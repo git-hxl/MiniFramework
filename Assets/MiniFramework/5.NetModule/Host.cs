@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class UDP
+    public class Host
     {
-        public bool IsActive;
+        public bool IsActive { get; set; }
         private byte[] recvBuffer;
         private UdpClient udpClient;
         private DataPacker dataPacker;
@@ -15,7 +15,7 @@ namespace MiniFramework
         {
             if (IsActive)
             {
-                Debug.Log("UDP已启动!");
+                Debug.Log("主机已启动!");
                 return;
             }
             dataPacker = new DataPacker();
@@ -26,7 +26,7 @@ namespace MiniFramework
                 udpClient.EnableBroadcast = true;
                 udpClient.BeginReceive(ReceiveResult, udpClient);
                 IsActive = true;
-                Debug.Log("UDP初始化成功");
+                Debug.Log("主机初始化成功");
             }
             catch (Exception e)
             {
@@ -41,25 +41,30 @@ namespace MiniFramework
             dataPacker.UnPack(recvBuffer);
             udpClient.BeginReceive(ReceiveResult, udpClient);
         }
-        public void Send(byte[] data, string ip, int port)
+        public void Send(PackHead head, byte[] bodyData,string remoteIP,int remotePort)
+        {
+            byte[] sendData = dataPacker.Packer(head, bodyData);
+            Send(sendData,remoteIP,remotePort);
+        }
+        public void Send(byte[] data,string remoteIP,int remotePort)
         {
             if (IsActive)
             {
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-                udpClient.BeginSend(data, data.Length, endPoint, SendResult, udpClient);
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(remoteIP),remotePort);
+                udpClient.BeginSend(data, data.Length, remoteEP, SendResult, udpClient);
+                Debug.Log("发送数据：" + data.Length + "字节");
             }
-        }
-        public void Send(PackHead head, byte[] data, string ip, int port)
-        {
-            byte[] sendData = dataPacker.Packer(head, data);
-            Send(sendData, ip, port);
+            else
+            {
+                Debug.LogError("主机未启动，无法发送数据");
+            }
         }
         private void SendResult(IAsyncResult ar)
         {
             udpClient = (UdpClient)ar.AsyncState;
             udpClient.EndSend(ar);
+            Debug.Log("数据发送成功");
         }
-
         public void Close()
         {
             if (udpClient != null)

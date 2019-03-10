@@ -9,6 +9,7 @@ namespace MiniFramework
         //创建数据包
         public byte[] Packer(PackHead head, byte[] bodyData)
         {
+            head.PackLength  = (short)(Marshal.SizeOf(head)+bodyData.Length);
             byte[] headData = Binary.SerializeByMarshal(head);
             byte[] packData = new byte[headData.Length + bodyData.Length];
             Array.Copy(headData, packData, headData.Length);
@@ -65,8 +66,8 @@ namespace MiniFramework
         //发送消息体
         public void SendPack(PackHead head, byte[] bodyData)
         {
-            MsgManager.Instance.SendMsg(head.MsgID.ToString(), bodyData);
             Debug.Log("接收到消息ID："+head.MsgID);
+            MsgManager.Instance.SendMsg(head.MsgID.ToString(), bodyData);
         }
     }
 }

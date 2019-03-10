@@ -5,7 +5,7 @@
         public AssetLoader AssetLoader;
         public SceneLoader SceneLoader;
 
-        public override void OnSingletonInit()
+        protected override void OnSingletonInit()
         {
             AssetLoader = new AssetLoader(this);
             SceneLoader = new SceneLoader(this);

@@ -7,44 +7,39 @@ namespace MiniFramework
 {
     public class SocketManager : MonoSingleton<SocketManager>
     {
-        public int Timeout;
+        public int Timeout = 5;
+        public int MaxBufferSize = 1024;
+        public int MaxConnections = 12;
+        public Action ConnectSuccess;
+        public Action ConnectFailed;
+        public Action ConnectAbort;
         public Client Client;
         public Server Server;
-        public UDP UDP;
-        public override void OnSingletonInit()
+        public Host Host;
+        protected override void OnSingletonInit()
         {
-            MsgManager.Instance.RegisterMsg(this,MsgConfig.Net.ConnectSuccess.ToString(),ConnectSuccess);
-            MsgManager.Instance.RegisterMsg(this,MsgConfig.Net.ConnectFailed.ToString(),ConnectFailed);
-            MsgManager.Instance.RegisterMsg(this,MsgConfig.Net.ConnectAbort.ToString(),ConnectAbort);
-        }
-        public void Connect(string ip, int port)
-        {
-            Client = new Client();
-            Client.Connect(ip, port);
-        }
-        public void LaunchAsServer(int port, int maxConnections)
-        {
-            Server = new Server();
-            Server.Launch(port, maxConnections);
-        }
-        public void LaunchAsHost(int port)
-        {
-            UDP = new UDP();
-            UDP.Launch(port);
-        }
-        void ConnectSuccess(object data){
 
         }
-        void ConnectFailed(object data){
-           
+        public void LaunchAsClient(string ip, int port)
+        {
+            Client = new Client(MaxBufferSize);
+            Client.Connect(ip, port);
+            StartCoroutine(CheckTimeout(Timeout));
         }
-        void ConnectAbort(object data){
-            
+        public void LaunchAsServer(int port){
+            Server = new Server(MaxBufferSize,MaxConnections);
+            Server.Launch(port);
         }
-        IEnumerator CheckTimeout(int timeout){
+        public void LaunchAsHost(int port){
+            Host = new Host();
+            Host.Launch(port);
+        }
+        IEnumerator CheckTimeout(int timeout)
+        {
             yield return new WaitForSeconds(timeout);
-            if(!Client.IsConnect){
-                Close();
+            if (Client.IsConnecting)
+            {
+                Client.Close();
             }
         }
         public string GetLocalIP()
@@ -70,9 +65,9 @@ namespace MiniFramework
             {
                 Server.Close();
             }
-            if (UDP != null)
+            if (Host != null)
             {
-                UDP.Close();
+                Host.Close();
             }
         }
         private void OnDestroy()

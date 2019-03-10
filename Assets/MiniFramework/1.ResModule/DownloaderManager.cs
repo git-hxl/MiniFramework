@@ -12,7 +12,7 @@ namespace MiniFramework
         private string downloadSpeed;
         private long lastTotalSaveLength;
         private Dictionary<string, IDownloader> downloaderHandlers = new Dictionary<string, IDownloader>();
-        public override void OnSingletonInit()
+        protected override void OnSingletonInit()
         {
             if (PlatformUtil.IsEditor())
             {

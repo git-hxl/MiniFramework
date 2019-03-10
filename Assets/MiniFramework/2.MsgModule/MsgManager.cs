@@ -29,7 +29,7 @@ namespace MiniFramework
         private readonly Dictionary<string, List<MsgHandler>> msgHandlerDict = new Dictionary<string, List<MsgHandler>>();
 
         private Queue<IdleMsg> idleMsgHandler = new Queue<IdleMsg>();
-        public override void OnSingletonInit() { }
+        protected override void OnSingletonInit() { }
 
         void Update()
         {
@@ -89,6 +89,7 @@ namespace MiniFramework
                 if (handler.Receiver != null)
                 {
                     IdleMsg iMsg = new IdleMsg(param, handler.Callback);
+
                     idleMsgHandler.Enqueue(iMsg);
                 }
                 else

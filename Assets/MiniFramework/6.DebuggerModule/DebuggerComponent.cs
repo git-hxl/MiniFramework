@@ -24,7 +24,7 @@ namespace MiniFramework
         private MemoryWindow memoryWindow = new MemoryWindow();
         private SettingsWindow settingWindow = new SettingsWindow();
         private FPSCounter fpsCounter = new FPSCounter();
-        public override void OnSingletonInit()
+        protected override void OnSingletonInit()
         {
             RegisterDebuggerWindow("<b>Console</b>", consoleWindow);
             RegisterDebuggerWindow("<b>Information</b>", informationWindow);
@@ -79,6 +79,13 @@ namespace MiniFramework
             {
                 window.Initialize();
                 windowList.Add(window);
+            }
+        }
+
+        void OnDestory(){
+            foreach (var item in windowList)
+            {
+                item.Close();
             }
         }
     }

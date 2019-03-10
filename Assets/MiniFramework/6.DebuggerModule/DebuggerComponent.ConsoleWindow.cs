@@ -13,7 +13,7 @@ namespace MiniFramework
             private int warningCount = 0;
             private int errorCount = 0;
             private int exceptionCount = 0;
-     
+
             private string dateTimeFormat = "[HH:mm:ss.fff]";
             private Queue<LogNode> logNodes = new Queue<LogNode>();
             private LogNode selectedNode = null;
@@ -32,127 +32,134 @@ namespace MiniFramework
 
             private Vector2 logScrollPosition = Vector2.zero;
             private Vector2 stackTraceScrollPosition = Vector2.zero;
-
+            private readonly static object locker = new object();
             public void Initialize(params object[] args)
             {
                 Application.logMessageReceivedThreaded += OnLogMessageReceived;
-			}
-            public void OnUpdate(float time, float realTime)
-            {
-                //throw new System.NotImplementedException();
             }
+            public void OnUpdate(float time, float realTime) { }
             public void OnDraw()
             {
-                RefreshCount();
-                GUILayout.BeginHorizontal();
+                lock (locker)
                 {
-                    if (GUILayout.Button("Clear All"))
+                    RefreshCount();
+                    GUILayout.BeginHorizontal();
                     {
-                        Clear();
-                    }
-                    lockScroll = GUILayout.Toggle(lockScroll, "Lock Scroll");
-                    GUILayout.FlexibleSpace();
-                    logFilter = GUILayout.Toggle(logFilter, "Info (" + logCount + ")");
-                    warningFilter = GUILayout.Toggle(warningFilter, "Warning (" + warningCount + ")");
-                    errorFilter = GUILayout.Toggle(errorFilter, "Error (" + errorCount + ")");
-                    exceptionFilter = GUILayout.Toggle(exceptionFilter, "Exception (" + exceptionCount + ")");
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginVertical("box");
-                {
-                    if (lockScroll)
-                    {
-                        logScrollPosition.y = float.MaxValue;
-                    }
-                    logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
-                    {
-                        foreach (LogNode logNode in logNodes)
+                        if (GUILayout.Button("Clear All"))
                         {
-                            switch (logNode.LogType)
+                            Clear();
+                        }
+                        lockScroll = GUILayout.Toggle(lockScroll, "Lock Scroll");
+                        GUILayout.FlexibleSpace();
+                        logFilter = GUILayout.Toggle(logFilter, "Info (" + logCount + ")");
+                        warningFilter = GUILayout.Toggle(warningFilter, "Warning (" + warningCount + ")");
+                        errorFilter = GUILayout.Toggle(errorFilter, "Error (" + errorCount + ")");
+                        exceptionFilter = GUILayout.Toggle(exceptionFilter, "Exception (" + exceptionCount + ")");
+                    }
+                    GUILayout.EndHorizontal();
+
+                    GUILayout.BeginVertical("box");
+                    {
+                        if (lockScroll)
+                        {
+                            logScrollPosition.y = float.MaxValue;
+                        }
+                        logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
+                        {
+                            foreach (LogNode logNode in logNodes)
                             {
-                                case LogType.Log:
-                                    if (!logFilter)
-                                    {
-                                        continue;
-                                    }
-                                    break;
-                                case LogType.Warning:
-                                    if (!warningFilter)
-                                    {
-                                        continue;
-                                    }
-                                    break;
-                                case LogType.Error:
-                                    if (!errorFilter)
-                                    {
-                                        continue;
-                                    }
-                                    break;
-                                case LogType.Exception:
-                                    if (!exceptionFilter)
-                                    {
-                                        continue;
-                                    }
-                                    break;
-                            }
-                            if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode)))
-                            {
-                                if (selectedNode != logNode)
+                                switch (logNode.LogType)
                                 {
-                                    selectedNode = logNode;
-                                    stackTraceScrollPosition = Vector2.zero;
+                                    case LogType.Log:
+                                        if (!logFilter)
+                                        {
+                                            continue;
+                                        }
+                                        break;
+                                    case LogType.Warning:
+                                        if (!warningFilter)
+                                        {
+                                            continue;
+                                        }
+                                        break;
+                                    case LogType.Error:
+                                        if (!errorFilter)
+                                        {
+                                            continue;
+                                        }
+                                        break;
+                                    case LogType.Exception:
+                                        if (!exceptionFilter)
+                                        {
+                                            continue;
+                                        }
+                                        break;
+                                }
+                                if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode)))
+                                {
+                                    if (selectedNode != logNode)
+                                    {
+                                        selectedNode = logNode;
+                                        stackTraceScrollPosition = Vector2.zero;
+                                    }
                                 }
                             }
                         }
+                        GUILayout.EndScrollView();
                     }
-                    GUILayout.EndScrollView();
-                }
-                GUILayout.EndVertical();
-                GUILayout.BeginVertical("box");
-                {
-                    stackTraceScrollPosition = GUILayout.BeginScrollView(stackTraceScrollPosition, GUILayout.Height(100f));
+                    GUILayout.EndVertical();
+                    GUILayout.BeginVertical("box");
                     {
-                        if (selectedNode != null)
+                        stackTraceScrollPosition = GUILayout.BeginScrollView(stackTraceScrollPosition, GUILayout.Height(DebuggerComponent.Instance.windowRect.height / 6));
                         {
-							GUILayout.BeginHorizontal();
+                            if (selectedNode != null)
+                            {
+                                GUILayout.BeginHorizontal();
 
-							GUILayout.Label(selectedNode.LogMsg);
-							if(GUILayout.Button("Copy",GUILayout.Width(60f),GUILayout.Height(30f)))
-							{
-								TextEditor textEditor = new TextEditor
-								{
-									text = selectedNode.LogMsg+"\n"+selectedNode.StackTrace
-								};
-								textEditor.OnFocus();
-								textEditor.Copy();
-							}
-							GUILayout.EndHorizontal();
-							GUILayout.Label(selectedNode.StackTrace);
+                                GUILayout.Label(selectedNode.LogMsg);
+                                if (GUILayout.Button("Copy", GUILayout.Width(60f), GUILayout.Height(30f)))
+                                {
+                                    TextEditor textEditor = new TextEditor
+                                    {
+                                        text = selectedNode.LogMsg + "\n" + selectedNode.StackTrace
+                                    };
+                                    textEditor.OnFocus();
+                                    textEditor.Copy();
+                                }
+                                GUILayout.EndHorizontal();
+                                GUILayout.Label(selectedNode.StackTrace);
+                            }
+                            GUILayout.EndScrollView();
                         }
-						GUILayout.EndScrollView();
                     }
+                    GUILayout.EndVertical();
                 }
-				GUILayout.EndVertical();
+
             }
             public void Close()
             {
-                Application.logMessageReceivedThreaded += OnLogMessageReceived;
+                Application.logMessageReceivedThreaded -= OnLogMessageReceived;
                 Clear();
             }
 
             private void OnLogMessageReceived(string logMsg, string stackTrace, LogType logtype)
             {
-				if(logtype == LogType.Assert){
-					logtype = LogType.Error;
-				}
-                logNodes.Enqueue(Pool<LogNode>.Instance.Allocate().Fill(logtype, logMsg, stackTrace));
-                while (logNodes.Count > maxLine)
+                lock (locker)
                 {
-					if(selectedNode == logNodes.Peek()){
-						selectedNode = null;
-					}
-                    Pool<LogNode>.Instance.Recycle(logNodes.Dequeue());
+                    if (logtype == LogType.Assert)
+                    {
+                        logtype = LogType.Error;
+                    }
+                    LogNode log = Pool<LogNode>.Instance.Allocate().Fill(logtype, logMsg, stackTrace);
+                    logNodes.Enqueue(log);
+                    while (logNodes.Count > maxLine)
+                    {
+                        if (selectedNode == logNodes.Peek())
+                        {
+                            selectedNode = null;
+                        }
+                        Pool<LogNode>.Instance.Recycle(logNodes.Dequeue());
+                    }
                 }
             }
             private string GetLogString(LogNode logNode)

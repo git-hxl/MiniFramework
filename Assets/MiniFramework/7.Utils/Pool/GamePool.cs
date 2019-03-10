@@ -7,7 +7,7 @@ namespace MiniFramework
     {
         private Dictionary<string, Stack<GameObject>> objs = new Dictionary<string, Stack<GameObject>>();
         private Dictionary<string, uint> maxCacheNum = new Dictionary<string, uint>();
-        public override void OnSingletonInit() { }
+        protected override void OnSingletonInit() { }
 
         public int CurCount(string name)
         {

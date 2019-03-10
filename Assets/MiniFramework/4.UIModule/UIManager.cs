@@ -10,9 +10,9 @@ namespace MiniFramework
         public string UIDownloadPath = Application.streamingAssetsPath + "/AssetBundle/StandaloneWindows/ui";
         public string UIResourecePath = "UI";       
         private readonly Dictionary<string, GameObject> UIPanelDict = new Dictionary<string, GameObject>();
-        public override void OnSingletonInit()
+        protected override void OnSingletonInit()
         {
-            throw new System.NotImplementedException();
+            
         }
         public void Start()
         {

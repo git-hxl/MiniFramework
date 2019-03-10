@@ -8,20 +8,26 @@ namespace MiniFramework
 {
     public class Server
     {
-        public bool IsActive;
-        public int MaxBufferSize = 1024;
+        public bool IsActive { get; set; }
+        private int maxConnections;
+        private int maxBufferSize;
         private byte[] recvBuffer;
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
-        public void Launch(int port, int maxConnections)
+        public Server(int size, int count)
+        {
+            maxBufferSize = size;
+            maxConnections = count;
+        }
+        public void Launch(int port)
         {
             if (IsActive)
             {
                 Debug.Log("服务器已启动");
                 return;
             }
-            recvBuffer = new byte[MaxBufferSize];
+            recvBuffer = new byte[maxBufferSize];
             remoteClients = new List<TcpClient>();
             dataPacker = new DataPacker();
             try
@@ -30,7 +36,7 @@ namespace MiniFramework
                 tcpListener.Start(maxConnections);
                 tcpListener.BeginAcceptTcpClient(AcceptResult, tcpListener);
                 IsActive = true;
-                Debug.Log("服务端启动成功:" + tcpListener.LocalEndpoint);
+                Debug.Log("服务端启动成功:" + SocketManager.Instance.GetLocalIP()+":"+port);
             }
             catch (Exception e)
             {
@@ -68,9 +74,9 @@ namespace MiniFramework
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
             }
         }
-        public void Send(PackHead head, byte[] data)
+        public void Send(PackHead head, byte[] bodyData)
         {
-            byte[] sendData = dataPacker.Packer(head, data);
+            byte[] sendData = dataPacker.Packer(head, bodyData);
             Send(sendData);
         }
         public void Send(byte[] data)
@@ -83,14 +89,18 @@ namespace MiniFramework
             {
                 TcpClient client = remoteClients[i];
                 if (client.Connected)
+                {
                     client.GetStream().BeginWrite(data, 0, data.Length, SendResult, client);
+                    Debug.Log("发送数据：" + data.Length + "字节");
+                }                   
             }
-        }    
+        }
         private void SendResult(IAsyncResult ar)
         {
             TcpClient tcpClient = (TcpClient)ar.AsyncState;
             NetworkStream stream = tcpClient.GetStream();
             stream.EndWrite(ar);
+            Debug.Log("数据发送成功");
         }
         public void Close()
         {

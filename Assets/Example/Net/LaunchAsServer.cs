@@ -10,7 +10,7 @@ public class LaunchAsServer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		MsgManager.Instance.RegisterMsg(this,"1",Recv);
-		SocketManager.Instance.LaunchAsServer(1122,10);
+		SocketManager.Instance.LaunchAsServer(1122);
 	}
 	void Recv(object data){
 		byte[] bytes = (byte[])data;
@@ -18,13 +18,11 @@ public class LaunchAsServer : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-		if(Time.frameCount%60==0){
 			byte[] bytes = Encoding.UTF8.GetBytes("I am Server");
 			PackHead head= new PackHead();
 			head.MsgID = 1;
 			head.TimeStamp = DateTime.Now.Second;
 			head.PackLength = (short)bytes.Length;			
 			SocketManager.Instance.Server.Send(head,bytes);
-		}
 	}
 }
