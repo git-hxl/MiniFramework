@@ -35,7 +35,7 @@ namespace MiniFramework
         }
         private void ConnectResult(IAsyncResult ar)
         {
-            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            tcpClient = (TcpClient)ar.AsyncState;
             if (!tcpClient.Connected)
             {
                 Debug.Log("连接服务器失败，请尝试重新连接!");
@@ -61,7 +61,7 @@ namespace MiniFramework
         }
         private void ReadResult(IAsyncResult ar)
         {
-            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            tcpClient = (TcpClient)ar.AsyncState;
             if (tcpClient.Connected)
             {
                 NetworkStream stream = tcpClient.GetStream();
@@ -101,7 +101,7 @@ namespace MiniFramework
         }
         private void SendResult(IAsyncResult ar)
         {
-            TcpClient tcpClient = (TcpClient)ar.AsyncState;
+            tcpClient = (TcpClient)ar.AsyncState;
             NetworkStream stream = tcpClient.GetStream();
             stream.EndWrite(ar);
             Debug.Log("数据发送成功");

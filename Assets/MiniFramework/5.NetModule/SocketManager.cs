@@ -16,10 +16,7 @@ namespace MiniFramework
         public Client Client;
         public Server Server;
         public Host Host;
-        protected override void OnSingletonInit()
-        {
-
-        }
+        protected override void OnSingletonInit(){}
         public void LaunchAsClient(string ip, int port)
         {
             Client = new Client(MaxBufferSize);
