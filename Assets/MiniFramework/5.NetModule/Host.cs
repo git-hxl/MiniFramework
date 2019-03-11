@@ -46,7 +46,7 @@ namespace MiniFramework
             byte[] sendData = dataPacker.Packer(head, bodyData);
             Send(sendData,remoteIP,remotePort);
         }
-        public void Send(byte[] data,string remoteIP,int remotePort)
+        private void Send(byte[] data,string remoteIP,int remotePort)
         {
             if (IsActive)
             {

@@ -87,7 +87,7 @@ namespace MiniFramework
             byte[] sendData = dataPacker.Packer(head, bodyData);
             Send(sendData);
         }
-        public void Send(byte[] data)
+        private void Send(byte[] data)
         {
             if (tcpClient.Connected)
             {

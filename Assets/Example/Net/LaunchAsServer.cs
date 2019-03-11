@@ -23,6 +23,6 @@ public class LaunchAsServer : MonoBehaviour {
 			head.MsgID = 1;
 			head.TimeStamp = DateTime.Now.Second;
 			head.PackLength = (short)bytes.Length;			
-			SocketManager.Instance.Server.Send(head,bytes);
+			SocketManager.Instance.SendToClient(head,bytes);
 	}
 }

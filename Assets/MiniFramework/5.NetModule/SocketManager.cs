@@ -13,30 +13,42 @@ namespace MiniFramework
         public Action ConnectSuccess;
         public Action ConnectFailed;
         public Action ConnectAbort;
-        public Client Client;
-        public Server Server;
-        public Host Host;
+        private Client client;
+        private Server server;
+        private Host host;
         protected override void OnSingletonInit(){}
         public void LaunchAsClient(string ip, int port)
         {
-            Client = new Client(MaxBufferSize);
-            Client.Connect(ip, port);
+            client = new Client(MaxBufferSize);
+            client.ConnectSuccess = ConnectSuccess;
+            client.ConnectFailed = ConnectFailed;
+            client.ConnectAbort = ConnectAbort;
+            client.Connect(ip, port);
             StartCoroutine(CheckTimeout(Timeout));
         }
         public void LaunchAsServer(int port){
-            Server = new Server(MaxBufferSize,MaxConnections);
-            Server.Launch(port);
+            server = new Server(MaxBufferSize,MaxConnections);
+            server.Launch(port);
         }
         public void LaunchAsHost(int port){
-            Host = new Host();
-            Host.Launch(port);
+            host = new Host();
+            host.Launch(port);
+        }
+        public void SendToServer(PackHead head,byte[] bodyData){
+            client.Send(head,bodyData);
+        }
+        public void SendToClient(PackHead head,byte[] bodyData){
+            server.Send(head,bodyData);
+        }
+        public void SendToRemoteIP(PackHead head,byte[] bodyData,string remoteIP,int remotePort){
+            host.Send(head,bodyData,remoteIP,remotePort);
         }
         IEnumerator CheckTimeout(int timeout)
         {
             yield return new WaitForSeconds(timeout);
-            if (Client.IsConnecting)
+            if (client.IsConnecting)
             {
-                Client.Close();
+                client.Close();
             }
         }
         public string GetLocalIP()
@@ -54,17 +66,17 @@ namespace MiniFramework
         }
         public void Close()
         {
-            if (Client != null)
+            if (client != null)
             {
-                Client.Close();
+                client.Close();
             }
-            if (Server != null)
+            if (server != null)
             {
-                Server.Close();
+                server.Close();
             }
-            if (Host != null)
+            if (host != null)
             {
-                Host.Close();
+                host.Close();
             }
         }
         private void OnDestroy()
