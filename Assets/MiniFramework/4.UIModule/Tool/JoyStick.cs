@@ -5,49 +5,58 @@ using UnityEngine.EventSystems;
 
 namespace MiniFramework
 {
-    public class JoyStick : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class JoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        public RectTransform Joy;
-        public float MaxDistance;
-        public float Sensitivity;
-        //public Vector3 GetJoyDir { get { return } }
-        private Vector2 startInputPos;
-        private Vector3 startJoyStickPos;
-        private RectTransform joyStick;
-        private Vector2 tempPos;
+        public RectTransform Rocker;//摇杆
+        public RectTransform Base;//底座
+        public float MaxDistance;//摇杆最大移动距离
+        public Vector2 RockerDir { get { return rockerPos.normalized; } }
+        private Vector2 rockerPos;
+        private Vector2 basePos;
         void Start()
         {
-            joyStick = GetComponent<RectTransform>();
-            startJoyStickPos = joyStick.position;
-        }
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                joyStick.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-            }
-            if (Input.GetKeyUp(KeyCode.Mouse0))
-            {
-                joyStick.position = startJoyStickPos;
-            }
+            basePos = Base.localPosition;
         }
         public void OnBeginDrag(PointerEventData eventData)
         {
-            startInputPos = eventData.position;
-            tempPos = Joy.localPosition;
+            rockerPos = Rocker.localPosition;
         }
         public void OnDrag(PointerEventData eventData)
         {
-            tempPos += eventData.delta;
-            if (Vector3.Distance(Vector3.zero, tempPos) > MaxDistance)
+            rockerPos += eventData.delta;
+            float distance = Vector2.Distance(rockerPos, Vector2.zero);
+            if (distance > MaxDistance)
             {
-                
+                rockerPos = (MaxDistance / distance) * rockerPos;
             }
+            Rocker.localPosition = rockerPos;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            Joy.localPosition = Vector3.zero;
+            Rocker.localPosition = Vector3.zero;
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Vector2 position;
+            Canvas canvas = GetComponentInParent<Canvas>();
+            Camera camera;
+            if(canvas.renderMode == RenderMode.ScreenSpaceCamera){
+                camera = Camera.main;
+            }
+            else{
+                camera = null;
+            }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(Base, Input.mousePosition, camera, out position);
+            Base.localPosition = position + basePos;
+            Base.gameObject.SetActive(true);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            Base.localPosition = basePos;
+            Base.gameObject.SetActive(false);
         }
     }
 

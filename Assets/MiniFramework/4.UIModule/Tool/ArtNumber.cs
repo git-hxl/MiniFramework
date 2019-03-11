@@ -22,7 +22,6 @@ namespace MiniFramework
             set
             {
                 GenerateNumber(value);
-                number = value;
             }
         }
         private void Start()
@@ -42,7 +41,7 @@ namespace MiniFramework
                 for (int i = curChildCount; i < chars.Length; i++)
                 {
                     GameObject obj = new GameObject(i.ToString(), typeof(Image));
-                    obj.transform.SetParent(transform);
+                    obj.transform.SetParent(transform,false);
                 }
             }
             else if (curChildCount > chars.Length)

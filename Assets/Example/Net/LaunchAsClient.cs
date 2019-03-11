@@ -12,7 +12,7 @@ public class LaunchAsClient : MonoBehaviour
     void Start()
     {
         MsgManager.Instance.RegisterMsg(this, "1", Recv);
-        SocketManager.Instance.LaunchAsClient("192.168.89.37", 1122);
+        SocketManager.Instance.LaunchAsClient("192.168.0.101", 1122);
 
     }
     void Recv(object data)
