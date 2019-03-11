@@ -68,7 +68,7 @@ namespace MiniFramework
                 int recvLength = stream.EndRead(ar);
                 if (recvLength <= 0)
                 {
-                    Debug.Log("网络中断");
+                    Debug.LogError("网络中断");
                     if (ConnectAbort != null)
                     {
                         ConnectAbort();
@@ -113,7 +113,6 @@ namespace MiniFramework
                 tcpClient.Close();
                 IsConnected = false;
             }
-            Debug.Log("连接已断开");
         }
     }
 }

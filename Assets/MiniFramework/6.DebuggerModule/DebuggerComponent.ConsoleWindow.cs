@@ -7,7 +7,7 @@ namespace MiniFramework
     {
         private class ConsoleWindow : IDebuggerWindow
         {
-            private int maxLine = 300;
+            private int maxLine = 50;
 
             private int logCount = 0;
             private int warningCount = 0;

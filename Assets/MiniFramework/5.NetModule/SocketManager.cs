@@ -16,6 +16,7 @@ namespace MiniFramework
         private Client client;
         private Server server;
         private Host host;
+        public bool IsConnected{get{return client.IsConnected;}}
         protected override void OnSingletonInit(){}
         public void LaunchAsClient(string ip, int port)
         {
@@ -48,7 +49,8 @@ namespace MiniFramework
             yield return new WaitForSeconds(timeout);
             if (client.IsConnecting)
             {
-                client.Close();
+                Debug.Log("请求超时");
+                Close();
             }
         }
         public string GetLocalIP()

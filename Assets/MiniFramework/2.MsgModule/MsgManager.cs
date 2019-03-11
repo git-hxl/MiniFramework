@@ -28,17 +28,8 @@ namespace MiniFramework
         }
         private readonly Dictionary<string, List<MsgHandler>> msgHandlerDict = new Dictionary<string, List<MsgHandler>>();
 
-        private Queue<IdleMsg> idleMsgHandler = new Queue<IdleMsg>();
         protected override void OnSingletonInit() { }
 
-        void Update()
-        {
-            if (idleMsgHandler.Count > 0)
-            {
-                IdleMsg iMsg = idleMsgHandler.Dequeue();
-                iMsg.Callback(iMsg.Param);
-            }
-        }
         /// <summary>
         /// 注册消息
         /// </summary>
@@ -88,9 +79,7 @@ namespace MiniFramework
                 MsgHandler handler = handlers[i];
                 if (handler.Receiver != null)
                 {
-                    IdleMsg iMsg = new IdleMsg(param, handler.Callback);
-
-                    idleMsgHandler.Enqueue(iMsg);
+                    handler.Callback(param);
                 }
                 else
                 {

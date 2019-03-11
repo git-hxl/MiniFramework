@@ -7,11 +7,13 @@ using System;
 
 public class LaunchAsClient : MonoBehaviour
 {
+    float startTime;
     // Use this for initialization
     void Start()
     {
         MsgManager.Instance.RegisterMsg(this, "1", Recv);
-        SocketManager.Instance.LaunchAsClient("192.168.0.101", 1122);
+        SocketManager.Instance.LaunchAsClient("192.168.89.37", 1122);
+
     }
     void Recv(object data)
     {
@@ -20,11 +22,18 @@ public class LaunchAsClient : MonoBehaviour
     }
     void Update()
     {
+        if(!SocketManager.Instance.IsConnected){
+            return;
+        }
+        if(Time.time-startTime<0.2f){
+            return;
+        }
         byte[] bytes = Encoding.UTF8.GetBytes("I am Client");
         PackHead head = new PackHead();
         head.MsgID = 1;
         head.TimeStamp = DateTime.Now.Second;
         head.PackLength = (short)bytes.Length;
         SocketManager.Instance.SendToServer(head, bytes);
+        startTime = Time.time;
     }
 }
