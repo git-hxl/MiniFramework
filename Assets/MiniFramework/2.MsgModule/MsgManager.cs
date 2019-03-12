@@ -18,8 +18,8 @@ namespace MiniFramework
         }
         private class IdleMsg
         {
-            public readonly object Param;
-            public readonly Action<object> Callback;
+            public object Param;
+            public Action<object> Callback;
             public IdleMsg(object param, Action<object> callback)
             {
                 Param = param;
@@ -27,9 +27,14 @@ namespace MiniFramework
             }
         }
         private readonly Dictionary<string, List<MsgHandler>> msgHandlerDict = new Dictionary<string, List<MsgHandler>>();
-
+        private Queue<IdleMsg> msgQueue = new Queue<IdleMsg>();
         protected override void OnSingletonInit() { }
-
+        void Update(){
+            while(msgQueue.Count>0){
+               IdleMsg msg = msgQueue.Dequeue();
+               msg.Callback(msg.Param);
+            }
+        }
         /// <summary>
         /// 注册消息
         /// </summary>
@@ -79,7 +84,9 @@ namespace MiniFramework
                 MsgHandler handler = handlers[i];
                 if (handler.Receiver != null)
                 {
-                    handler.Callback(param);
+                    //handler.Callback(param);
+                    IdleMsg msg = new IdleMsg(param,handler.Callback);
+                    msgQueue.Enqueue(msg); 
                 }
                 else
                 {

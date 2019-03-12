@@ -11,12 +11,13 @@ public class ArtNumberEditor : Editor
     private void OnEnable()
     {
         artNumber = (ArtNumber)target;
+        artNumber.Generate();
     }
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-		artNumber.Number = (uint)serializedObject.FindProperty("number").intValue;
-		serializedObject.ApplyModifiedProperties();
+        artNumber.Number = serializedObject.FindProperty("number").stringValue;
+        artNumber.transform.localScale = new Vector3(1,1,1)*serializedObject.FindProperty("size").floatValue;
     }
 
 }

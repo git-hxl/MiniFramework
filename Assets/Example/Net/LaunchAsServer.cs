@@ -7,31 +7,42 @@ using System;
 
 public class LaunchAsServer : MonoBehaviour
 {
+    public Dictionary<string, PlayerController> players = new Dictionary<string, PlayerController>();
     float startTime;
     // Use this for initialization
     void Start()
     {
-        MsgManager.Instance.RegisterMsg(this, "1", Recv);
-        SocketManager.Instance.LaunchAsServer(1122);
-    }
-    void Recv(object data)
-    {
-        byte[] bytes = (byte[])data;
-        Debug.Log(Encoding.UTF8.GetString(bytes));
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if (Time.time - startTime < 0.2f)
+        SocketManager.Instance.ClientConnected += ClientConnect;
+        SocketManager.Instance.ClientAborted += ClientAbort;
+        SocketManager.Instance.LaunchAsServer(8888);
+
+        MsgManager.Instance.RegisterMsg(this, "ClientConnect", (data) =>
         {
-            return;
-        }
-        byte[] bytes = Encoding.UTF8.GetBytes("I am Server");
-        PackHead head = new PackHead();
-        head.MsgID = 1;
-        head.TimeStamp = DateTime.Now.Second;
-        head.PackLength = (short)bytes.Length;
-        SocketManager.Instance.SendToClient(head, bytes);
-		startTime = Time.time;
+            ResourceManager.Instance.AssetLoader.LoadAsset("Player", (obj) =>
+            {
+                string id = (string)data;
+                GameObject player = Instantiate(obj) as GameObject;
+                player.GetComponent<MeshRenderer>().material.color = Color.red;
+                PlayerController pController = player.GetComponent<PlayerController>();
+                pController.IsSelf = false;
+                pController.Port = id;
+                players.Add(id, pController);
+            });
+        });
+        MsgManager.Instance.RegisterMsg(this, "Abort", (data) =>
+        {
+            string id = (string)data;
+            Destroy(players[id].gameObject);
+            players.Remove(id);
+        });
     }
+    void ClientConnect(string id)
+    {
+        MsgManager.Instance.SendMsg("ClientConnect", id);
+    }
+    void ClientAbort(string id)
+    {
+        MsgManager.Instance.SendMsg("Abort", id);
+    }
+
 }

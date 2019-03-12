@@ -13,6 +13,8 @@ namespace MiniFramework
         public Action ConnectSuccess;
         public Action ConnectFailed;
         public Action ConnectAbort;
+        public Action<string> ClientConnected;
+        public Action<string> ClientAborted;
         private Client client;
         private Server server;
         private Host host;
@@ -29,6 +31,8 @@ namespace MiniFramework
         }
         public void LaunchAsServer(int port){
             server = new Server(MaxBufferSize,MaxConnections);
+            server.ClientConnected = ClientConnected;
+            server.ClientAborted = ClientAborted;
             server.Launch(port);
         }
         public void LaunchAsHost(int port){

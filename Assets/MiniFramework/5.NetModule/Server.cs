@@ -9,6 +9,8 @@ namespace MiniFramework
     public class Server
     {
         public bool IsActive { get; set; }
+        public Action<string> ClientConnected;
+        public Action<string> ClientAborted;
         private int maxConnections;
         private int maxBufferSize;
         private byte[] recvBuffer;
@@ -52,6 +54,9 @@ namespace MiniFramework
             networkStream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, remoteClient);
             tcpListener.BeginAcceptTcpClient(AcceptResult, tcpListener);
             Debug.Log("远程客户端：" + remoteClient.Client.RemoteEndPoint + "接入成功");
+            if(ClientConnected!=null){
+                ClientConnected(remoteClient.Client.RemoteEndPoint.ToString());
+            }
         }
 
         private void ReadResult(IAsyncResult ar)
@@ -64,6 +69,9 @@ namespace MiniFramework
                 if (recvLength <= 0)
                 {
                     Debug.Log("远程客户端：" + tcpClient.Client.RemoteEndPoint + "已经断开");
+                    if(ClientAborted!=null){
+                        ClientAborted(tcpClient.Client.RemoteEndPoint.ToString());
+                    }
                     remoteClients.Remove(tcpClient);
                     tcpClient.Close();
                     return;

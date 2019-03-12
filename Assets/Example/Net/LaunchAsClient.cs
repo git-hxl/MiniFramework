@@ -11,29 +11,19 @@ public class LaunchAsClient : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MsgManager.Instance.RegisterMsg(this, "1", Recv);
-        SocketManager.Instance.LaunchAsClient("192.168.0.101", 1122);
+        SocketManager.Instance.ConnectSuccess+=ConnectSuccess;
+        SocketManager.Instance.LaunchAsClient("192.168.89.37", 8888);
+        
 
+        MsgManager.Instance.RegisterMsg(this,"Connect",(data)=>{
+            ResourceManager.Instance.AssetLoader.LoadAsset("Player",(obj)=>{
+           GameObject player = Instantiate(obj) as GameObject;
+           player.GetComponent<MeshRenderer>().material.color = Color.blue;
+        });
+        });
     }
-    void Recv(object data)
-    {
-        byte[] bytes = (byte[])data;
-        Debug.Log(Encoding.UTF8.GetString(bytes));
+    void ConnectSuccess(){
+        MsgManager.Instance.SendMsg("Connect",null);
     }
-    void Update()
-    {
-        if(!SocketManager.Instance.IsConnected){
-            return;
-        }
-        if(Time.time-startTime<0.2f){
-            return;
-        }
-        byte[] bytes = Encoding.UTF8.GetBytes("I am Client");
-        PackHead head = new PackHead();
-        head.MsgID = 1;
-        head.TimeStamp = DateTime.Now.Second;
-        head.PackLength = (short)bytes.Length;
-        SocketManager.Instance.SendToServer(head, bytes);
-        startTime = Time.time;
-    }
+   
 }
