@@ -10,15 +10,18 @@ public class PlayerController : MonoBehaviour
     public string Port;
     private JoyStick joyStick;
     private new Rigidbody rigidbody;
-    private bool isStop;
+    private bool needLerp;
+    private bool isDrag;
     private Vector3 needLerpPos;
+    PackHead head;
+    Msg msg;
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         joyStick = FindObjectOfType<JoyStick>();
-        PackHead head = new PackHead();
+         head = new PackHead();
         head.MsgID = 10001;
-        Msg msg = new Msg();
+         msg = new Msg();
         if (IsSelf)
         {
             joyStick.OnDragStart += () =>
@@ -30,11 +33,8 @@ public class PlayerController : MonoBehaviour
             };
             joyStick.OnDragging += (data) =>
             {
-                msg.state = 2;
-                Vector3 dirSend = new Vector3(data.x,0,data.y);
-                msg.dir = dirSend;
-                byte[] bytes = Binary.SerializeByMarshal(msg);
-                SocketManager.Instance.SendToServer(head, bytes);
+
+                isDrag = true;
             };
             joyStick.OnDragEnd += () =>
             {
@@ -42,34 +42,32 @@ public class PlayerController : MonoBehaviour
                 msg.dir = transform.position;
                 byte[] data = Binary.SerializeByMarshal(msg);
                 SocketManager.Instance.SendToServer(head, data);
+                isDrag = false;
             };
         }
-
-
         if (!IsSelf)
         {
             //非本机用户 从服务端获取输入信息
             MsgManager.Instance.RegisterMsg(this, "10001", (data) =>
             {
                 Msg msg2 = Binary.DeserializeByMarshal<Msg>((byte[])data);
-                isStop = false;
+                needLerp = false;
                 switch (msg2.state)
                 {
                     case 1:
                         transform.position = msg2.dir;
-                        
+
                         break;
                     case 2:
                         dir = msg2.dir;
-                        Debug.Log("接受到方向"+msg.dir);
                         break;
-
                     case 3:
-                        dir = Vector3.zero;
-                        //transform.position = msg2.dir;
-                        Debug.Log("移动结束" + msg2.dir);
-                        isStop =true;
-                        needLerpPos = msg2.dir;
+                        dir = Vector2.zero;
+                        if (Vector3.Distance(msg2.dir, transform.position) > 1)
+                        {
+                            needLerpPos = msg2.dir;
+                            needLerp = true;
+                        }
                         break;
                 }
 
@@ -79,9 +77,10 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-        if(isStop&&needLerpPos!=Vector3.zero){
+        if (needLerp)
+        {
             transform.LookAt(needLerpPos);
-            transform.position = Vector3.MoveTowards(transform.position,needLerpPos,Time.deltaTime*Speed);
+            transform.position = Vector3.Lerp(transform.position, needLerpPos, Time.deltaTime);
         }
     }
     void FixedUpdate()
@@ -94,6 +93,15 @@ public class PlayerController : MonoBehaviour
         }
 
         MoveAndRoate(dir);
+
+        if (isDrag)
+        {
+            msg.state = 2;
+            Vector3 dirSend = new Vector3(joyStick.RockerDir.x, 0, joyStick.RockerDir.y);
+            msg.dir = dirSend;
+            byte[] bytes = Binary.SerializeByMarshal(msg);
+            SocketManager.Instance.SendToServer(head, bytes);
+        }
     }
     void MoveAndRoate(Vector3 dir)
     {
