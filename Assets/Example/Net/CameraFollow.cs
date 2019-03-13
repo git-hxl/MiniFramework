@@ -10,9 +10,10 @@ public class CameraFollow : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		if(Player!=null){
-			transform.position = Player.position+new Vector3(0,10,-10);
+			Vector3 followPos = Player.position+new Vector3(0,10,-10);
+			transform.position =Vector3.MoveTowards(transform.position,followPos,Time.deltaTime*10);
 			transform.LookAt(Player);
 		}
 	}

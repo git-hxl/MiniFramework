@@ -12,7 +12,7 @@ public class LaunchAsClient : MonoBehaviour
     void Start()
     {
         SocketManager.Instance.ConnectSuccess+=ConnectSuccess;
-        SocketManager.Instance.LaunchAsClient("192.168.0.101", 8888);
+        SocketManager.Instance.LaunchAsClient("192.168.89.37", 8888);
         
 
         MsgManager.Instance.RegisterMsg(this,"Connect",(data)=>{

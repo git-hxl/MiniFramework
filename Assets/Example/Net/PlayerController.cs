@@ -80,7 +80,8 @@ public class PlayerController : MonoBehaviour
         if (needLerp)
         {
             transform.LookAt(needLerpPos);
-            transform.position = Vector3.Lerp(transform.position, needLerpPos, Time.deltaTime);
+            //transform.position = Vector3.Lerp(transform.position, needLerpPos, Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position,needLerpPos,Time.deltaTime*Speed);
         }
     }
     void FixedUpdate()
