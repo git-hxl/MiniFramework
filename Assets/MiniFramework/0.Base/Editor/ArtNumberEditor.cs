@@ -19,5 +19,4 @@ public class ArtNumberEditor : Editor
         artNumber.Number = serializedObject.FindProperty("number").stringValue;
         artNumber.transform.localScale = new Vector3(1,1,1)*serializedObject.FindProperty("size").floatValue;
     }
-
 }

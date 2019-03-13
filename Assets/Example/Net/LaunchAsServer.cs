@@ -7,7 +7,7 @@ using System;
 
 public class LaunchAsServer : MonoBehaviour
 {
-    public Dictionary<string, PlayerController> players = new Dictionary<string, PlayerController>();
+   // public Dictionary<string, PlayerController> players = new Dictionary<string, PlayerController>();
     float startTime;
     // Use this for initialization
     void Start()
@@ -23,17 +23,17 @@ public class LaunchAsServer : MonoBehaviour
                 string id = (string)data;
                 GameObject player = Instantiate(obj) as GameObject;
                 player.GetComponent<MeshRenderer>().material.color = Color.red;
-                PlayerController pController = player.GetComponent<PlayerController>();
-                pController.IsSelf = false;
-                pController.Port = id;
-                players.Add(id, pController);
+              //  PlayerController pController = player.GetComponent<PlayerController>();
+               // pController.IsSelf = false;
+              //  pController.Port = id;
+              //  players.Add(id, pController);
             });
         });
         MsgManager.Instance.RegisterMsg(this, "Abort", (data) =>
         {
             string id = (string)data;
-            Destroy(players[id].gameObject);
-            players.Remove(id);
+           // Destroy(players[id].gameObject);
+          //  players.Remove(id);
         });
     }
     void ClientConnect(string id)

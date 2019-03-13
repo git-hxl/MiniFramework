@@ -22,6 +22,9 @@ namespace MiniFramework
             ResourceRequest request = Resources.LoadAsync(assetPath,type);
             monoBehaviour.StartCoroutine(requestIEnumerator(request, loadCallback));
         }
+        public void LoadAllAsset(string assetPath,Action<UnityEngine.Object[]> loadCallback){
+            loadCallback(Resources.LoadAll(assetPath));
+        }
         public void LoadAssetBundle(string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
         {
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetBundlePath);

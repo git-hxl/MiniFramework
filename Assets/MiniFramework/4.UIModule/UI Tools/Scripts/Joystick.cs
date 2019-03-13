@@ -6,15 +6,20 @@ using UnityEngine.EventSystems;
 
 namespace MiniFramework
 {
-    public class JoyStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public enum JoyStickState{
+        OnBeginDrag,
+        OnDrag,
+        OnEndDrag,
+    }
+    public class Joystick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         public RectTransform Rocker;//摇杆
         public RectTransform Base;//底座
         public float MaxDistance;//摇杆最大移动距离
-        public Action OnDragStart;
-        public Action<Vector2> OnDragging;
-        public Action OnDragEnd;
-        public Vector2 RockerDir { get { return Rocker.localPosition.normalized; } }
+        public Action OnBeginDragHandler;//摇杆状态事件
+        public Action<Vector2> OnDragHandler;
+        public Action OnEndDragHandler;
+        public JoyStickState CurState;//摇杆当前状态
         private Vector2 rockerPos;
         private Vector2 basePos;
         void Start()
@@ -24,6 +29,11 @@ namespace MiniFramework
         public void OnBeginDrag(PointerEventData eventData)
         {
             rockerPos = Rocker.localPosition;
+            if (OnBeginDragHandler != null)
+            {
+                OnBeginDragHandler();
+            }
+            CurState = JoyStickState.OnBeginDrag;
         }
         public void OnDrag(PointerEventData eventData)
         {
@@ -34,17 +44,21 @@ namespace MiniFramework
                 rockerPos = (MaxDistance / distance) * rockerPos;
             }
             Rocker.localPosition = rockerPos;
-            if(OnDragging!=null){
-                OnDragging(Rocker.localPosition.normalized);
+            if (OnDragHandler != null)
+            {
+                OnDragHandler(Rocker.localPosition.normalized);
             }
+            CurState = JoyStickState.OnDrag;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             Rocker.localPosition = Vector3.zero;
-            if(OnDragEnd!=null){
-                OnDragEnd();
+            if (OnEndDragHandler != null)
+            {
+                OnEndDragHandler();
             }
+            CurState = JoyStickState.OnEndDrag;
         }
 
         public void OnPointerDown(PointerEventData eventData)
