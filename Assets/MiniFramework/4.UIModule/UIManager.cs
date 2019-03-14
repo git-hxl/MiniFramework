@@ -14,9 +14,6 @@ namespace MiniFramework
         protected override void OnSingletonInit()
         {
             canvas = GetComponentInChildren<Canvas>();
-        }
-        public void Start()
-        {
             if (canvas != null)
             {
                 for (int i = 0; i < canvas.transform.childCount; i++)
@@ -25,11 +22,14 @@ namespace MiniFramework
                     UIPanelDict.Add(child.name, child);
                 }
             }
-            if (UIDownloadPath != "")
+        }
+        public void Start()
+        {
+            if (!string.IsNullOrEmpty(UIDownloadPath))
             {
                 ResourceManager.Instance.AssetLoader.LoadAssetBundles(UIDownloadPath, LoadCallback);
             }
-            if (UIResourecePath != "")
+            if (!string.IsNullOrEmpty(UIResourecePath))
             {
                 ResourceManager.Instance.AssetLoader.LoadAllAsset(UIResourecePath, LoadCallback);
             }
@@ -43,12 +43,14 @@ namespace MiniFramework
                 UIPanelDict.Add(obj.name, obj);
             }
         }
-        public GameObject GetUI(string panelName){
+        public GameObject GetUI(string panelName)
+        {
             if (UIPanelDict.ContainsKey(panelName))
             {
                 GameObject ui = UIPanelDict[panelName];
                 return ui;
             }
+            Debug.LogError(panelName + "不存在");
             return null;
         }
         /// <summary>
@@ -63,6 +65,24 @@ namespace MiniFramework
                 ui.SetActive(true);
                 return ui;
             }
+            Debug.LogError(panelName + "不存在");
+            return null;
+        }
+        /// <summary>
+        /// 从Resource中打开UI
+        /// </summary>
+        /// <param name ="path"></param>
+        public GameObject LoadUI(string path)
+        {
+            Object ui = Resources.Load(path);
+            if (ui != null)
+            {
+                GameObject obj = Instantiate(ui, transform) as GameObject;
+                obj.name = ui.name;
+                UIPanelDict.Add(obj.name, obj);
+                return obj;
+            }
+            Debug.LogError(path + "不存在");
             return null;
         }
         /// <summary>
@@ -77,7 +97,8 @@ namespace MiniFramework
                 up.SetActive(false);
             }
         }
-        public void CloseUIByAnimation(string panelName){
+        public void CloseUIByAnimation(string panelName)
+        {
             if (UIPanelDict.ContainsKey(panelName))
             {
                 GameObject up = UIPanelDict[panelName];

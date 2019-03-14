@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 
 namespace MiniFramework
 {
-    public enum JoyStickState{
+    public enum JoyStickState
+    {
         OnBeginDrag,
         OnDrag,
         OnEndDrag,
@@ -16,10 +17,11 @@ namespace MiniFramework
         public RectTransform Rocker;//摇杆
         public RectTransform Base;//底座
         public float MaxDistance;//摇杆最大移动距离
-        public Action OnBeginDragHandler;//摇杆状态事件
-        public Action<Vector2> OnDragHandler;
-        public Action OnEndDragHandler;
+        public Action OnBeginDragHandler;//摇杆开始拖拽事件
+        public Action<Vector2> OnDragHandler;//摇杆拖拽中事件
+        public Action OnEndDragHandler;//摇杆结束拖拽事件
         public JoyStickState CurState;//摇杆当前状态
+        public Vector2 RockerDir { get { return Rocker.localPosition.normalized; } }//摇杆方向
         private Vector2 rockerPos;
         private Vector2 basePos;
         void Start()

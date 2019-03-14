@@ -1,4 +1,4 @@
-//Ë®²¨¶¯£¨ÓÐ¶¥²¿²¨ÀËs£©
+//å¸¦æ³¢çº¹çš„æ°´
 Shader "MiniFramework/Water 2D Waves"
 {
 	Properties 

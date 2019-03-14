@@ -1,4 +1,4 @@
-//Ë®²¨¶¯£¨ÎŞ¶¥²¿²¨ÀË£©
+//ç®€å•çš„2dæ°´
 Shader "MiniFramework/Water 2D Plain"
 {
 	Properties 

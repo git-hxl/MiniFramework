@@ -4,14 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using MiniFramework;
 public class ReadTxt : MonoBehaviour {
-
 	// Use this for initialization
-	void Start () {
+	public int ID;
 		
-	}
-	
-	// Update is called once per frame
 	void Update () {
-		GetComponent<Text>().text = Language.Instance.Words[10001];
+		GetComponent<Text>().text = Language.Instance.Words[ID];
 	}
 }

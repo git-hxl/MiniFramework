@@ -10,7 +10,7 @@ namespace MiniFramework
     public class ArtNumber : MonoBehaviour
     {
         public List<Sprite> Sprites;
-        private Dictionary<string, Sprite> spriteDict;
+        
         [SerializeField]
         private string number;
         [SerializeField]
@@ -27,6 +27,7 @@ namespace MiniFramework
                 Create(value);
             }
         }
+        private Dictionary<string, Sprite> spriteDict;
         private void Start()
         {
             Generate();

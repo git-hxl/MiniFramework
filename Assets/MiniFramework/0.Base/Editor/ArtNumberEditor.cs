@@ -3,20 +3,22 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using MiniFramework;
-
-[CustomEditor(typeof(ArtNumber))]
-public class ArtNumberEditor : Editor
+namespace MiniFramework
 {
-    ArtNumber artNumber;
-    private void OnEnable()
+    [CustomEditor(typeof(ArtNumber))]
+    public class ArtNumberEditor : Editor
     {
-        artNumber = (ArtNumber)target;
-        artNumber.Generate();
-    }
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        artNumber.Number = serializedObject.FindProperty("number").stringValue;
-        artNumber.transform.localScale = new Vector3(1,1,1)*serializedObject.FindProperty("size").floatValue;
+        ArtNumber artNumber;
+        private void OnEnable()
+        {
+            artNumber = (ArtNumber)target;
+            artNumber.Generate();
+        }
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            artNumber.Number = serializedObject.FindProperty("number").stringValue;
+            artNumber.transform.localScale = new Vector3(1, 1, 1) * serializedObject.FindProperty("size").floatValue;
+        }
     }
 }
