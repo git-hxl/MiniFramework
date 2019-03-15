@@ -13,8 +13,7 @@ namespace MiniFramework
             base.Start();
             if (Application.isPlaying)
             {
-                SwitchText();
-                Language.Instance.ChangeLanguageHandler += () =>
+                Language.Instance.ChangeLanguageEvent += () =>
                 {
                     SwitchText();
                 };
@@ -22,10 +21,9 @@ namespace MiniFramework
         }
         void SwitchText()
         {
-            if (Language.Instance.Words.ContainsKey(ID))
+            if (Language.Instance.CurLanguageWords.ContainsKey(ID))
             {
-                text = Language.Instance.Words[ID];
-                text = text.Replace("\\n","\n");
+                text = Language.Instance.CurLanguageWords[ID];
             }
         }
     }

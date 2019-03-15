@@ -10,7 +10,7 @@ namespace MiniFramework
         public Vector3 MoveDir;
         private Rigidbody mRigidbody;
         private Joystick mJoystick;
-        
+
         void Start()
         {
             mRigidbody = GetComponent<Rigidbody>();
@@ -19,11 +19,20 @@ namespace MiniFramework
             {
                 mJoystick = obj.GetComponent<Joystick>();
             }
+            mJoystick.OnEndDragHandler += () =>
+            {
+                MoveDir = Vector3.zero;
+            };
         }
         void Update()
         {
-            MoveDir.x = Input.GetAxis("Horizontal");
-            MoveDir.z = Input.GetAxis("Vertical");
+            // if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+            // {
+            //     MoveDir.x = Input.GetAxis("Horizontal");
+            //     MoveDir.z = Input.GetAxis("Vertical");
+            // }
+            // if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
+            //     MoveDir = Vector3.zero;
         }
         void FixedUpdate()
         {
@@ -33,9 +42,18 @@ namespace MiniFramework
             }
             if (MoveDir != Vector3.zero)
             {
-                mRigidbody.MoveRotation(Quaternion.LookRotation(MoveDir));
-                mRigidbody.MovePosition(transform.position + transform.forward * Speed * Time.deltaTime);
+                SetLookDir(MoveDir);
+                MoveToDir();
             }
+        }
+
+        public void SetLookDir(Vector3 dir)
+        {
+            mRigidbody.MoveRotation(Quaternion.LookRotation(dir));
+        }
+        public void MoveToDir()
+        {
+            mRigidbody.MovePosition(transform.position + transform.forward * Speed * Time.deltaTime);
         }
     }
 }

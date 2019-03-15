@@ -8,6 +8,6 @@ public class ReadTxt : MonoBehaviour {
 	public int ID;
 		
 	void Update () {
-		GetComponent<Text>().text = Language.Instance.Words[ID];
+		//GetComponent<Text>().text = Language.Instance.Words[ID];
 	}
 }

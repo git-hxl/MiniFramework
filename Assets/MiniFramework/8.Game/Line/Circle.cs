@@ -1,32 +1,47 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using MiniFramework;
 using UnityEngine;
-using MiniFramework;
-public class Circle : MonoBehaviour {
 
-	private float t = 0.55228475f;
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		//Debug.DrawLine()
-		for (int i = 0; i < 100; i++)
-		{
-			Vector3 pos1 = BezierUtil.Curve(i/100,new Vector3(0,1,0),new Vector3(t,1,0),new Vector3(1,t,0),new Vector3(1,0,0));
-			Vector3 pos2 = BezierUtil.Curve((i+1)/100,new Vector3(0,1,0),new Vector3(t,1,0),new Vector3(1,t,0),new Vector3(1,0,0));
-			Debug.DrawLine(pos1,pos2,Color.red);
-		}
-
-		Debug.DrawLine(Vector3.zero,new Vector3(10,0,0));
-
-		for (int i = 0; i < 100; i++)
-		{
-			Vector3 pos1 = BezierUtil.Curve(i/100,new Vector3(-10,0,0),new Vector3(0,10,0),new Vector3(10,0,0));
-			Vector3 pos2= BezierUtil.Curve((i+1)/100,new Vector3(-10,0,0),new Vector3(0,10,0),new Vector3(10,0,0));
-			Debug.DrawLine(pos1,pos2,Color.yellow);
-		}
-	}
+namespace MiniFramework
+{
+    public class Circle : MonoBehaviour
+    {
+        public float Radius;
+        [Range(0, 360)]
+        public int Angle;
+        public Color Color = Color.yellow;
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color;
+            int t;
+            if (transform.forward.z < 0)
+            {
+                t = Angle / 2 + 360 - (int)Vector3.Angle(transform.forward, Vector3.right);
+            }
+            else
+            {
+                t = Angle / 2 + (int)Vector3.Angle(transform.forward, Vector3.right);
+            }
+            for (int i = t - Angle; i < t; i++)
+            {
+                float x1 = Radius * Mathf.Cos(i * 3.14f / 180);
+                float z1 = Radius * Mathf.Sin(i * 3.14f / 180);
+                Vector3 start = transform.position + new Vector3(x1, 0, z1);
+                float x2 = Radius * Mathf.Cos((i + 1) * 3.14f / 180);
+                float z2 = Radius * Mathf.Sin((i + 1) * 3.14f / 180);
+                Vector3 end = transform.position + new Vector3(x2, 0, z2);
+                Gizmos.DrawLine(start, end);
+            }
+            if (Angle < 360)
+            {
+                float x1 = Radius * Mathf.Cos((t - Angle) * 3.14f / 180);
+                float z1 = Radius * Mathf.Sin((t - Angle) * 3.14f / 180);
+                Vector3 start = transform.position + new Vector3(x1, 0, z1);
+                float x2 = Radius * Mathf.Cos(t * 3.14f / 180);
+                float z2 = Radius * Mathf.Sin(t * 3.14f / 180);
+                Vector3 end = transform.position + new Vector3(x2, 0, z2);
+                Gizmos.DrawLine(start, transform.position);
+                Gizmos.DrawLine(end, transform.position);
+            }
+        }
+    }
 }

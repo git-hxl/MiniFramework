@@ -12,12 +12,14 @@ namespace MiniFramework
     {
         public enum LanguageType
         {
-            China,
+            简体中文,
+            繁体中文,
             English,
         }
         public LanguageType ChangeLanguageType;//修改目标语言
-        public Action ChangeLanguageHandler;//语言修改事件
-        public Dictionary<int, string> Words = new Dictionary<int, string>();//文本
+        public Action ChangeLanguageEvent;//语言修改事件
+        public Dictionary<int, string> CurLanguageWords = new Dictionary<int, string>();//文本
+        private Dictionary<int, string[]> allLanguageWords = new Dictionary<int, string[]>();//文本
         private LanguageType curLanguageType;
         private string txts;
         protected override void OnSingletonInit()
@@ -33,7 +35,7 @@ namespace MiniFramework
             FileUtil.ReadFromLocalAsync(Application.streamingAssetsPath + "/Language.csv", (data) =>
             {
                 txts = Encoding.UTF8.GetString((byte[])data);
-                ExtractWord();
+                Read();
             });
         }
         void Update()
@@ -41,10 +43,11 @@ namespace MiniFramework
             if (curLanguageType != ChangeLanguageType)
             {
                 curLanguageType = ChangeLanguageType;
-                ExtractWord();
+                ChangeLanguage();
             }
         }
-        void ExtractWord()
+
+        void Read()
         {
             try
             {
@@ -52,9 +55,12 @@ namespace MiniFramework
                 for (int i = 1; i < txt2Array.Length; i++)
                 {
                     List<string> txt = txt2Array[i].Split(',').ToList();
+                    int id = int.Parse(txt[0]);
+                    txt.RemoveAt(0);
                     int head = 0;
                     for (int j = 0; j < txt.Count; j++)
                     {
+                        txt[j] = txt[j].Replace("\\n","\n");
                         if (txt[j].IndexOf("\"") == 0)
                         {
                             head = j;
@@ -62,30 +68,36 @@ namespace MiniFramework
                         }
                         if (txt[j].IndexOf("\"") == txt[j].Length - 1)
                         {
-                            txt[head] = txt[head] + "," + txt[j];
+                            txt[head] = (txt[head] + "," + txt[j]).Trim('"');
                             txt.RemoveAt(j);
+                            j--;
                         }
                     }
-                    int id = int.Parse(txt[0]);
-                    string targetLanguage = txt[(int)curLanguageType + 1].Trim('"');
-
-                    if (Words.ContainsKey(id))
-                    {
-                        Words[id] = targetLanguage;
-                    }
-                    else
-                    {
-                        Words.Add(id, targetLanguage);
-                    }
+                    allLanguageWords.Add(id, txt.ToArray());
                 }
-                if (ChangeLanguageHandler != null)
+                foreach (var item in allLanguageWords)
                 {
-                    ChangeLanguageHandler();
+                    CurLanguageWords.Add(item.Key, item.Value[(int)curLanguageType]);
+                }
+                if (ChangeLanguageEvent != null)
+                {
+                    ChangeLanguageEvent();
                 }
             }
             catch (Exception e)
             {
                 Debug.LogError("语言初始化失败：" + e);
+            }
+        }
+        void ChangeLanguage()
+        {
+            foreach (var item in allLanguageWords)
+            {
+                CurLanguageWords[item.Key] = item.Value[(int)curLanguageType];
+            }
+            if (ChangeLanguageEvent != null)
+            {
+                ChangeLanguageEvent();
             }
         }
     }
