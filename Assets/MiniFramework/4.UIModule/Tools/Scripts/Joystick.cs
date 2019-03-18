@@ -8,6 +8,7 @@ namespace MiniFramework
 {
     public enum JoyStickState
     {
+        None,
         OnBeginDrag,
         OnDrag,
         OnEndDrag,

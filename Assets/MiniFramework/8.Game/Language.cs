@@ -30,7 +30,7 @@ namespace MiniFramework
         {
             Load();
         }
-        public void Load()
+        private void Load()
         {
             FileUtil.ReadFromLocalAsync(Application.streamingAssetsPath + "/Language.csv", (data) =>
             {

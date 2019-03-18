@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace MiniFramework
 {
+    /// <summary>
+    /// 辅助线
+    /// </summary>
     public class Circle : MonoBehaviour
     {
         public float Radius;

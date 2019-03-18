@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace MiniFramework
 {
+    /// <summary>
+    /// 摄像机跟随
+    /// </summary>
     public class CameraFollow : MonoBehaviour
     {
         public Transform Player;

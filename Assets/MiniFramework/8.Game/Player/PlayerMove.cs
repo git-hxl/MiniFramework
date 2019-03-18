@@ -8,52 +8,104 @@ namespace MiniFramework
     {
         public float Speed;
         public Vector3 MoveDir;
-        private Rigidbody mRigidbody;
-        private Joystick mJoystick;
-
+        public Vector3 MovePos;
+        public bool IsGrounded;
+        private Rigidbody m_Rigidbody;
+        private CapsuleCollider m_Capsule;
+        private Joystick m_Joystick;
+        private Vector3 m_GroundContactNormal;
         void Start()
         {
-            mRigidbody = GetComponent<Rigidbody>();
+            m_Rigidbody = GetComponent<Rigidbody>();
+            m_Capsule = GetComponent<CapsuleCollider>();
             GameObject obj = UIManager.Instance.GetUI("Joystick");
             if (obj != null)
             {
-                mJoystick = obj.GetComponent<Joystick>();
+                m_Joystick = obj.GetComponent<Joystick>();
             }
-            mJoystick.OnEndDragHandler += () =>
-            {
-                MoveDir = Vector3.zero;
-            };
         }
         void Update()
         {
-            // if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
-            // {
-            //     MoveDir.x = Input.GetAxis("Horizontal");
-            //     MoveDir.z = Input.GetAxis("Vertical");
-            // }
-            // if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
-            //     MoveDir = Vector3.zero;
+            
         }
         void FixedUpdate()
         {
-            if (mJoystick != null && mJoystick.CurState == JoyStickState.OnDrag)
+            GroundCheck();
+            if (m_Joystick != null && m_Joystick.CurState == JoyStickState.OnDrag)//虚拟摇杆
             {
-                MoveDir = new Vector3(mJoystick.Rocker.localPosition.x, 0, mJoystick.Rocker.localPosition.y);
-            }
-            if (MoveDir != Vector3.zero)
-            {
+                MoveDir.x = m_Joystick.Rocker.localPosition.x;
+                MoveDir.z = m_Joystick.Rocker.localPosition.y;
                 SetLookDir(MoveDir);
                 MoveToDir();
             }
-        }
+            else//按键输入
+            {
+                MoveDir.x = Input.GetAxis("Horizontal");
+                MoveDir.z = Input.GetAxis("Vertical");
+                SetLookDir(MoveDir);
+                MoveToDir();
+            }
 
+            if (MovePos != Vector3.zero)//当存在目标位置
+            {
+                MovePos.y = transform.position.y;
+                Vector3 dir = (MovePos - transform.position).normalized;
+                SetLookDir(dir);
+                MoveToDir();
+                if (Vector3.Distance(transform.position, MovePos) < 1)
+                {
+                    MovePos = Vector3.zero;
+                }
+            }
+        }
+        /// <summary>
+        /// 设置朝向
+        /// </summary>
+        /// <param name="dir"></param>
         public void SetLookDir(Vector3 dir)
         {
-            mRigidbody.MoveRotation(Quaternion.LookRotation(dir));
+            m_Rigidbody.MoveRotation(Quaternion.LookRotation(dir));
         }
+        /// <summary>
+        /// 移动
+        /// </summary>
         public void MoveToDir()
         {
-            mRigidbody.MovePosition(transform.position + transform.forward * Speed * Time.deltaTime);
+            Vector3 moveDir = Vector3.ProjectOnPlane(transform.forward, m_GroundContactNormal);
+            m_Rigidbody.MovePosition(transform.position + moveDir * Speed * Time.deltaTime);
+        }
+        /// <summary>
+        /// 地板检测
+        /// </summary>
+        private void GroundCheck()
+        {
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, m_Capsule.radius, Vector3.down, out hitInfo,
+                                   (m_Capsule.height / 2f - m_Capsule.radius) + 0.1f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            {
+                IsGrounded = true;
+                m_GroundContactNormal = hitInfo.normal;
+            }
+            else
+            {
+                IsGrounded = false;
+                m_GroundContactNormal = Vector3.up;
+            }
+        }
+        /// <summary>
+        /// 下落到斜坡时调整方向
+        /// </summary>
+        private void StickToGroundHelper()
+        {
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, m_Capsule.radius, Vector3.down, out hitInfo,
+                                   ((m_Capsule.height / 2f) - m_Capsule.radius) + 0.5f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
+                {
+                    m_Rigidbody.velocity = Vector3.ProjectOnPlane(m_Rigidbody.velocity, hitInfo.normal);
+                }
+            }
         }
     }
 }

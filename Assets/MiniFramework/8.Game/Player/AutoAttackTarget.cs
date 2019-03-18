@@ -18,34 +18,42 @@ namespace MiniFramework
         }
         void Update()
         {
-            if (CurTarget == null)
-            {
-                SelectTarget();
-            }
             if (CurTarget != null)
             {
-                Vector3 targetDir = (CurTarget.transform.position - transform.position).normalized;
-                targetDir.y = 0;
-                playerMove.SetLookDir(targetDir);
-                if (Vector3.Distance(transform.position, CurTarget.transform.position) < AttackDistance)
-                {
-                    playerMove.MoveDir = Vector3.zero;
-                }
-                else if (IsFollow)
-                {
-                    playerMove.MoveDir = targetDir;
-                }
-                else //超出攻击范围 不跟随
-                {
-                    playerMove.MoveDir = Vector3.zero;
-
-                }
                 if (Vector3.Distance(transform.position, CurTarget.transform.position) > MaxSearchDistance)
                 {
                     CancelTarget();
                 }
             }
+            // if (CurTarget == null)
+            // {
+            //     SelectTarget();
+            // }
+
+            // if (CurTarget != null)
+            // {
+            //     Vector3 targetDir = (CurTarget.transform.position - transform.position).normalized;
+            //     targetDir.y = 0;
+            //     playerMove.SetLookDir(targetDir);
+            //     if (Vector3.Distance(transform.position, CurTarget.transform.position) < AttackDistance)
+            //     {
+            //         playerMove.MoveDir = Vector3.zero;
+            //     }
+            //     else if (IsFollow)
+            //     {
+            //         playerMove.MoveDir = targetDir;
+            //     }
+            //     else //超出攻击范围 不跟随
+            //     {
+            //         playerMove.MoveDir = Vector3.zero;
+
+            //     }
+
+            // }
         }
+        /// <summary>
+        /// 选择目标
+        /// </summary>
         [ContextMenu("SelectTarget")]
         public void SelectTarget()
         {
@@ -54,14 +62,21 @@ namespace MiniFramework
             {
                 if (Vector3.Distance(item.transform.position, transform.position) < MaxSearchDistance)
                 {
+                    CancelTarget();
                     item.GetComponent<MeshRenderer>().material.color = Color.red;
                     CurTarget = item;
                     return;
                 }
             }
         }
+        /// <summary>
+        /// 取消选择目标
+        /// </summary>
         public void CancelTarget()
         {
+            if(CurTarget==null){
+                return;
+            }
             CurTarget.GetComponent<MeshRenderer>().material.color = Color.white;
             CurTarget = null;
         }
