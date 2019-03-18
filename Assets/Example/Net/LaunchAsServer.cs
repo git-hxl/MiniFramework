@@ -20,7 +20,7 @@ public class LaunchAsServer : MonoBehaviour
         {
             ResourceManager.Instance.AssetLoader.LoadAsset("Player", (obj) =>
             {
-                string id = (string)data;
+               // string id = (string)data;
                 GameObject player = Instantiate(obj) as GameObject;
                 player.GetComponent<MeshRenderer>().material.color = Color.red;
               //  PlayerController pController = player.GetComponent<PlayerController>();
@@ -31,7 +31,7 @@ public class LaunchAsServer : MonoBehaviour
         });
         MsgManager.Instance.RegisterMsg(this, "Abort", (data) =>
         {
-            string id = (string)data;
+           // string id = (string)data;
            // Destroy(players[id].gameObject);
           //  players.Remove(id);
         });

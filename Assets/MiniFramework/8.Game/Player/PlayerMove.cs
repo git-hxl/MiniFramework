@@ -24,28 +24,16 @@ namespace MiniFramework
                 m_Joystick = obj.GetComponent<Joystick>();
             }
         }
-        void Update()
-        {
-            
-        }
         void FixedUpdate()
         {
             GroundCheck();
-            if (m_Joystick != null && m_Joystick.CurState == JoyStickState.OnDrag)//虚拟摇杆
+            if (m_Joystick != null && m_Joystick.CurState == JoyStickState.OnDrag)//虚拟摇杆输入
             {
                 MoveDir.x = m_Joystick.Rocker.localPosition.x;
                 MoveDir.z = m_Joystick.Rocker.localPosition.y;
                 SetLookDir(MoveDir);
                 MoveToDir();
             }
-            else//按键输入
-            {
-                MoveDir.x = Input.GetAxis("Horizontal");
-                MoveDir.z = Input.GetAxis("Vertical");
-                SetLookDir(MoveDir);
-                MoveToDir();
-            }
-
             if (MovePos != Vector3.zero)//当存在目标位置
             {
                 MovePos.y = transform.position.y;
@@ -80,8 +68,8 @@ namespace MiniFramework
         private void GroundCheck()
         {
             RaycastHit hitInfo;
-            if (Physics.SphereCast(transform.position, m_Capsule.radius, Vector3.down, out hitInfo,
-                                   (m_Capsule.height / 2f - m_Capsule.radius) + 0.1f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.SphereCast(transform.position, m_Capsule.radius - 0.01f, Vector3.down, out hitInfo,
+                                   (m_Capsule.height / 2f - m_Capsule.radius) + 0.02f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
             {
                 IsGrounded = true;
                 m_GroundContactNormal = hitInfo.normal;

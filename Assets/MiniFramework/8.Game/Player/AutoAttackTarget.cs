@@ -20,36 +20,20 @@ namespace MiniFramework
         {
             if (CurTarget != null)
             {
-                if (Vector3.Distance(transform.position, CurTarget.transform.position) > MaxSearchDistance)
+                if (Vector3.Distance(transform.position, CurTarget.transform.position) > AttackDistance)
                 {
-                    CancelTarget();
+                    //CancelTarget();
+                    //移动到可攻击范围内
+                    Vector3 targetDir = (CurTarget.transform.position - transform.position).normalized;
+                    playerMove.SetLookDir(targetDir);
+                }
+                else
+                {
+                    Vector3 targetDir = (CurTarget.transform.position - transform.position).normalized;
+                    playerMove.SetLookDir(targetDir);
+                    playerMove.MoveDir = targetDir;
                 }
             }
-            // if (CurTarget == null)
-            // {
-            //     SelectTarget();
-            // }
-
-            // if (CurTarget != null)
-            // {
-            //     Vector3 targetDir = (CurTarget.transform.position - transform.position).normalized;
-            //     targetDir.y = 0;
-            //     playerMove.SetLookDir(targetDir);
-            //     if (Vector3.Distance(transform.position, CurTarget.transform.position) < AttackDistance)
-            //     {
-            //         playerMove.MoveDir = Vector3.zero;
-            //     }
-            //     else if (IsFollow)
-            //     {
-            //         playerMove.MoveDir = targetDir;
-            //     }
-            //     else //超出攻击范围 不跟随
-            //     {
-            //         playerMove.MoveDir = Vector3.zero;
-
-            //     }
-
-            // }
         }
         /// <summary>
         /// 选择目标
@@ -57,24 +41,32 @@ namespace MiniFramework
         [ContextMenu("SelectTarget")]
         public void SelectTarget()
         {
-            GameObject[] objs = GameObject.FindGameObjectsWithTag(TargetTag);
-            foreach (var item in objs)
+
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, MaxSearchDistance, Vector3.zero, out hitInfo,
+                                   0, Physics.AllLayers, QueryTriggerInteraction.Ignore))
             {
-                if (Vector3.Distance(item.transform.position, transform.position) < MaxSearchDistance)
-                {
-                    CancelTarget();
-                    item.GetComponent<MeshRenderer>().material.color = Color.red;
-                    CurTarget = item;
-                    return;
-                }
+                CancelTarget();
+                hitInfo.transform.GetComponent<MeshRenderer>().material.color = Color.red;
+                CurTarget = hitInfo.transform.gameObject;
+                return;
             }
+            // GameObject[] objs = GameObject.FindGameObjectsWithTag(TargetTag);
+            // foreach (var item in objs)
+            // {
+            //     if (Vector3.Distance(item.transform.position, transform.position) < MaxSearchDistance)
+            //     {
+
+            //     }
+            // }
         }
         /// <summary>
         /// 取消选择目标
         /// </summary>
         public void CancelTarget()
         {
-            if(CurTarget==null){
+            if (CurTarget == null)
+            {
                 return;
             }
             CurTarget.GetComponent<MeshRenderer>().material.color = Color.white;
