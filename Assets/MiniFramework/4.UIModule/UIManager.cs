@@ -10,15 +10,16 @@ namespace MiniFramework
         public string UIDownloadPath;
         public string UIResourecePath;
         private readonly Dictionary<string, GameObject> UIPanelDict = new Dictionary<string, GameObject>();
-        private Canvas canvas;
+        private Canvas m_Canvas;
+        private Camera m_Camera;
         protected override void OnSingletonInit()
         {
-            canvas = GetComponentInChildren<Canvas>();
-            if (canvas != null)
+            m_Canvas = GetComponentInChildren<Canvas>();
+            if (m_Canvas != null)
             {
-                for (int i = 0; i < canvas.transform.childCount; i++)
+                for (int i = 0; i < m_Canvas.transform.childCount; i++)
                 {
-                    GameObject child = canvas.transform.GetChild(i).gameObject;
+                    GameObject child = m_Canvas.transform.GetChild(i).gameObject;
                     UIPanelDict.Add(child.name, child);
                 }
             }
@@ -94,18 +95,17 @@ namespace MiniFramework
             if (UIPanelDict.ContainsKey(panelName))
             {
                 GameObject up = UIPanelDict[panelName];
-                up.SetActive(false);
+                Animator animator = up.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.Play("close");
+                }
+                else
+                {
+                    up.SetActive(false);
+                }
             }
         }
-        public void CloseUIByAnimation(string panelName)
-        {
-            if (UIPanelDict.ContainsKey(panelName))
-            {
-                GameObject up = UIPanelDict[panelName];
-                up.GetComponent<Animator>().Play("close");
-            }
-        }
-
         /// <summary>
         /// 销毁UI
         /// </summary>
