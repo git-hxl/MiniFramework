@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using UnityEngine;
 namespace MiniFramework
 {
-    public class Downloader : IDownloader
-    {    
-        public event Action<string> DownloadSuccessed;
-        public event Action<string> DownloadFailed;
+    public class Downloader
+    {
+        public enum DownloadState
+        {
+            None,
+            Downloading,
+            Failed,
+            Completed,
+        }
+        /// <summary>
+        /// 下载回调
+        /// </summary>
+        private event Action<bool> downloadCallback;
 
         private string fileName;
 
@@ -16,20 +28,13 @@ namespace MiniFramework
         private long fileLength;
 
         private byte[] buffer;
-        private string url;
         private string saveDir;
         private string tempSavePath;
 
-        private DownloadState state;
+        private DownloadState curState;
         private FileStream fileStream;
-        private Stream responseStream;     
-        public Downloader(string url,string saveDir)
-        {
-            this.url = url;
-            this.saveDir = saveDir;
-            fileName = GetFileNameFromUrl(url);
-            state = DownloadState.None;
-        }
+        private Stream responseStream;
+
         public string GetFileName()
         {
             return fileName;
@@ -44,36 +49,35 @@ namespace MiniFramework
         }
         public DownloadState GetDownloadSate()
         {
-            return state;
+            return curState;
         }
-        // Use this for initialization
-        public void Start()
-        {           
-            tempSavePath = saveDir + "/" + fileName + ".temp";
-            
-            HttpRequest();
+        public Downloader(string url,string saveDir,Action<bool> downloadCallback){
+            this.saveDir = saveDir;
+            this.downloadCallback = downloadCallback;
+            HttpRequest(url);
         }
-
         public void Close()
         {
             if (fileStream != null)
             {
                 fileStream.Close();
-            }  
+            }
             if (responseStream != null)
             {
                 responseStream.Close();
             }
-            if (state == DownloadState.Downloading)
+            if (curState == DownloadState.Downloading)
             {
-                state = DownloadState.None;
-            }              
+                curState = DownloadState.None;
+            }
         }
-        private void HttpRequest()
+        private void HttpRequest(string url)
         {
             try
             {
-                state = DownloadState.Downloading;
+                fileName = GetFileNameFromUrl(url);
+                tempSavePath = saveDir + "/" + fileName + ".temp";
+                curState = DownloadState.Downloading;
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
                 request.Method = "GET";
                 request.Timeout = timeout;
@@ -94,19 +98,20 @@ namespace MiniFramework
                 request.KeepAlive = false;
                 request.BeginGetResponse(new AsyncCallback(RespCallback), request);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                DownloadFailed(fileName);
+                downloadCallback(false);
+                curState = DownloadState.Failed;
                 throw e;
-            }  
+            }
         }
         private void RespCallback(IAsyncResult result)
         {
             HttpWebRequest request = (HttpWebRequest)result.AsyncState;
             if (!request.HaveResponse)
             {
-                DownloadFailed(fileName);
-                state = DownloadState.Failed;
+                downloadCallback(false);
+                curState = DownloadState.Failed;
                 Close();
                 return;
             }
@@ -130,7 +135,7 @@ namespace MiniFramework
             else
             {
                 buffer = null;
-                state = DownloadState.Completed;
+                curState = DownloadState.Completed;
                 Close();
                 string savePath = saveDir + "/" + fileName;
                 if (File.Exists(savePath))
@@ -138,7 +143,7 @@ namespace MiniFramework
                     File.Delete(savePath);
                 }
                 File.Move(tempSavePath, savePath);
-                DownloadSuccessed(fileName);
+                downloadCallback(true);
             }
         }
 
@@ -149,4 +154,3 @@ namespace MiniFramework
         }
     }
 }
-
