@@ -17,6 +17,7 @@ namespace MiniFramework
     {
         public RectTransform Rocker;//摇杆
         public RectTransform Base;//底座
+        public RectTransform Arrow;//箭头
         public float MaxDistance;//摇杆最大移动距离
         public Action OnBeginDragHandler;//摇杆开始拖拽事件
         public Action<Vector2> OnDragHandler;//摇杆拖拽中事件
@@ -40,6 +41,7 @@ namespace MiniFramework
         }
         public void OnDrag(PointerEventData eventData)
         {
+            Base.gameObject.SetActive(true);
             rockerPos += eventData.delta;
             float distance = Vector2.Distance(rockerPos, Vector2.zero);
             if (distance > MaxDistance)
@@ -47,6 +49,11 @@ namespace MiniFramework
                 rockerPos = (MaxDistance / distance) * rockerPos;
             }
             Rocker.localPosition = rockerPos;
+            if (Arrow != null)
+            {
+                Arrow.localPosition = Rocker.localPosition.normalized * distance;
+                Arrow.up = Rocker.localPosition.normalized;
+            }
             if (OnDragHandler != null)
             {
                 OnDragHandler(Rocker.localPosition.normalized);
@@ -69,7 +76,6 @@ namespace MiniFramework
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(Base, Input.mousePosition, eventData.enterEventCamera, out position);
             Base.localPosition = position + basePos;
-            Base.gameObject.SetActive(true);
         }
 
         public void OnPointerUp(PointerEventData eventData)

@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class LookToTarget : MonoBehaviour
+namespace MiniFramework
 {
-    public Transform Target;
-    // Update is called once per frame
-    void Update()
+    public class LookToTarget : MonoBehaviour
     {
-        if (Target == null)
+        public Transform Target;
+        // Update is called once per frame
+        void Update()
         {
-            return;
+            if (Target == null)
+            {
+                return;
+            }
+            transform.forward = Target.forward;
         }
-        transform.forward = Target.forward;
     }
 }

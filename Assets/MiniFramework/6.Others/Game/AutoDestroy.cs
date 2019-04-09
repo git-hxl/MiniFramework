@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class AutoDestroy : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+namespace MiniFramework
+{
+    public class AutoDestroy : MonoBehaviour
+    {
+		public float Delay;
+        // Use this for initialization
+        void Start()
+        {
+			Destroy(gameObject,Delay);
+        }
+    }
 }

@@ -1,21 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class CameraFollow : MonoBehaviour
+namespace MiniFramework
 {
-    public Transform Target;
-    public float Distance = 10;
-    public float Height = 0;
-    public float Angle = 45;
-    private void LateUpdate()
+    public class CameraFollow : MonoBehaviour
     {
-        if (Target == null)
+        public Transform Target;
+        public float Distance = 10;
+        public float Height = 0;
+        public float Angle = 45;
+        private void LateUpdate()
         {
-            return;
+            if (Target == null)
+            {
+                return;
+            }
+
+            transform.rotation = Quaternion.Euler(Angle, 0, 0);
+            transform.position = Target.position + transform.forward * -Distance + transform.up * Height;
         }
-        
-        transform.rotation = Quaternion.Euler(Angle, 0, 0);
-		transform.position = Target.position + transform.forward * -Distance + transform.up * Height;
     }
 }
