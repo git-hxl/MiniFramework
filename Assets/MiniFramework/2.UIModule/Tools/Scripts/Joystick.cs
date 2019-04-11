@@ -74,7 +74,7 @@ namespace MiniFramework
         public void OnPointerDown(PointerEventData eventData)
         {
             Vector2 position;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(Base, Input.mousePosition, eventData.enterEventCamera, out position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(Base, eventData.position, eventData.enterEventCamera, out position);
             Base.localPosition = position + basePos;
         }
 
