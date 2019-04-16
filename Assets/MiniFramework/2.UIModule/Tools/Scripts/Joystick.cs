@@ -25,11 +25,6 @@ namespace MiniFramework
         public JoyStickState CurState;//摇杆当前状态
         public Vector2 RockerDir { get { return Rocker.localPosition.normalized; } }//摇杆方向
         private Vector2 rockerPos;
-        private Vector2 basePos;
-        void Start()
-        {
-            basePos = Base.localPosition;
-        }
         public void OnBeginDrag(PointerEventData eventData)
         {
             rockerPos = Rocker.localPosition;
@@ -74,13 +69,12 @@ namespace MiniFramework
         public void OnPointerDown(PointerEventData eventData)
         {
             Vector2 position;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(Base, eventData.position, eventData.enterEventCamera, out position);
-            Base.localPosition = position + basePos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position, eventData.enterEventCamera, out position);
+            Base.localPosition = position;
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            Base.localPosition = basePos;
             Base.gameObject.SetActive(false);
         }
     }
