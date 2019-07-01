@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MsgDispatcher : MonoSingleton<MsgDispatcher>
+    public class MsgManager : MonoSingleton<MsgManager>
     {
         private class MsgHandler
         {
@@ -29,10 +29,12 @@ namespace MiniFramework
         private readonly Dictionary<string, List<MsgHandler>> msgHandlerDict = new Dictionary<string, List<MsgHandler>>();
         private Queue<IdleMsg> msgQueue = new Queue<IdleMsg>();
         protected override void OnSingletonInit() { }
-        void Update(){
-            while(msgQueue.Count>0){
-               IdleMsg msg = msgQueue.Dequeue();
-               msg.Callback(msg.Param);
+        void Update()
+        {
+            while (msgQueue.Count > 0)
+            {
+                IdleMsg msg = msgQueue.Dequeue();
+                msg.Callback(msg.Param);
             }
         }
         /// <summary>
@@ -64,7 +66,16 @@ namespace MiniFramework
             }
             handlers.Add(new MsgHandler(receiverSelf, callback));
         }
-
+        /// <summary>
+        /// 注册消息
+        /// </summary>
+        /// <param name="receiverSelf"></param>
+        /// <param name="msgId"></param>
+        /// <param name="callback"></param>
+        public void RegisterMsg(object receiverSelf, int msgID, Action<object> callback)
+        {
+            RegisterMsg(receiverSelf, msgID.ToString(), callback);
+        }
         /// <summary>
         /// 发送消息
         /// </summary>
@@ -85,8 +96,8 @@ namespace MiniFramework
                 if (handler.Receiver != null)
                 {
                     //handler.Callback(param);
-                    IdleMsg msg = new IdleMsg(param,handler.Callback);
-                    msgQueue.Enqueue(msg); 
+                    IdleMsg msg = new IdleMsg(param, handler.Callback);
+                    msgQueue.Enqueue(msg);
                 }
                 else
                 {
@@ -94,7 +105,15 @@ namespace MiniFramework
                 }
             }
         }
-
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="msgID"></param>
+        /// <param name="param"></param>
+        public void SendMsg(int msgID, object param)
+        {
+            SendMsg(msgID.ToString(), param);
+        }
         /// <summary>
         /// 撤销注册消息
         /// </summary>
@@ -118,8 +137,12 @@ namespace MiniFramework
                 }
             }
         }
+        public void UnRegisterMsg(object receiver, int msgID, Action<object> callback)
+        {
+            UnRegisterMsg(receiver, msgID.ToString(), callback);
+        }
         /// <summary>
-        /// 撤销注册消息
+        /// 撤销所有该消息的注册
         /// </summary>
         /// <param name="receiverSelf"></param>
         /// <param name="msgName"></param>
@@ -135,6 +158,10 @@ namespace MiniFramework
                     handlers.Remove(handler);
                 }
             }
+        }
+        public void UnRegisterMsg(object receiver, int msgID)
+        {
+            UnRegisterMsg(receiver, msgID.ToString());
         }
     }
 }

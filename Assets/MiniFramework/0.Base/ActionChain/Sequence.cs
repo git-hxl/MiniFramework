@@ -7,12 +7,16 @@ namespace MiniFramework
     /// <summary>
     /// 队列：控制所有节点的执行
     /// </summary>
-    public class Sequence : IPoolable,IDelay,IUntil,IEvent
+    public class Sequence : IPoolable, IDelay, IUntil, IEvent
     {
         public MonoBehaviour Executer { get; set; }
         public bool IsRecycled { get; set; }
         private List<IEnumerator> nodes = new List<IEnumerator>();
         public Sequence() { }
+        public Sequence(MonoBehaviour executer)
+        {
+            Executer = executer;
+        }
         public Sequence Delay(float seconds)
         {
             nodes.Add(delayCoroutine(seconds));

@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 public static class FileUtil
 {
     public static Dictionary<int, string[]> ReadCSV(string path)
     {
-        string txts = File.ReadAllText(path);
+        string txts = ReadFile(path);
         Dictionary<int, string[]> csv = new Dictionary<int, string[]>();
         try
         {
@@ -42,6 +43,26 @@ public static class FileUtil
         catch (Exception e)
         {
             throw e;
+        }
+    }
+    public static void WriteFile(string path, string content)
+    {
+        using (StreamWriter writer = new StreamWriter(path,false,Encoding.UTF8))
+        {
+            writer.Write(content);
+        }
+    }
+    public static string ReadFile(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        if (!file.Exists)
+        {
+            Debug.LogError(path + ":不存在");
+            return "";
+        }
+        using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+        {
+            return reader.ReadToEnd();
         }
     }
 }

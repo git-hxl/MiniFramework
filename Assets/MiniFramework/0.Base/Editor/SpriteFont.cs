@@ -9,7 +9,7 @@ public class SpriteFont {
     /// 0.将spirte图片放入Resources目录下，右键选择SpriteFont
     /// 1.命名规则xxx+对应字符 如0-9对应0-9 
     /// </summary>
-    [MenuItem("MiniFramework/SpriteFont")]
+    [MenuItem("Assets/SpriteFont")]
     static void CreateFont()
     {
         if (Selection.objects == null) return;
