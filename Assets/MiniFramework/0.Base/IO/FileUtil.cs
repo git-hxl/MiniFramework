@@ -8,6 +8,11 @@ using UnityEngine;
 
 public static class FileUtil
 {
+    /// <summary>
+    /// 采用,分割符号读取，使用“,”可保留,分割符号
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public static Dictionary<int, string[]> ReadCSV(string path)
     {
         string txts = ReadFile(path);
@@ -45,9 +50,16 @@ public static class FileUtil
             throw e;
         }
     }
-    public static void WriteFile(string path, string content)
+    public static void WriteFile(string path, string content,bool append = false)
     {
-        using (StreamWriter writer = new StreamWriter(path,false,Encoding.UTF8))
+        using (StreamWriter writer = new StreamWriter(path, append, Encoding.UTF8))
+        {
+            writer.Write(content);
+        }
+    }
+    public static void WriteFile(string path, byte[] content, bool append = false)
+    {
+        using (StreamWriter writer = new StreamWriter(path, append, Encoding.UTF8))
         {
             writer.Write(content);
         }
@@ -64,5 +76,14 @@ public static class FileUtil
         {
             return reader.ReadToEnd();
         }
+    }
+    public static long GetFileLength(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        if (!file.Exists)
+        {
+            return 0;
+        }
+        return file.Length;
     }
 }
