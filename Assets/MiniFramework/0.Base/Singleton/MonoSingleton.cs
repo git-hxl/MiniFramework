@@ -31,7 +31,6 @@
                 {
                     DontDestroyOnLoad(this);
                 }
-
             }
             else
             {

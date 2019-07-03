@@ -6,13 +6,9 @@ using UnityEngine.EventSystems;
 
 namespace MiniFramework
 {
-    public enum JoyStickState
-    {
-        None,
-        OnBeginDrag,
-        OnDrag,
-        OnEndDrag,
-    }
+    /// <summary>
+    /// 摇杆
+    /// </summary>
     public class Joystick : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         public RectTransform Rocker;//摇杆
@@ -22,7 +18,6 @@ namespace MiniFramework
         public Action OnBeginDragHandler;//摇杆开始拖拽事件
         public Action<Vector2> OnDragHandler;//摇杆拖拽中事件
         public Action OnEndDragHandler;//摇杆结束拖拽事件
-        public JoyStickState CurState;//摇杆当前状态
         public Vector2 RockerDir { get { return Rocker.localPosition.normalized; } }//摇杆方向
         private Vector2 rockerPos;
 
@@ -46,7 +41,6 @@ namespace MiniFramework
             {
                 OnBeginDragHandler();
             }
-            CurState = JoyStickState.OnBeginDrag;
         }
         public void OnDrag(PointerEventData eventData)
         {
@@ -70,7 +64,6 @@ namespace MiniFramework
             {
                 OnDragHandler(Rocker.localPosition.normalized);
             }
-            CurState = JoyStickState.OnDrag;
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -84,7 +77,6 @@ namespace MiniFramework
             {
                 OnEndDragHandler();
             }
-            CurState = JoyStickState.OnEndDrag;
             Base.gameObject.SetActive(false);
             pointerID = -1;
         }

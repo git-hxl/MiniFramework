@@ -2,6 +2,9 @@
 using UnityEngine.EventSystems;
 namespace MiniFramework
 {
+    /// <summary>
+    /// 用来控制UI窗口拖拽
+    /// </summary>
     public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler
     {
         Vector3 offset;

@@ -50,14 +50,7 @@ public static class FileUtil
             throw e;
         }
     }
-    public static void WriteFile(string path, string content,bool append = false)
-    {
-        using (StreamWriter writer = new StreamWriter(path, append, Encoding.UTF8))
-        {
-            writer.Write(content);
-        }
-    }
-    public static void WriteFile(string path, byte[] content, bool append = false)
+    public static void WriteFile(string path, string content, bool append = false)
     {
         using (StreamWriter writer = new StreamWriter(path, append, Encoding.UTF8))
         {
@@ -85,5 +78,16 @@ public static class FileUtil
             return 0;
         }
         return file.Length;
+    }
+
+    public static bool IsExitFile(string path)
+    {
+        FileInfo file = new FileInfo(path);
+        return file.Exists;
+    }
+    public static bool ISExitDir(string path)
+    {
+        DirectoryInfo dir = new DirectoryInfo(path);
+        return dir.Exists;
     }
 }

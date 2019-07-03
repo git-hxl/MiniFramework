@@ -11,6 +11,8 @@ public class Example_File : MonoBehaviour {
 
 		string content = FileUtil.ReadFile(Application.streamingAssetsPath+"/Test.txt");
 		Debug.Log(content);
+
+		Debug.Log(FileUtil.ISExitDir(Application.streamingAssetsPath));
 	}
 
 }
