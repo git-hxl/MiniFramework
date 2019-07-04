@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 namespace MiniFramework
 {
     /// <summary>
@@ -7,19 +9,19 @@ namespace MiniFramework
     /// </summary>
     public static class ActionChain
     {
-        public static void Delay<T>(this T selfBehaviour,float seconds,Action action) where T : MonoBehaviour
+        public static void Delay<T>(this T selfBehaviour, float seconds, Action action) where T : MonoBehaviour
         {
             Sequence sequence = Pool<Sequence>.Instance.Allocate();
             sequence.Executer = selfBehaviour;
-            sequence.Delay(seconds);
-            sequence.Event(action);
-            sequence.Execute();
+            (sequence as IChain).Delay(seconds);
+            (sequence as IChain).Event(action);
+            (sequence as IChain).Execute();
         }
-        public static Sequence Sequence<T>(this T selfBehaviour) where T : MonoBehaviour
+        public static IChain Sequence<T>(this T selfBehaviour) where T : MonoBehaviour
         {
             Sequence sequence = Pool<Sequence>.Instance.Allocate();
             sequence.Executer = selfBehaviour;
-            return sequence;
-        }      
+            return sequence as IChain;
+        }
     }
 }

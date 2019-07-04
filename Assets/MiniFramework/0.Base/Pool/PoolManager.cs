@@ -97,7 +97,7 @@ namespace MiniFramework
         }
         public void Recycle(GameObject obj, float delay)
         {
-            this.Delay(delay, () => Recycle(obj));
+            //this.Delay(delay, () => Recycle(obj));
         }
         //分配
         public GameObject Allocate(string key)

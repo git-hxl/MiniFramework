@@ -1,9 +1,8 @@
-﻿namespace MiniFramework
+﻿using UnityEngine;
+namespace MiniFramework
 {
-    using UnityEngine;
     public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {
-        public bool IsDestroyOnLoad;
         protected static T mInstance = null;
         public static T Instance
         {
@@ -14,8 +13,9 @@
                     mInstance = Object.FindObjectOfType<T>();
                     if (mInstance == null)
                     {
-                        var obj = new GameObject(typeof(T).Name);
-                        obj.AddComponent<T>();
+                        GameObject obj = new GameObject(typeof(T).Name);
+                        mInstance = obj.AddComponent<T>();
+                        mInstance.OnSingletonInit();
                     }
                 }
                 return mInstance;
@@ -26,21 +26,17 @@
             if (mInstance == null)
             {
                 mInstance = this as T;
-                mInstance.OnSingletonInit();
-                if (!IsDestroyOnLoad)
-                {
-                    DontDestroyOnLoad(this);
-                }
+                DontDestroyOnLoad(gameObject);
             }
             else
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
-        protected virtual void OnSingletonInit(){}
+        protected virtual void OnSingletonInit() { }
         public virtual void Dispose()
         {
-            Destroy(mInstance.gameObject);
+            Destroy(gameObject);
         }
     }
 }

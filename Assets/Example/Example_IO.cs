@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
-public class Example_File : MonoBehaviour {
+public class Example_IO : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

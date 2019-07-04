@@ -80,7 +80,6 @@ namespace MiniFramework
         {
             UnityWebRequest headRequest = UnityWebRequest.Head(url);
             yield return headRequest.SendWebRequest();
-
             long totalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
             string fileName = url.Substring(url.LastIndexOf('/') + 1);
             string savePath = dir + "/" + fileName;
@@ -93,9 +92,8 @@ namespace MiniFramework
             using (UnityWebRequest www = UnityWebRequest.Get(url))
             {
                 www.SetRequestHeader("Range", "bytes=" + curLength + "-" + totalLength);
-                www.timeout = 10000;
                 www.SendWebRequest();
-                Debug.Log("开始下载:" + fileName + ":" + UnitConvert.ByteAutoConvert(totalLength));
+                Debug.Log("开始下载:" + fileName + " 大小:" + UnitConvert.ByteAutoConvert(totalLength));
                 using (FileStream fileStream = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
                     fileStream.Seek(curLength, SeekOrigin.Begin);
