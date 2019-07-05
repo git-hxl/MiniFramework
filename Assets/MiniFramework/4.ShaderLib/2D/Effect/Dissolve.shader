@@ -1,5 +1,5 @@
 ﻿//消融效果
-Shader "MiniFramework/Dissolve"
+Shader "MiniFramework/2D Effect/Dissolve"
 {
 	Properties
 	{

@@ -1,5 +1,5 @@
 //带波纹的水
-Shader "MiniFramework/Water 2D Waves"
+Shader "MiniFramework/2D Effect/Water 2D Waves"
 {
 	Properties 
 	{

@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 //铅笔效果
-Shader "MiniFramework/Pencil"
+Shader "MiniFramework/2D Effect/Pencil"
 {
     Properties
     {

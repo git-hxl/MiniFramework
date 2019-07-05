@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 //流光效果
-Shader "MiniFramework/Flash"
+Shader "MiniFramework/2D Effect/Flash"
 {
     Properties
     {

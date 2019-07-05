@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 //老照片
-Shader "MiniFramework/OldPhoto"
+Shader "MiniFramework/2D Effect/OldPhoto"
 {
     Properties
     {

@@ -1,5 +1,5 @@
 //简单的2d水
-Shader "MiniFramework/Water 2D Plain"
+Shader "MiniFramework/2D Effect/Water 2D Plain"
 {
 	Properties 
 	{

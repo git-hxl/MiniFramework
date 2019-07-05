@@ -10,7 +10,7 @@ namespace MiniFramework
         public byte[] Packer(PackHead head, byte[] bodyData)
         {
             head.PackLength  = (short)(Marshal.SizeOf(head)+bodyData.Length);
-            byte[] headData = SerializeUtil.SerializeByMarshal(head);
+            byte[] headData = SerializeUtil.ToPtr(head);
             byte[] packData = new byte[headData.Length + bodyData.Length];
             Array.Copy(headData, packData, headData.Length);
             Array.Copy(bodyData, 0, packData, headData.Length, bodyData.Length);
@@ -20,7 +20,7 @@ namespace MiniFramework
         public void UnPack(byte[] data)
         {
             PackHead head = new PackHead();
-            int headLength = SerializeUtil.SerializeByMarshal(head).Length;
+            int headLength = SerializeUtil.ToPtr(head).Length;
 
             byte[] totalData = new byte[OtherBytes.Length + data.Length];
             if(OtherBytes.Length>0){
@@ -37,7 +37,7 @@ namespace MiniFramework
             }
             byte[] headData = new byte[headLength];
             Array.Copy(totalData, headData, headLength);
-            head = SerializeUtil.DeserializeByMarshal<PackHead>(headData);
+            head = SerializeUtil.FromPtr<PackHead>(headData);
             if (totalData.Length < head.PackLength)
             {
                 //消息体不足

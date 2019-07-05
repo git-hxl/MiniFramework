@@ -1,5 +1,5 @@
 //浮雕效果
-Shader "MiniFramework/Emboss"
+Shader "MiniFramework/2D Effect/Emboss"
 {
     Properties
     {

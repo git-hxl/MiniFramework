@@ -7,11 +7,9 @@ namespace MiniFramework
 {
     public class UIManager : MonoSingleton<UIManager>
     {
-        public string UIDownloadPath;
         private readonly Dictionary<string, GameObject> UIPanelDict = new Dictionary<string, GameObject>();
         private Canvas m_Canvas;
-        private Camera m_Camera;
-        protected override void OnSingletonInit()
+        void Start()
         {
             m_Canvas = GetComponentInChildren<Canvas>();
             if (m_Canvas != null)
@@ -21,19 +19,6 @@ namespace MiniFramework
                     GameObject child = m_Canvas.transform.GetChild(i).gameObject;
                     UIPanelDict.Add(child.name, child);
                 }
-            }
-        }
-        public void Start()
-        {
-            
-        }
-        void LoadCallback(Object[] objs)
-        {
-            foreach (var item in objs)
-            {
-                GameObject obj = Instantiate(item, transform) as GameObject;
-                obj.name = item.name;
-                UIPanelDict.Add(obj.name, obj);
             }
         }
         public GameObject GetUI(string panelName)
@@ -87,15 +72,7 @@ namespace MiniFramework
             if (UIPanelDict.ContainsKey(panelName))
             {
                 GameObject up = UIPanelDict[panelName];
-                Animator animator = up.GetComponent<Animator>();
-                if (animator != null)
-                {
-                    animator.Play("close");
-                }
-                else
-                {
-                    up.SetActive(false);
-                }
+                up.SetActive(false);
             }
         }
         /// <summary>

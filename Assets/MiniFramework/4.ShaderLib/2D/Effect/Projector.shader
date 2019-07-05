@@ -1,5 +1,5 @@
 ﻿//投影仪使用shader
-Shader "MiniFramework/Projector" {
+Shader "MiniFramework/2D Effect/Projector" {
 	Properties{
 		_ShadowTex("Cookie", 2D) = "gray" {}
 		_FalloffTex("FallOff", 2D) = "white" {}
