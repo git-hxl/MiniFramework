@@ -7,7 +7,7 @@ public class Example_IO : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		FileUtil.WriteFile(Application.streamingAssetsPath+"/Test.txt","hello--");
-		FileUtil.WriteFile(Application.streamingAssetsPath+"/Test.txt","world",true);
+		//FileUtil.WriteFile(Application.streamingAssetsPath+"/Test.txt","world",true);
 
 		string content = FileUtil.ReadFile(Application.streamingAssetsPath+"/Test.txt");
 		Debug.Log(content);

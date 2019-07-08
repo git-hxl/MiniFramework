@@ -91,9 +91,11 @@ namespace MiniFramework
             DirectoryInfo info = new DirectoryInfo(dir);
             return info.Exists;
         }
-        public static void CreateDir(string dir){
+        public static void CreateDir(string dir)
+        {
             DirectoryInfo info = new DirectoryInfo(dir);
-            if(!info.Exists){
+            if (!info.Exists)
+            {
                 info.Create();
             }
         }
