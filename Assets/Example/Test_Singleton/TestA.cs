@@ -15,7 +15,7 @@ public class TestA : MonoSingleton<TestA> {
 		
 	}
 	
-	// Update is called once per frame
+	
 	void Update () {
 		
 	}

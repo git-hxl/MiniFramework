@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -63,7 +64,7 @@ namespace MiniFramework
             FileInfo file = new FileInfo(path);
             if (!file.Exists)
             {
-                Debug.LogError(path + ":不存在");
+                UnityEngine.Debug.LogError(path + ":不存在");
                 return "";
             }
             using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
@@ -86,18 +87,42 @@ namespace MiniFramework
             FileInfo file = new FileInfo(path);
             return file.Exists;
         }
-        public static bool IsExitDir(string dir)
+        public static bool IsExitDir(string path)
         {
-            DirectoryInfo info = new DirectoryInfo(dir);
+            DirectoryInfo info = new DirectoryInfo(path);
             return info.Exists;
         }
-        public static void CreateDir(string dir)
+        public static void CreateDir(string path)
         {
-            DirectoryInfo info = new DirectoryInfo(dir);
+            DirectoryInfo info = new DirectoryInfo(path);
             if (!info.Exists)
             {
                 info.Create();
             }
+        }
+
+        public static void OpenDirectory(string path)
+        {
+            if (!IsExitDir(path))
+            {
+                return;
+            }
+            Process p = new Process();
+#if UNITY_EDITOR_WIN
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.Arguments = "/c start " + path;
+#elif UNITY_EDITOR_OSX
+            p.StartInfo.FileName = "bash";
+            p.StartInfo.Arguments = Application.dataPath+"/MiniFramework/0.Core/Editor/OpenDir.sh" + " " + path;
+#endif
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+            p.WaitForExit();
+            p.Close();
         }
     }
 }

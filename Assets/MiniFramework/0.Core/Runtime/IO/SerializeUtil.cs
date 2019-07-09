@@ -62,6 +62,10 @@ namespace MiniFramework
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
+        public static void ToJson(object obj, string path)
+        {
+            FileUtil.WriteFile(path, ToJson(obj));
+        }
 
         public static T FromJson<T>(string json)
         {

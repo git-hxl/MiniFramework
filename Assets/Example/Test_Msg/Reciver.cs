@@ -4,7 +4,6 @@ using UnityEngine;
 using MiniFramework;
 public class Reciver : MonoBehaviour
 {
-
     private void Awake()
     {
         MsgManager.Instance.RegisterMsg(this, MsgID.Test, reciverCallback);
