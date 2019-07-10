@@ -12,8 +12,7 @@ namespace MiniFramework
     {
         private BuildTarget platform;
         private BuildAssetBundleOptions option;
-        private string selectedAssetBundle;
-        private Vector2 scorllPos;
+        private string version;
         [MenuItem("MiniFramework/AssetBundle")]
         public static void OpenWindow()
         {
@@ -24,51 +23,40 @@ namespace MiniFramework
         {
             platform = (BuildTarget)EditorPrefs.GetInt("platform", 2);
             option = (BuildAssetBundleOptions)EditorPrefs.GetInt("option", 256);
-            scorllPos = Vector2.zero;
+            version = EditorPrefs.GetString("version", "1.0.0");
         }
         private void OnGUI()
         {
             GUILayout.Label("打包平台");
             platform = (BuildTarget)EditorGUILayout.EnumPopup(platform);
-            EditorPrefs.SetInt("platform", (int)platform);
+
             GUILayout.Label("压缩方式");
             option = (BuildAssetBundleOptions)EditorGUILayout.EnumPopup(option);
-            EditorPrefs.SetInt("option", (int)option);
 
             string[] assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
+            for (int i = 0; i < assetBundleNames.Length; i++)
+            {
+                GUILayout.Label(assetBundleNames[i]);
+            }
 
-            foreach (var item in assetBundleNames)
+            GUILayout.Label("版本信息");
+            version = GUILayout.TextField(version);
+
+            if (GUILayout.Button("打包"))
             {
-                if (GUILayout.Toggle(selectedAssetBundle == item, item))
-                {
-                    if (selectedAssetBundle != item)
-                    {
-                        selectedAssetBundle = item;
-                    }
-                }
+                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
+                Dictionary<string, string> config = new Dictionary<string, string>();
+                config.Add("version", version);
+                config.Add("platform",platform.ToString());
+                SerializeUtil.ToJson(Application.streamingAssetsPath+ "/AssetBundle/Config.txt", config);
+                FileUtil.Open(Application.streamingAssetsPath+"/AssetBundle");
             }
-            scorllPos = GUILayout.BeginScrollView(scorllPos);
-            string[] prefabPaths = AssetDatabase.GetAssetPathsFromAssetBundle(selectedAssetBundle);
-            long length = 0;
-            foreach (var prefab in prefabPaths)
-            {
-                string[] dependencePaths = AssetDatabase.GetDependencies(prefab, false);
-                foreach (var obj in dependencePaths)
-                {
-                    UnityEngine.Object target = AssetDatabase.LoadAssetAtPath(obj, typeof(UnityEngine.Object));
-                    //length += Profiler.GetRuntimeMemorySizeLong(target);
-                    Type type = typeof(Editor).Assembly.GetType("UnityEditor.TextureUtil");
-                    MethodInfo methodInfo = type.GetMethod("GetStorageMemorySizeLong", BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
-                    length += (long)methodInfo.Invoke(null, new object[] { target });
-                    GUILayout.Label(obj);
-                }
-            }
-            GUILayout.EndScrollView();
-            GUILayout.Label("总计大小：" + UnitConvert.ByteAutoConvert(length));
-            if (GUILayout.Button("Build"))
-            {
-                BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
-            }
+        }
+        private void OnDestroy()
+        {
+            EditorPrefs.SetInt("platform", (int)platform);
+            EditorPrefs.SetInt("option", (int)option);
+            EditorPrefs.SetString("version", version);
         }
         private static string GetTargetPath(BuildTarget platform)
         {
@@ -79,5 +67,6 @@ namespace MiniFramework
             }
             return outputPath;
         }
+
     }
 }

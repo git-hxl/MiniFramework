@@ -100,10 +100,9 @@ namespace MiniFramework
                 info.Create();
             }
         }
-
-        public static void OpenDirectory(string path)
+        public static void Open(string path)
         {
-            if (!IsExitDir(path))
+            if (!IsExitDir(path) && !IsExitFile(path))
             {
                 return;
             }
@@ -113,7 +112,7 @@ namespace MiniFramework
             p.StartInfo.Arguments = "/c start " + path;
 #elif UNITY_EDITOR_OSX
             p.StartInfo.FileName = "bash";
-            p.StartInfo.Arguments = Application.dataPath+"/MiniFramework/0.Core/Editor/OpenDir.sh" + " " + path;
+            p.StartInfo.Arguments = Application.dataPath + "/MiniFramework/0.Core/Editor/OpenDir.sh" + " " + path;
 #endif
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;

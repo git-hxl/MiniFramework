@@ -1,4 +1,4 @@
-﻿
+﻿using UnityEngine;
 namespace MiniFramework
 {
     public static class PlatformUtil
@@ -21,8 +21,24 @@ namespace MiniFramework
             return false;
 #endif
         }
+        public static bool IsWindows()
+        {
+#if UNITY_EDITOR_WIN||UNITY_STANDALONE_WIN
+            return true;
+#else
+            return false;
+#endif
+        }
+        public static bool IsMac()
+        {
+#if UNITY_EDITOR_OSX||UNITY_STANDALONE_OSX
+            return true;
+#else
+            return false;
+#endif
+        }
 
-        public static bool IsIOS()
+        public static bool IsiOS()
         {
 #if UNITY_IOS
             return true;
@@ -41,7 +57,7 @@ namespace MiniFramework
 
         public static bool IsPhone()
         {
-            if (IsIOS() || IsAndroid())
+            if (IsiOS() || IsAndroid())
             {
                 return true;
             }

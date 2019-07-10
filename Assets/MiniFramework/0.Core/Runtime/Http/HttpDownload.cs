@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -14,14 +15,15 @@ namespace MiniFramework
         private long totalLength;
         private float progress;
         private MonoBehaviour mono;
-
+        private Action callback;
         public float GetProgress { get { return progress; } }
         public float GetCurLength { get { return curLength; } }
         public float GetTotalLength { get { return totalLength; } }
-        public HttpDownload(MonoBehaviour mono, string url, string dir)
+        public HttpDownload(MonoBehaviour mono, string url, string dir, Action callback = null)
         {
             this.mono = mono;
             this.url = url;
+            this.callback = callback;
             FileUtil.CreateDir(dir);
             fileName = url.Substring(url.LastIndexOf('/') + 1);
             savePath = dir + "/" + fileName;
@@ -46,8 +48,8 @@ namespace MiniFramework
             }
             if (curLength >= totalLength)
             {
-                Debug.LogWarning(fileName + ":已经下载完成！");
-                yield break;
+                File.Delete(savePath);
+                curLength = 0;
             }
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
@@ -67,6 +69,10 @@ namespace MiniFramework
                         index = data.Length;
                         curLength += writeLength;
                         progress = (curLength / (float)totalLength);
+                    }
+                    if (callback != null)
+                    {
+                        callback();
                     }
                     Debug.Log("下载成功:" + fileName);
                 }
