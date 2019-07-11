@@ -44,12 +44,20 @@ namespace MiniFramework
 
             if (GUILayout.Button("打包"))
             {
-                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
+                BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
                 Dictionary<string, string> config = new Dictionary<string, string>();
                 config.Add("version", version);
-                config.Add("platform",platform.ToString());
-                SerializeUtil.ToJson(Application.streamingAssetsPath+ "/AssetBundle/Config.txt", config);
-                FileUtil.Open(Application.streamingAssetsPath+"/AssetBundle");
+                config.Add("platform", platform.ToString());
+                SerializeUtil.ToJson(Application.streamingAssetsPath + "/config.txt", config);
+                FileUtil.Open(Application.streamingAssetsPath);
+            }
+            if (GUILayout.Button("打开StreamingAssets目录"))
+            {
+                FileUtil.Open(Application.streamingAssetsPath);
+            }
+            if (GUILayout.Button("打开PersistentData目录"))
+            {
+                FileUtil.Open(Application.persistentDataPath);
             }
         }
         private void OnDestroy()
@@ -60,7 +68,7 @@ namespace MiniFramework
         }
         private static string GetTargetPath(BuildTarget platform)
         {
-            string outputPath = Application.streamingAssetsPath + "/AssetBundle/" + platform;
+            string outputPath = Application.streamingAssetsPath + "/"+ platform;
             if (!Directory.Exists(outputPath))
             {
                 Directory.CreateDirectory(outputPath);

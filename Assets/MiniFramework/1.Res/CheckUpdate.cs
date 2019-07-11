@@ -6,76 +6,65 @@ namespace MiniFramework
 {
     public class CheckUpdate : MonoBehaviour
     {
+        //配置信息地址
         public string ConfigUrl;
-        public string DownloadUrl;
-        private string externalDir;
-        private string internalDir;
+        //AssetBundle目标平台地址
+        public string AssetBundleUrl;
+        //当前平台
+        private string curPlatform;
+        //当前版本
+        private Version curVersion;
         // Use this for initialization
         void Start()
         {
-            externalDir = Application.persistentDataPath + "/AssetBundle";
-            internalDir = Application.streamingAssetsPath + "/AssetBundle";
             CheckVersion();
         }
 
         /// <summary>
-        /// 检测版本号
+        /// 检测本地版本号
         /// </summary>
         void CheckVersion()
         {
-            DirectoryInfo internalDirInfo = new DirectoryInfo(internalDir);
-            DirectoryInfo externalDirInfo = new DirectoryInfo(externalDir);
-            if (!FileUtil.IsExitDir(externalDir))
+            DirectoryInfo externalDirInfo = new DirectoryInfo(Application.persistentDataPath);
+            if (!FileUtil.IsExitFile(Application.persistentDataPath + "/config.txt"))
             {
-                internalDirInfo.MoveTo(externalDir);
-                Debug.Log("检测到首次安装,已释放内部资源...");
-            }
-            else if (FileUtil.IsExitDir(internalDir))
-            {
-                externalDirInfo.Delete(true);
-                internalDirInfo.MoveTo(externalDir);
-                Debug.Log("检测到重新安装,已覆盖外部资源...");
-            }
-            else
-            {
-                string versionPath = externalDir + "/Config.txt";
-                if (!FileUtil.IsExitFile(versionPath))
+                Debug.Log("检测到首次安装");
+                if (!FileUtil.IsExitFile(Application.streamingAssetsPath + "/config.txt"))
                 {
                     Debug.LogError("未发现版本配置文件!");
                     return;
                 }
-                // if (FileUtil.IsExitFile(versionPath))
-                // {
-                //     Dictionary<string, string> internalConfig = SerializeUtil.FromJsonFile<Dictionary<string, string>>(versionPath);
-                //     versionPath = externalDir + "/Config.txt";
-                //     Dictionary<string, string> externalConfig = SerializeUtil.FromJsonFile<Dictionary<string, string>>(versionPath);
-                //     Version internalVersion = new Version(internalConfig["version"]);
-                //     Version externalVersion = new Version(externalConfig["version"]);
-                //     if (internalVersion > externalVersion)
-                //     {
-                //         externalDirInfo.Delete(true);
-                //         internalDirInfo.MoveTo(externalDir);
-                //         Debug.Log("内部版本大于外部版本，已释放内部资源...");
-                //     }
-                // }
+                File.Copy(Application.streamingAssetsPath + "/config.txt", Application.persistentDataPath + "/config.txt", true);
+            }
+            Dictionary<string, string> localConfig = SerializeUtil.FromJsonFile<Dictionary<string, string>>(Application.persistentDataPath + "/config.txt");
+            curPlatform = localConfig["platform"];
+            curVersion = new Version(localConfig["version"]);
+
+            if (!FileUtil.IsExitDir(Application.persistentDataPath + "/" + curPlatform))
+            {
+                Debug.Log("释放本地资源");
+                FileUtil.CreateDir((Application.persistentDataPath + "/" + curPlatform));
+                DirectoryInfo internalDirInfo = new DirectoryInfo(Application.streamingAssetsPath + "/" + curPlatform);
+                FileInfo[] files = internalDirInfo.GetFiles();
+                foreach (var item in files)
+                {
+                    File.Copy(item.FullName, Application.persistentDataPath + "/" + curPlatform + "/" + item.Name, true);
+                }
             }
         }
-
+        /// <summary>
+        /// 检测服务器版本
+        /// </summary>
         void CheckFromServer()
         {
-            HttpRequest.Get(this, ConfigUrl, (result) =>
-            {
-                Dictionary<string, string> serverConfig = SerializeUtil.FromJson<Dictionary<string, string>>(result);
-                Version serverVersion = new Version(serverConfig["version"]);
 
-                Dictionary<string, string> externalConfig = SerializeUtil.FromJsonFile<Dictionary<string, string>>(externalDir + "/Config.txt");
-                Version externalVersion = new Version(externalConfig["version"]);
+        }
+        /// <summary>
+        /// 下载平台配置文件对比哈希值
+        /// </summary>
+        void DownPlaformManifest()
+        {
 
-                if (serverVersion > externalVersion)
-                {
-                    Debug.Log("检测到新版本");
-                }
-            });
         }
     }
 }

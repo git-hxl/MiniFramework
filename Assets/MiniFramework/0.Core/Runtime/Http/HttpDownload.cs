@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,35 +9,61 @@ namespace MiniFramework
 {
     public class HttpDownload
     {
-        private string url;
+        private string curUrl;
+        private List<string> urls = new List<string>();
         private string fileName;
+        private string saveDir;
         private string savePath;
         private long curLength;
         private long totalLength;
         private float progress;
         private MonoBehaviour mono;
         private Action callback;
+        public bool IsCompleted;
+        public int CompletedTask;
         public float GetProgress { get { return progress; } }
         public float GetCurLength { get { return curLength; } }
         public float GetTotalLength { get { return totalLength; } }
         public HttpDownload(MonoBehaviour mono, string url, string dir, Action callback = null)
         {
+            urls.Add(url);
             this.mono = mono;
-            this.url = url;
+            this.saveDir = dir;
             this.callback = callback;
             FileUtil.CreateDir(dir);
-            fileName = url.Substring(url.LastIndexOf('/') + 1);
-            savePath = dir + "/" + fileName;
-            curLength = FileUtil.GetFileLength(savePath);
         }
 
-        public void Download()
+        public HttpDownload(MonoBehaviour mono, List<string> urls, string dir, Action callback = null)
         {
-            mono.StartCoroutine(GetEnumerator());
+            this.mono = mono;
+            this.urls = urls;
+            this.saveDir = dir;
+            this.callback = callback;
+            FileUtil.CreateDir(dir);
+        }
+        public void Start()
+        {
+            mono.StartCoroutine(Download());
+        }
+        IEnumerator Download()
+        {
+            foreach (var item in urls)
+            {
+                this.curUrl = item;
+                yield return mono.StartCoroutine(GetEnumerator());
+            }
+            if (callback != null)
+            {
+                callback();
+            }
+            IsCompleted = true;
         }
         IEnumerator GetEnumerator()
         {
-            using (UnityWebRequest headRequest = UnityWebRequest.Head(url))
+            fileName = curUrl.Substring(curUrl.LastIndexOf('/') + 1);
+            savePath = saveDir + "/" + fileName;
+            curLength = FileUtil.GetFileLength(savePath);
+            using (UnityWebRequest headRequest = UnityWebRequest.Head(curUrl))
             {
                 yield return headRequest.SendWebRequest();
                 if (headRequest.isHttpError || headRequest.isNetworkError)
@@ -51,7 +78,7 @@ namespace MiniFramework
                 File.Delete(savePath);
                 curLength = 0;
             }
-            using (UnityWebRequest request = UnityWebRequest.Get(url))
+            using (UnityWebRequest request = UnityWebRequest.Get(curUrl))
             {
                 request.SetRequestHeader("Range", "bytes=" + curLength + "-" + totalLength);
                 request.SendWebRequest();
@@ -70,10 +97,8 @@ namespace MiniFramework
                         curLength += writeLength;
                         progress = (curLength / (float)totalLength);
                     }
-                    if (callback != null)
-                    {
-                        callback();
-                    }
+                    CompletedTask++;
+                    yield return null;
                     Debug.Log("下载成功:" + fileName);
                 }
             }

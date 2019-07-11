@@ -1,6 +1,0 @@
-﻿{
-  "prefab": "304f653d1090814f8ece3f73b7879cad",
-  "ui": "688c6888a2ae969edfc1df9839600327",
-  "version": "1.0.3",
-  "platform": "StandaloneOSX"
-}
