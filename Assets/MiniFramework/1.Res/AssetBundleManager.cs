@@ -72,6 +72,7 @@ namespace MiniFramework
                 Hash128 hash = manifest.GetAssetBundleHash(bundlesName[i]);
                 bundlesHash.Add(bundlesName[i], hash);
             }
+            assetBundle.Unload(true);
             return bundlesHash;
         }
     }

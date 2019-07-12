@@ -6,65 +6,105 @@ namespace MiniFramework
 {
     public class CheckUpdate : MonoBehaviour
     {
-        //配置信息地址
-        public string ConfigUrl;
+        //版本地址
+        public string VersionUrl;
         //AssetBundle目标平台地址
         public string AssetBundleUrl;
+
         //当前平台
         private string curPlatform;
         //当前版本
         private Version curVersion;
+        //内部版本
+        private Version internalVersion;
+        //服务器版本
+        private Version serverVersion;
+        private List<string> updateFiles = new List<string>();
+        private Dictionary<string, string> localInfo;
+        private Dictionary<string, string> internalInfo;
         // Use this for initialization
         void Start()
         {
+            InitConfig();
             CheckVersion();
         }
+        void InitConfig()
+        {
 
-        /// <summary>
-        /// 检测本地版本号
-        /// </summary>
+            string localConfigPath = Application.persistentDataPath + "/config.txt";
+            string internalConfigPath = Application.streamingAssetsPath + "/config.txt";
+
+            if (!FileUtil.IsExitFile(localConfigPath))
+            {
+                File.Copy(internalConfigPath, localConfigPath);
+            }
+            localInfo = SerializeUtil.FromJsonFile<Dictionary<string, string>>(localConfigPath);
+            internalInfo = SerializeUtil.FromJsonFile<Dictionary<string, string>>(internalConfigPath);
+
+            if (localInfo["platform"] != internalInfo["platform"])
+            {
+                Debug.Log("检测到配置文件异常，正重新生成");
+                localInfo = internalInfo;
+                SerializeUtil.ToJson(localConfigPath, localInfo);
+            }
+            curPlatform = localInfo["platform"];
+            curVersion = new Version(localInfo["version"]);
+            internalVersion = new Version(internalInfo["version"]);
+            Debug.Log("平台：" + curPlatform + " 本地版本号：" + curVersion + " 内部版本号：" + internalVersion);
+        }
         void CheckVersion()
         {
-            DirectoryInfo externalDirInfo = new DirectoryInfo(Application.persistentDataPath);
-            if (!FileUtil.IsExitFile(Application.persistentDataPath + "/config.txt"))
+            if (internalVersion >= curVersion)
             {
-                Debug.Log("检测到首次安装");
-                if (!FileUtil.IsExitFile(Application.streamingAssetsPath + "/config.txt"))
-                {
-                    Debug.LogError("未发现版本配置文件!");
-                    return;
-                }
-                File.Copy(Application.streamingAssetsPath + "/config.txt", Application.persistentDataPath + "/config.txt", true);
+                UpdateAssetBundle();
             }
-            Dictionary<string, string> localConfig = SerializeUtil.FromJsonFile<Dictionary<string, string>>(Application.persistentDataPath + "/config.txt");
-            curPlatform = localConfig["platform"];
-            curVersion = new Version(localConfig["version"]);
-
-            if (!FileUtil.IsExitDir(Application.persistentDataPath + "/" + curPlatform))
+            HttpRequest.Get(this, VersionUrl, (res) =>
             {
-                Debug.Log("释放本地资源");
-                FileUtil.CreateDir((Application.persistentDataPath + "/" + curPlatform));
-                DirectoryInfo internalDirInfo = new DirectoryInfo(Application.streamingAssetsPath + "/" + curPlatform);
+                serverVersion = new Version(res);
+            });
+
+        }
+        void UpdateAssetBundle()
+        {
+            string localPath = Application.persistentDataPath + "/" + curPlatform;
+            string internalPath = Application.streamingAssetsPath + "/" + curPlatform;
+            if (!FileUtil.IsExitDir(localPath))
+            {
+                FileUtil.CreateDir(localPath);
+                DirectoryInfo internalDirInfo = new DirectoryInfo(internalPath);
                 FileInfo[] files = internalDirInfo.GetFiles();
                 foreach (var item in files)
                 {
-                    File.Copy(item.FullName, Application.persistentDataPath + "/" + curPlatform + "/" + item.Name, true);
+                    Debug.Log("更新文件：" + item.Name);
+                    File.Copy(item.FullName, localPath + "/" + item.Name);
                 }
             }
-        }
-        /// <summary>
-        /// 检测服务器版本
-        /// </summary>
-        void CheckFromServer()
-        {
+            else
+            {
+                Dictionary<string, Hash128> localABHash = AssetBundleManager.Instance.LoadABManifest(localPath + "/" + curPlatform);
+                Dictionary<string, Hash128> internalABHash = AssetBundleManager.Instance.LoadABManifest(internalPath + "/" + curPlatform);
+
+                foreach (var item in internalABHash)
+                {
+                    if (!localABHash.ContainsKey(item.Key))
+                    {
+                        updateFiles.Add(item.Key);
+                    }
+                    else if (internalABHash[item.Key] != localABHash[item.Key])
+                    {
+                        updateFiles.Add(item.Key);
+                    }
+                }
+                foreach (var item in updateFiles)
+                {
+                    Debug.Log("更新文件：" + item);
+                    File.Copy(internalPath + "/" + item, localPath + "/" + item, true);
+                }
+            }
 
         }
-        /// <summary>
-        /// 下载平台配置文件对比哈希值
-        /// </summary>
-        void DownPlaformManifest()
-        {
 
-        }
+
+
     }
 }
