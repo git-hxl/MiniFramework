@@ -1,4 +1,4 @@
 ﻿{
-  "version": "1.0.0",
-  "platform": "iOS"
+  "version": "1.0.4",
+  "platform": "StandaloneOSX"
 }

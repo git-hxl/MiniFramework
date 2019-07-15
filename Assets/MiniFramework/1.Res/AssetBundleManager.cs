@@ -63,10 +63,14 @@ namespace MiniFramework
         }
         public Dictionary<string, Hash128> LoadABManifest(string path)
         {
+            Dictionary<string, Hash128> bundlesHash = new Dictionary<string, Hash128>();
+            if (!FileUtil.IsExitFile(path))
+            {
+                return bundlesHash;
+            }
             AssetBundle assetBundle = AssetBundle.LoadFromFile(path);
             AssetBundleManifest manifest = assetBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
             string[] bundlesName = manifest.GetAllAssetBundles();
-            Dictionary<string, Hash128> bundlesHash = new Dictionary<string, Hash128>();
             for (int i = 0; i < bundlesName.Length; i++)
             {
                 Hash128 hash = manifest.GetAssetBundleHash(bundlesName[i]);

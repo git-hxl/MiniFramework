@@ -31,6 +31,7 @@ namespace MiniFramework
             this.saveDir = dir;
             this.callback = callback;
             FileUtil.CreateDir(dir);
+            mono.StartCoroutine(Download());
         }
 
         public HttpDownload(MonoBehaviour mono, List<string> urls, string dir, Action callback = null)
@@ -40,9 +41,6 @@ namespace MiniFramework
             this.saveDir = dir;
             this.callback = callback;
             FileUtil.CreateDir(dir);
-        }
-        public void Start()
-        {
             mono.StartCoroutine(Download());
         }
         IEnumerator Download()
@@ -68,7 +66,7 @@ namespace MiniFramework
                 yield return headRequest.SendWebRequest();
                 if (headRequest.isHttpError || headRequest.isNetworkError)
                 {
-                    Debug.Log(headRequest.error);
+                    Debug.LogError(headRequest.error);
                     yield break;
                 }
                 totalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
@@ -83,7 +81,7 @@ namespace MiniFramework
                 request.SetRequestHeader("Range", "bytes=" + curLength + "-" + totalLength);
                 request.SendWebRequest();
                 Debug.Log("开始下载:" + fileName + " 大小:" + UnitConvert.ByteAutoConvert(totalLength));
-                using (FileStream fileStream = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
                     fileStream.Seek(curLength, SeekOrigin.Begin);
                     int index = 0;

@@ -13,7 +13,6 @@ public class Example_Http : MonoBehaviour
         urls.Add(url);
         urls.Add(url);
         download = new HttpDownload(this, urls, Application.streamingAssetsPath);
-        download.Start();
     }
 
     private void Update()
