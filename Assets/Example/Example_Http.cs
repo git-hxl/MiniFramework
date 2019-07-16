@@ -6,18 +6,15 @@ public class Example_Http : MonoBehaviour
 {
     HttpDownload download;
     // Use this for initialization
-    void Start()
+    IEnumerator Start()
     {
         string url = "http://b-ssl.duitang.com/uploads/item/201701/13/20170113161807_QzMt5.jpeg";
-        List<string> urls = new List<string>();
-        urls.Add(url);
-        urls.Add(url);
-        download = new HttpDownload(this, urls, Application.streamingAssetsPath);
+        download = new HttpDownload(Application.streamingAssetsPath);
+        yield return download.Download(url);
     }
 
     private void Update()
     {
-        if (!download.IsCompleted)
-            Debug.Log("进度:" + download.GetProgress + " 已完成:" + download.CompletedTask + " 当前：" + download.GetCurLength + "字节 总计：" + download.GetTotalLength + "字节");
+        Debug.Log("进度:" + download.GetProgress + " 当前：" + download.GetCurLength + "字节 总计：" + download.GetTotalLength + "字节");
     }
 }

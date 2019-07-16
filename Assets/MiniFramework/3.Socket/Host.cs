@@ -12,7 +12,6 @@ namespace MiniFramework
         private byte[] recvBuffer;
         private UdpClient udpClient;
         private DataPacker dataPacker;
-        protected override void OnSingletonInit() { }
         private void Start() {
             Launch(Port);
         }

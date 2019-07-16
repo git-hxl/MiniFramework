@@ -18,7 +18,6 @@ namespace MiniFramework
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
-        protected override void OnSingletonInit() { }
 
         private void Start()
         {

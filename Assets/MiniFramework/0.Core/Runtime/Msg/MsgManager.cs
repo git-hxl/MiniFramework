@@ -29,7 +29,6 @@ namespace MiniFramework
         private Dictionary<string, List<MsgHandler>> msgHandlerDict = new Dictionary<string, List<MsgHandler>>();
         private Queue<IdleMsg> msgQueue = new Queue<IdleMsg>();
         private static readonly object obj = new object();
-        protected override void OnSingletonInit() { }
         void Update()
         {
             while (msgQueue.Count > 0)

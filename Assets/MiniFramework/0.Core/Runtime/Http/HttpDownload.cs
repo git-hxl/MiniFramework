@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -9,63 +8,35 @@ namespace MiniFramework
 {
     public class HttpDownload
     {
-        private string curUrl;
-        private List<string> urls = new List<string>();
         private string fileName;
         private string saveDir;
-        private string savePath;
+        private string filePath;
         private long curLength;
         private long totalLength;
         private float progress;
-        private MonoBehaviour mono;
-        private Action callback;
-        public bool IsCompleted;
-        public int CompletedTask;
+        private Action<bool> callback;
         public float GetProgress { get { return progress; } }
         public float GetCurLength { get { return curLength; } }
         public float GetTotalLength { get { return totalLength; } }
-        public HttpDownload(MonoBehaviour mono, string url, string dir, Action callback = null)
+        public string FilePath { get { return filePath; } }
+        public HttpDownload(string saveDir, Action<bool> callback = null)
         {
-            urls.Add(url);
-            this.mono = mono;
-            this.saveDir = dir;
+            this.saveDir = saveDir;
             this.callback = callback;
-            FileUtil.CreateDir(dir);
-            mono.StartCoroutine(Download());
+            FileUtil.CreateDir(saveDir);
         }
-
-        public HttpDownload(MonoBehaviour mono, List<string> urls, string dir, Action callback = null)
+        public IEnumerator Download(string url)
         {
-            this.mono = mono;
-            this.urls = urls;
-            this.saveDir = dir;
-            this.callback = callback;
-            FileUtil.CreateDir(dir);
-            mono.StartCoroutine(Download());
-        }
-        IEnumerator Download()
-        {
-            foreach (var item in urls)
-            {
-                this.curUrl = item;
-                yield return mono.StartCoroutine(GetEnumerator());
-            }
-            if (callback != null)
-            {
-                callback();
-            }
-            IsCompleted = true;
-        }
-        IEnumerator GetEnumerator()
-        {
-            fileName = curUrl.Substring(curUrl.LastIndexOf('/') + 1);
-            savePath = saveDir + "/" + fileName;
-            curLength = FileUtil.GetFileLength(savePath);
-            using (UnityWebRequest headRequest = UnityWebRequest.Head(curUrl))
+            fileName = url.Substring(url.LastIndexOf('/') + 1);
+            filePath = saveDir + "/" + fileName;
+            curLength = FileUtil.GetFileLength(filePath);
+            using (UnityWebRequest headRequest = UnityWebRequest.Head(url))
             {
                 yield return headRequest.SendWebRequest();
                 if (headRequest.isHttpError || headRequest.isNetworkError)
                 {
+                    if (callback != null)
+                        callback(false);
                     Debug.LogError(headRequest.error);
                     yield break;
                 }
@@ -73,15 +44,15 @@ namespace MiniFramework
             }
             if (curLength >= totalLength)
             {
-                File.Delete(savePath);
+                File.Delete(filePath);
                 curLength = 0;
             }
-            using (UnityWebRequest request = UnityWebRequest.Get(curUrl))
+            using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
                 request.SetRequestHeader("Range", "bytes=" + curLength + "-" + totalLength);
                 request.SendWebRequest();
                 Debug.Log("开始下载:" + fileName + " 大小:" + UnitConvert.ByteAutoConvert(totalLength));
-                using (FileStream fileStream = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                using (FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
                     fileStream.Seek(curLength, SeekOrigin.Begin);
                     int index = 0;
@@ -95,11 +66,12 @@ namespace MiniFramework
                         curLength += writeLength;
                         progress = (curLength / (float)totalLength);
                     }
-                    CompletedTask++;
-                    yield return null;
+                    if (callback != null)
+                        callback(true);
                     Debug.Log("下载成功:" + fileName);
                 }
             }
+            yield return null;
         }
     }
 }

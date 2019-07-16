@@ -6,7 +6,7 @@ public class TestB : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		//场景中不存在TestA时 会自动创建 并执行OnSingletonInit
+		//场景中不存在TestA时 会自动创建 
 		TestA.Instance.Dispose();
 	}
 	

@@ -7,9 +7,6 @@ public class TestA : MonoSingleton<TestA> {
 		base.Awake();
 		Debug.Log("Awake");
 	}
-	protected override void OnSingletonInit(){
-		Debug.Log("OnInit");
-	}
 	// Use this for initialization
 	void Start () {
 		

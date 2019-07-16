@@ -17,8 +17,6 @@ namespace MiniFramework
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
-        protected override void OnSingletonInit() { }
-
         private void Start()
         {
             Connect(IP, Port);

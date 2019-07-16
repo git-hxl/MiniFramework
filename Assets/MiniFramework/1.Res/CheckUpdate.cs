@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -6,140 +6,102 @@ namespace MiniFramework
 {
     public class CheckUpdate : MonoBehaviour
     {
-        //AssetBundle地址
+        //AssetBundle下载地址
         public string AssetBundleUrl;
-        public string curPlatform;
-        private string localConfigPath;
-        private string internalConfigPath;
-        private string localABPath;
-        private string internalABPath;
-        private string saveManifestPath;
-        private List<string> updateFiles = new List<string>();
-        private Dictionary<string, string> localInfo;
-        private Dictionary<string, string> internalInfo;
-        // Use this for initialization
-        void Start()
-        {
-            AssetBundleUrl = "http://localhost:8080";
-            saveManifestPath = Application.persistentDataPath + "/Update";
-            CheckFiles();
-            CheckVersion();
-        }
+        public bool IsTest;
+        public HttpDownload HttpDownload;
 
-        void CheckFiles()
+        private string curPlatform;
+        private string curVersion;
+        private List<string> updateFiles = new List<string>();
+
+        // Use this for initialization
+        IEnumerator Start()
         {
-            localConfigPath = Application.persistentDataPath + "/config.txt";
-            internalConfigPath = Application.streamingAssetsPath + "/config.txt";
-            if (!FileUtil.IsExitFile(internalConfigPath))
+            yield return CheckConfig();
+            if (IsTest)
+            {
+                yield return CheckLocalMainfest();
+            }
+            else
+            {
+                yield return CheckServerManifest();
+            }
+
+            ResManager.Instance.Init(curPlatform);
+        }
+        IEnumerator CheckConfig()
+        {
+            string assetsConfigPath = Application.streamingAssetsPath + "/config.txt";
+            string dataConfigPath = Application.persistentDataPath + "/config.txt";
+            if (!FileUtil.IsExitFile(assetsConfigPath))
             {
                 Debug.LogError("配置文件不存在");
-                return;
+                yield break;
             }
-            if (!FileUtil.IsExitFile(localConfigPath))
-            {
-                File.Copy(internalConfigPath, localConfigPath);
-            }
-            localInfo = SerializeUtil.FromJsonFile<Dictionary<string, string>>(localConfigPath);
-            internalInfo = SerializeUtil.FromJsonFile<Dictionary<string, string>>(internalConfigPath);
-            if (localInfo["platform"] != internalInfo["platform"])
-            {
-                localInfo["platform"] = internalInfo["platform"];
-                SerializeUtil.ToJson(localConfigPath, localInfo);
-            }
-            curPlatform = localInfo["platform"];
-            Debug.Log("平台：" + curPlatform + " 本地版本号：" + localInfo["version"] + " 内部版本号：" + internalInfo["version"]);
-
-            localABPath = Application.persistentDataPath + "/" + curPlatform;
-            internalABPath = Application.streamingAssetsPath + "/" + curPlatform;
-            if (FileUtil.IsExitDir(internalABPath))
-            {
-                if (!FileUtil.IsExitDir(localABPath))
-                {
-                    FileUtil.CreateDir(localABPath);
-                    DirectoryInfo internalDirInfo = new DirectoryInfo(internalABPath);
-                    FileInfo[] files = internalDirInfo.GetFiles();
-                    foreach (var item in files)
-                    {
-                        Debug.Log("更新文件：" + item.Name);
-                        File.Copy(item.FullName, localABPath + "/" + item.Name);
-                    }
-                }
-            }
+            File.Copy(assetsConfigPath, dataConfigPath, true);
+            yield return null;
+            Dictionary<string, string> config = SerializeUtil.FromJsonFile<Dictionary<string, string>>(dataConfigPath);
+            curPlatform = config["platform"];
+            curVersion = config["version"];
+            Debug.Log("平台:" + curPlatform + " 本地版本号:" + curVersion);
         }
-        void CheckVersion()
+        IEnumerator CheckLocalMainfest()
         {
-            Version curVersion = new Version(localInfo["version"]);
-            Version internalVersion = new Version(internalInfo["version"]);
-            if (internalVersion > curVersion)
+            string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
+            string dataABPath = Application.persistentDataPath + "/" + curPlatform;
+            if (!FileUtil.IsExitFile(assetsABPath + "/" + curPlatform))
             {
-                UpdateLocalFiles();
-                localInfo["version"] = internalVersion.ToString();
-                SerializeUtil.ToJson(localConfigPath, localInfo);
-                curVersion = internalVersion;
+                yield break;
             }
-            HttpDownload download = new HttpDownload(this, AssetBundleUrl + "/" + curPlatform + "/" + curPlatform, saveManifestPath, () =>
-                 {
-                     Dictionary<string, Hash128> serverABHash = AssetBundleManager.Instance.LoadABManifest(saveManifestPath + "/" + curPlatform);
-                     Dictionary<string, Hash128> localABHash = AssetBundleManager.Instance.LoadABManifest(localABPath + "/" + curPlatform);
-                     foreach (var item in serverABHash)
-                     {
-                         if (!localABHash.ContainsKey(item.Key))
-                         {
-                             updateFiles.Add(AssetBundleUrl + "/" + curPlatform + "/" + item.Key);
-                         }
-                         else if (serverABHash[item.Key] != localABHash[item.Key])
-                         {
-                             updateFiles.Add(AssetBundleUrl + "/" + curPlatform + "/" + item.Key);
-                         }
-                     }
-                     if (updateFiles.Count > 0)
-                     {
-                         UpdateServerFiles();
-                     }
-                     else
-                     {
-                         Debug.Log("无更新列表");
-                     }
-                 });
-        }
-        void UpdateLocalFiles()
-        {
-            if (!FileUtil.IsExitDir(internalABPath))
+            FileUtil.CreateDir(dataABPath);
+            Dictionary<string, Hash128> assetsManifest =AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
+            Dictionary<string, Hash128> dataManifest = AssetBundleLoader.LoadABManifest(dataABPath + "/" + curPlatform);
+            foreach (var item in assetsManifest)
             {
-                return;
-            }
-            Dictionary<string, Hash128> localABHash = AssetBundleManager.Instance.LoadABManifest(localABPath + "/" + curPlatform);
-            Dictionary<string, Hash128> internalABHash = AssetBundleManager.Instance.LoadABManifest(internalABPath + "/" + curPlatform);
-
-            foreach (var item in internalABHash)
-            {
-                if (!localABHash.ContainsKey(item.Key))
+                if (dataManifest.ContainsKey(item.Key) && dataManifest[item.Key] == assetsManifest[item.Key])
                 {
-                    updateFiles.Add(item.Key);
+                    continue;
                 }
-                else if (internalABHash[item.Key] != localABHash[item.Key])
-                {
-                    updateFiles.Add(item.Key);
-                }
+                updateFiles.Add(item.Key);
             }
             foreach (var item in updateFiles)
             {
-                Debug.Log("释放本地文件：" + item);
-                File.Copy(internalABPath + "/" + item, localABPath + "/" + item, true);
+                Debug.Log("释放本地资源：" + item);
+                File.Copy(assetsABPath + "/" + item, dataABPath + "/" + item, true);
+                yield return null;
             }
-            if (updateFiles.Count > 0)
-            {
-                File.Copy(internalABPath + "/" + curPlatform, localABPath + "/" + curPlatform, true);
-                updateFiles.Clear();
-            }
+            File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
+            updateFiles.Clear();
         }
-        void UpdateServerFiles()
+        IEnumerator CheckServerManifest()
         {
-            HttpDownload downloadAB = new HttpDownload(this, updateFiles, localABPath, () =>
+            string downloadPath = AssetBundleUrl + "/" + curPlatform + "/" + curPlatform;
+            string savePath = Application.persistentDataPath + "/Update";
+            HttpDownload = new HttpDownload(savePath, null);
+            yield return HttpDownload.Download(downloadPath);
+            string updateManifestPath = HttpDownload.FilePath;
+            string dataManifestPath = Application.persistentDataPath + "/" + curPlatform + "/" + curPlatform;
+            Dictionary<string, Hash128> downloadManifes = AssetBundleLoader.LoadABManifest(updateManifestPath);
+            Dictionary<string, Hash128> dataManifest = AssetBundleLoader.LoadABManifest(dataManifestPath);
+            foreach (var item in downloadManifes)
             {
-                File.Move(saveManifestPath + "/" + curPlatform, localABPath + "/" + curPlatform);
-                Debug.Log("更新网络资源完成");
-            });
+                if (dataManifest.ContainsKey(item.Key) && dataManifest[item.Key] == downloadManifes[item.Key])
+                {
+                    continue;
+                }
+                updateFiles.Add(item.Key);
+            }
+            savePath = Application.persistentDataPath + "/" + curPlatform;
+            HttpDownload = new HttpDownload(savePath, null);
+            foreach (var item in updateFiles)
+            {
+                string url = AssetBundleUrl + "/" + curPlatform + "/" + item;
+                yield return HttpDownload.Download(url);
+            }
+            File.Copy(updateManifestPath, dataManifestPath, true);
+            updateFiles.Clear();
+            Debug.Log("更新完成");
         }
     }
 }

@@ -15,7 +15,6 @@ namespace MiniFramework
                     {
                         GameObject obj = new GameObject(typeof(T).Name);
                         mInstance = obj.AddComponent<T>();
-                        mInstance.OnSingletonInit();
                     }
                 }
                 return mInstance;
@@ -33,7 +32,6 @@ namespace MiniFramework
                 Destroy(gameObject);
             }
         }
-        protected virtual void OnSingletonInit() { }
         public virtual void Dispose()
         {
             Destroy(gameObject);

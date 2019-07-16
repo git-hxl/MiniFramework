@@ -8,14 +8,14 @@ namespace MiniFramework
         static readonly string DefaultWindowTitle = "<b>MiniFramework Debugger</b>";
         static readonly string DefaultMiniWindowTitle = "<b>Debugger</b>";
         //调试器默认大小
-        static readonly Rect DefaultWindowRect = new Rect(0, 0, Screen.width/2, Screen.height/2);
+        static readonly Rect DefaultWindowRect = new Rect(0, 0, Screen.width / 2, Screen.height / 2);
         static readonly float DefaultWindowScale = 1f;
 
         private Rect windowRect = DefaultWindowRect;
         private float windowScale = DefaultWindowScale;
         private Rect smallWindowRect = new Rect(0, 0, 60f, 60f);
         private Rect dragRect = new Rect(0, 0, float.MaxValue, float.MaxValue);
-        public bool ShowSmallWindow = true;
+        public bool DefaultSmallWindow = true;
         private List<IDebuggerWindow> windowList = new List<IDebuggerWindow>();
         private List<string> toolList = new List<string>();
         private int curSelectedWindowIndex;
@@ -24,7 +24,7 @@ namespace MiniFramework
         private MemoryWindow memoryWindow = new MemoryWindow();
         private SettingsWindow settingWindow = new SettingsWindow();
         private FPSCounter fpsCounter = new FPSCounter();
-        protected override void OnSingletonInit()
+        private void Start()
         {
             RegisterDebuggerWindow("<b>Console</b>", consoleWindow);
             RegisterDebuggerWindow("<b>Information</b>", informationWindow);
@@ -32,13 +32,14 @@ namespace MiniFramework
             RegisterDebuggerWindow("<b>Setting</b>", settingWindow);
             RegisterDebuggerWindow("<b>Close</b>", null);
         }
-        private void Update(){
+        private void Update()
+        {
             fpsCounter.Update();
         }
         private void OnGUI()
         {
             GUI.matrix = Matrix4x4.Scale(new Vector3(windowScale, windowScale, 1f));
-            if (ShowSmallWindow)
+            if (DefaultSmallWindow)
             {
                 smallWindowRect = GUILayout.Window(0, smallWindowRect, DrawSmallWindow, DefaultMiniWindowTitle);
             }
@@ -50,9 +51,9 @@ namespace MiniFramework
         //绘制小窗口
         private void DrawSmallWindow(int windowId)
         {
-            if (GUILayout.Button("FPS:"+fpsCounter.CurFps.ToString("F2"), GUILayout.Width(100f), GUILayout.Height(40f)))
+            if (GUILayout.Button("FPS:" + fpsCounter.CurFps.ToString("F2"), GUILayout.Width(100f), GUILayout.Height(40f)))
             {
-                ShowSmallWindow = false;
+                DefaultSmallWindow = false;
             }
             GUI.DragWindow(dragRect);
         }
@@ -62,7 +63,7 @@ namespace MiniFramework
             int toolbarIndex = GUILayout.Toolbar(curSelectedWindowIndex, toolList.ToArray(), GUILayout.Height(30f));
             if (toolbarIndex >= windowList.Count)
             {
-                ShowSmallWindow = true;
+                DefaultSmallWindow = true;
             }
             else
             {
@@ -82,7 +83,8 @@ namespace MiniFramework
             }
         }
 
-        void OnDestory(){
+        void OnDestory()
+        {
             foreach (var item in windowList)
             {
                 item.Close();
