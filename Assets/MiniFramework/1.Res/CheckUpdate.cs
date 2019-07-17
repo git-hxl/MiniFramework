@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
+
 namespace MiniFramework
 {
     public class CheckUpdate : MonoBehaviour
@@ -9,12 +11,11 @@ namespace MiniFramework
         //AssetBundle下载地址
         public string AssetBundleUrl;
         public bool IsTest;
-        public HttpDownload HttpDownload;
 
+        private HttpDownload httpDownload;
         private string curPlatform;
         private string curVersion;
         private List<string> updateFiles = new List<string>();
-
         // Use this for initialization
         IEnumerator Start()
         {
@@ -27,8 +28,7 @@ namespace MiniFramework
             {
                 yield return CheckServerManifest();
             }
-
-            ResManager.Instance.Init(curPlatform);
+            yield return ResManager.Instance.Init(curPlatform);
         }
         IEnumerator CheckConfig()
         {
@@ -48,6 +48,7 @@ namespace MiniFramework
         }
         IEnumerator CheckLocalMainfest()
         {
+            Debug.Log("检查更新文件");
             string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
             string dataABPath = Application.persistentDataPath + "/" + curPlatform;
             if (!FileUtil.IsExitFile(assetsABPath + "/" + curPlatform))
@@ -55,7 +56,7 @@ namespace MiniFramework
                 yield break;
             }
             FileUtil.CreateDir(dataABPath);
-            Dictionary<string, Hash128> assetsManifest =AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
+            Dictionary<string, Hash128> assetsManifest = AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
             Dictionary<string, Hash128> dataManifest = AssetBundleLoader.LoadABManifest(dataABPath + "/" + curPlatform);
             foreach (var item in assetsManifest)
             {
@@ -65,22 +66,26 @@ namespace MiniFramework
                 }
                 updateFiles.Add(item.Key);
             }
-            foreach (var item in updateFiles)
+            if (updateFiles.Count > 0)
             {
-                Debug.Log("释放本地资源：" + item);
-                File.Copy(assetsABPath + "/" + item, dataABPath + "/" + item, true);
-                yield return null;
+                foreach (var item in updateFiles)
+                {
+                    Debug.Log("释放本地资源：" + item);
+                    File.Copy(assetsABPath + "/" + item, dataABPath + "/" + item, true);
+                    yield return null;
+                }
+                File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
+                updateFiles.Clear();
             }
-            File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
-            updateFiles.Clear();
         }
         IEnumerator CheckServerManifest()
         {
+            Debug.Log("检查更新文件");
             string downloadPath = AssetBundleUrl + "/" + curPlatform + "/" + curPlatform;
             string savePath = Application.persistentDataPath + "/Update";
-            HttpDownload = new HttpDownload(savePath, null);
-            yield return HttpDownload.Download(downloadPath);
-            string updateManifestPath = HttpDownload.FilePath;
+            httpDownload = new HttpDownload(savePath, null);
+            yield return httpDownload.Download(downloadPath);
+            string updateManifestPath = httpDownload.FilePath;
             string dataManifestPath = Application.persistentDataPath + "/" + curPlatform + "/" + curPlatform;
             Dictionary<string, Hash128> downloadManifes = AssetBundleLoader.LoadABManifest(updateManifestPath);
             Dictionary<string, Hash128> dataManifest = AssetBundleLoader.LoadABManifest(dataManifestPath);
@@ -92,16 +97,18 @@ namespace MiniFramework
                 }
                 updateFiles.Add(item.Key);
             }
-            savePath = Application.persistentDataPath + "/" + curPlatform;
-            HttpDownload = new HttpDownload(savePath, null);
-            foreach (var item in updateFiles)
+            if (updateFiles.Count > 0)
             {
-                string url = AssetBundleUrl + "/" + curPlatform + "/" + item;
-                yield return HttpDownload.Download(url);
+                savePath = Application.persistentDataPath + "/" + curPlatform;
+                httpDownload = new HttpDownload(savePath, null);
+                foreach (var item in updateFiles)
+                {
+                    string url = AssetBundleUrl + "/" + curPlatform + "/" + item;
+                    yield return httpDownload.Download(url);
+                }
+                File.Copy(updateManifestPath, dataManifestPath, true);
+                updateFiles.Clear();
             }
-            File.Copy(updateManifestPath, dataManifestPath, true);
-            updateFiles.Clear();
-            Debug.Log("更新完成");
         }
     }
 }

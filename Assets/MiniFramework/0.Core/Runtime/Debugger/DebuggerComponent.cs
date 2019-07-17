@@ -10,12 +10,15 @@ namespace MiniFramework
         //调试器默认大小
         static readonly Rect DefaultWindowRect = new Rect(0, 0, Screen.width / 2, Screen.height / 2);
         static readonly float DefaultWindowScale = 1f;
+        static readonly Rect DefaultSmallWindowRect = new Rect(0, 0, 60f, 60f);
 
         private Rect windowRect = DefaultWindowRect;
         private float windowScale = DefaultWindowScale;
-        private Rect smallWindowRect = new Rect(0, 0, 60f, 60f);
+        private Rect smallWindowRect = DefaultSmallWindowRect;
+
         private Rect dragRect = new Rect(0, 0, float.MaxValue, float.MaxValue);
         public bool DefaultSmallWindow = true;
+
         private List<IDebuggerWindow> windowList = new List<IDebuggerWindow>();
         private List<string> toolList = new List<string>();
         private int curSelectedWindowIndex;

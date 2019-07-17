@@ -1,25 +1,19 @@
 ﻿using UnityEngine;
 using MiniFramework;
+using UnityEngine.SceneManagement;
+
 public class Example_LoadPrefab : MonoBehaviour
 {
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    public string TargetScene;
     private void OnGUI()
     {
-		if (GUI.Button(new Rect(1000,500,200,200),"生成Cube"))
-		{
-			ResManager.Instance.Load("Cube","prefab");
-		}
+        if (GUI.Button(new Rect(0, 400, 200, 200), "生成Cube"))
+        {
+            Instantiate(ResManager.Instance.Load("Prefab/Cube"));
+        }
+        if (GUI.Button(new Rect(0, 600, 200, 200), TargetScene))
+        {
+            SceneManager.LoadScene(TargetScene);
+        }
     }
 }

@@ -45,6 +45,7 @@ namespace MiniFramework
                     {
                         DebuggerComponent.Instance.windowScale = DefaultWindowScale;
                         DebuggerComponent.Instance.windowRect = DefaultWindowRect;
+                        DebuggerComponent.Instance.smallWindowRect = DefaultSmallWindowRect;
                     }
                 }
                 GUILayout.EndVertical();

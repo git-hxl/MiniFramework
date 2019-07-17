@@ -6,70 +6,18 @@ namespace MiniFramework
 {
     public static class AssetBundleLoader
     {
+        public static AssetBundle CurAssetBundle;
         public static IEnumerator LoadAssetBundle(string path)
         {
             AssetBundleCreateRequest request = UnityEngine.AssetBundle.LoadFromFileAsync(path);
-            yield return request;
-            AssetBundle AssetBundle = request.assetBundle;
-            if (AssetBundle == null)
+            yield return request.isDone;
+            CurAssetBundle = request.assetBundle;
+            if (CurAssetBundle == null)
             {
                 Debug.Log("Failed to load AssetBundle!");
                 yield break;
             }
         }
-        // public void LoadAsyncFromAssetBundle(string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
-        // {
-        //     StartCoroutine(requestIEnumerator(assetBundlePath, assetName, loadCallback));
-        // }
-        // public void LoadAllAsyncFromAssetBundle(string assetBundlePath, Action<UnityEngine.Object[]> loadCallback)
-        // {
-        //     StartCoroutine(requestIEnumerator(assetBundlePath, loadCallback));
-        // }
-        // public void LoadAsyncFromResource(string assetPath, Action<UnityEngine.Object> loadCallback)
-        // {
-        //     StartCoroutine(requestIEnumerator(assetPath, loadCallback));
-        // }
-        // IEnumerator requestIEnumerator(string assetPath, Action<UnityEngine.Object> loadCallback)
-        // {
-        //     ResourceRequest request = Resources.LoadAsync(assetPath);
-        //     yield return request;
-        //     if (request.asset == null)
-        //     {
-        //         Debug.Log("Failed to load Asset!");
-        //         yield break;
-        //     }
-        //     loadCallback(request.asset);
-        // }
-        // IEnumerator requestIEnumerator(string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
-        // {
-        //     AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetBundlePath);
-        //     yield return request;
-        //     AssetBundle myLoadedAssetBundle = request.assetBundle;
-        //     if (myLoadedAssetBundle == null)
-        //     {
-        //         Debug.Log("Failed to load AssetBundle!");
-        //         yield break;
-        //     }
-        //     AssetBundleRequest assetLoadRequest = myLoadedAssetBundle.LoadAssetAsync(assetName);
-        //     yield return assetLoadRequest;
-        //     loadCallback(assetLoadRequest.asset);
-        //     myLoadedAssetBundle.Unload(false);
-        // }
-        // IEnumerator requestIEnumerator(string assetBundlePath, Action<UnityEngine.Object[]> loadCallback)
-        // {
-        //     AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetBundlePath);
-        //     yield return request;
-        //     AssetBundle myLoadedAssetBundle = request.assetBundle;
-        //     if (myLoadedAssetBundle == null)
-        //     {
-        //         Debug.Log("Failed to load AssetBundle!");
-        //         yield break;
-        //     }
-        //     AssetBundleRequest assetLoadRequest = myLoadedAssetBundle.LoadAllAssetsAsync();
-        //     yield return assetLoadRequest;
-        //     loadCallback(assetLoadRequest.allAssets);
-        //     myLoadedAssetBundle.Unload(false);
-        // }
         public static Dictionary<string, Hash128> LoadABManifest(string path)
         {
             Dictionary<string, Hash128> bundlesHash = new Dictionary<string, Hash128>();

@@ -31,42 +31,31 @@ namespace MiniFramework
             Debug.LogError(panelName + "不存在");
             return null;
         }
-        /// <summary>
-        /// 打开UI
-        /// </summary>
-        /// <param name="panelName"></param>
         public GameObject OpenUI(string panelName)
         {
+            GameObject panel = null;
             if (UIPanelDict.ContainsKey(panelName))
             {
-                GameObject ui = UIPanelDict[panelName];
-                ui.SetActive(true);
-                return ui;
+                panel = UIPanelDict[panelName];
+                panel.SetActive(true);
             }
-            Debug.LogError(panelName + "不存在");
-            return null;
-        }
-        /// <summary>
-        /// 从Resource中打开UI
-        /// </summary>
-        /// <param name ="path"></param>
-        public GameObject LoadUI(string path)
-        {
-            Object ui = Resources.Load(path);
-            if (ui != null)
+            else
             {
-                GameObject obj = Instantiate(ui, transform) as GameObject;
-                obj.name = ui.name;
-                UIPanelDict.Add(obj.name, obj);
-                return obj;
+                Object asset = ResManager.Instance.Load(panelName);
+                if (asset != null)
+                {
+                    panel = Instantiate(asset, transform) as GameObject;
+                    panel.SetActive(true);
+                    panel.name = asset.name;
+                    UIPanelDict.Add(panel.name, panel);
+                }
             }
-            Debug.LogError(path + "不存在");
-            return null;
+            if (panel == null)
+            {
+                Debug.LogError(panelName + "不存在");
+            }
+            return panel;
         }
-        /// <summary>
-        /// 关闭UI
-        /// </summary>
-        /// <param name="panelName"></param>
         public void CloseUI(string panelName)
         {
             if (UIPanelDict.ContainsKey(panelName))
@@ -75,10 +64,6 @@ namespace MiniFramework
                 up.SetActive(false);
             }
         }
-        /// <summary>
-        /// 销毁UI
-        /// </summary>
-        /// <param name="panelName"></param>
         public void DestroyUI(string panelName)
         {
             if (UIPanelDict.ContainsKey(panelName))
