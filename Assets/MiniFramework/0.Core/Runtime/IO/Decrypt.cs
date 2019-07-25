@@ -50,8 +50,7 @@ namespace MiniFramework
         {
             try
             {
-                CspParameters cp = new CspParameters();
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(cp);
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
                 rsa.FromXmlString(xmlPrivateKey);
                 var decryptBytes = rsa.Decrypt(encryptData, false);
                 return Encoding.UTF8.GetString(decryptBytes);

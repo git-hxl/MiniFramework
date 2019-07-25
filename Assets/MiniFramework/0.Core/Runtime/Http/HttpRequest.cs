@@ -28,11 +28,11 @@ namespace MiniFramework
                 }
             }
         }
-        public static void Put(this MonoBehaviour mono, string url, byte[] data, Action<bool> callback)
+        public static void Put(this MonoBehaviour mono, string url, byte[] data, Action<string> callback)
         {
             mono.StartCoroutine(PutEnumerator(url, data, callback));
         }
-        static IEnumerator PutEnumerator(string url, byte[] data, Action<bool> callback)
+        static IEnumerator PutEnumerator(string url, byte[] data, Action<string> callback)
         {
             using (UnityWebRequest www = UnityWebRequest.Put(url, data))
             {
@@ -41,20 +41,19 @@ namespace MiniFramework
                 if (www.isNetworkError || www.isHttpError)
                 {
                     Debug.Log(www.error);
-                    callback(false);
                 }
                 else
                 {
                     Debug.Log("Upload complete!");
-                    callback(true);
+                    callback(www.downloadHandler.text);
                 }
             }
         }
-        public static void Post(this MonoBehaviour mono, string url, WWWForm form, Action<bool> callback)
+        public static void Post(this MonoBehaviour mono, string url, WWWForm form, Action<string> callback)
         {
             mono.StartCoroutine(PostEnumerator(url, form, callback));
         }
-        static IEnumerator PostEnumerator(string url, WWWForm form, Action<bool> callback)
+        static IEnumerator PostEnumerator(string url, WWWForm form, Action<string> callback)
         {
             using (UnityWebRequest www = UnityWebRequest.Post(url, form))
             {
@@ -63,15 +62,14 @@ namespace MiniFramework
                 if (www.isNetworkError || www.isHttpError)
                 {
                     Debug.Log(www.error);
-                    callback(false);
                 }
                 else
                 {
                     Debug.Log("Form upload complete!");
-                    callback(true);
+                    callback(www.downloadHandler.text);
                 }
             }
         }
-        
+
     }
 }

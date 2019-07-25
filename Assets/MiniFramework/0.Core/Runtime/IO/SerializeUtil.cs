@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
+using UnityEngine;
 namespace MiniFramework
 {
     public static class SerializeUtil
@@ -60,7 +60,7 @@ namespace MiniFramework
 
         public static string ToJson(object obj)
         {
-            return JsonConvert.SerializeObject(obj, Formatting.Indented);
+            return JsonUtility.ToJson(obj);
         }
         public static void ToJson( string path,object obj)
         {
@@ -69,13 +69,13 @@ namespace MiniFramework
 
         public static T FromJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonUtility.FromJson<T>(json);
         }
 
         public static T FromJsonFile<T>(string path)
         {   
             string json = FileUtil.ReadFile(path);
-            return JsonConvert.DeserializeObject<T>(json);
+            return JsonUtility.FromJson<T>(json);
         }
 
         public static byte[] ToProtoBuff(object obj)

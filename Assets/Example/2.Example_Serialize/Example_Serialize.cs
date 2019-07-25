@@ -14,7 +14,9 @@ public class Example_Serialize : MonoBehaviour
         json.name = "xxoo";
         json.random.Add(1.0f);
         json.random.Add(2.0f);
-        Debug.Log(SerializeUtil.ToJson(json));
+        
+        string jsonData = SerializeUtil.ToJson(json);
+        Debug.Log(jsonData);
 
         TestProto proto = new TestProto();
         proto.ID = 110;

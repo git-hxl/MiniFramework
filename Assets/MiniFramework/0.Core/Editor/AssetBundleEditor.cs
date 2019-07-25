@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 namespace MiniFramework
 {
+    struct Config
+    {
+        public string version;
+        public string platform;
+    }
     public class AssetBundleEditor : EditorWindow
     {
         private BuildTarget platform;
         private BuildAssetBundleOptions option;
         private string version;
+
+
         [MenuItem("MiniFramework/AssetBundle")]
         public static void OpenWindow()
         {
@@ -77,10 +82,13 @@ namespace MiniFramework
         }
         private void CreateConfig()
         {
-            Dictionary<string, string> config = new Dictionary<string, string>();
-            config.Add("version", version);
-            config.Add("platform", platform.ToString());
+            Config config = new Config();
+            config.version = version;
+            config.platform = platform.ToString();
             SerializeUtil.ToJson(Application.streamingAssetsPath + "/config.txt", config);
+            AssetDatabase.Refresh();
+            Debug.Log("写入成功");
+
         }
     }
 }
