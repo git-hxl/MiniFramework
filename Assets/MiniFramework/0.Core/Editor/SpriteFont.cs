@@ -39,7 +39,7 @@ namespace MiniFramework
                 //设置字符顶点的偏移位置和宽高
                 info.minX = 0;
                 info.maxX = (int)rect.width;
-                info.minY = -(int)rect.height / 2;
+                info.minY = -(int)rect.height + (int)rect.height / 2;
                 info.maxY = (int)rect.height / 2;
                 //设置字符的宽度
                 info.advance = (int)rect.width;
