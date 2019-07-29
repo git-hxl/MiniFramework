@@ -3,28 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
 using ProtoBuf;
-public class Example_Serialize : MonoBehaviour
+public class SerializeClass : MonoBehaviour
 {
 
     // Use this for initialization
     void Start()
     {
-        TestJson json = new TestJson();
-        json.ID = 110;
-        json.name = "xxoo";
-        json.random.Add(1.0f);
-        json.random.Add(2.0f);
-        
-        string jsonData = SerializeUtil.ToJson(json);
-        Debug.Log(jsonData);
+        Test test = new Test();
+        test.ID = 110;
+        test.name = "xxoo";
+        test.random.Add(1.0f);
 
+        string jsonData = SerializeUtil.ToJson(test);
+        Debug.Log(jsonData);
+        string xmlData = SerializeUtil.ToXml(test);
+         Debug.Log(xmlData);
+        SerializeUtil.ToXml(Application.streamingAssetsPath + "/test.xml", test);
+       
         TestProto proto = new TestProto();
         proto.ID = 110;
         proto.name = "xxoo";
         proto.random.Add(1.0f);
         proto.random.Add(2.0f);
         TestProto2 proto2 = SerializeUtil.FromProtoBuff<TestProto2>(SerializeUtil.ToProtoBuff(proto));
-        Debug.Log(proto2.ID + ".." + proto2.name+".."+proto2.testEnum);
+        Debug.Log(proto2.ID + ".." + proto2.name + ".." + proto2.testEnum);
     }
 
 }
@@ -33,7 +35,7 @@ public enum TestEnum
     A,
     B
 }
-public class TestJson
+public class Test
 {
     public int ID;
     public string name;

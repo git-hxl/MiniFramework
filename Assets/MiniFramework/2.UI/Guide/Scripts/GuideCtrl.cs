@@ -8,7 +8,7 @@ namespace MiniFramework
 	{
 		[Header("高亮目标")] public Image Target;
 		[Header("是否播放动画")] public bool ShowAnim;
-		[Header("收缩时间")] public float ShrinkTime = 0.25f;
+		[Header("收缩时间")] public float ShrinkTime = 0.2f;
 
 		protected Canvas mCanvas;
 		protected Material mMaterial;

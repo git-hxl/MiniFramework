@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
-public class Example_Security : MonoBehaviour {
+public class TxtEncrypt : MonoBehaviour {
 	public string Txt;
 	public string Key;
 	public string IV;

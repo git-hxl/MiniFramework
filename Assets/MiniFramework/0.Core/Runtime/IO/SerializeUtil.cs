@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
 namespace MiniFramework
@@ -17,7 +18,6 @@ namespace MiniFramework
                 return true;
             }
         }
-
         public static object FromBinary(string path)
         {
             using (FileStream fs = new FileStream(path, FileMode.Open))
@@ -32,24 +32,43 @@ namespace MiniFramework
             }
             return null;
         }
-
-        public static bool ToXML(string path, object obj)
+        public static string ToXml(object obj)
         {
-            using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
+            using (MemoryStream stream = new MemoryStream())
+            {
+                XmlSerializer xmlserializer = new XmlSerializer(obj.GetType());
+                xmlserializer.Serialize(stream, obj);
+                return Encoding.UTF8.GetString(stream.GetBuffer());
+            }
+        }
+        public static bool ToXml(string path, object obj)
+        {
+            using (StreamWriter fs = new StreamWriter(path))
             {
                 XmlSerializer xmlserializer = new XmlSerializer(obj.GetType());
                 xmlserializer.Serialize(fs, obj);
                 return true;
             }
         }
-
-        public static object FromXML<T>(string path)
+        public static object FromXml<T>(string xml)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open))
+            using (StringReader reader = new StringReader(xml))
+            {
+                XmlSerializer xmlserializer = new XmlSerializer(typeof(T));
+                object data = xmlserializer.Deserialize(reader);
+                if (data != null)
+                {
+                    return data;
+                }
+            }
+            return null;
+        }
+        public static object FromXmlFile<T>(string path)
+        {
+            using (StreamReader fs = new StreamReader(path))
             {
                 XmlSerializer xmlserializer = new XmlSerializer(typeof(T));
                 object data = xmlserializer.Deserialize(fs);
-
                 if (data != null)
                 {
                     return data;
@@ -62,7 +81,7 @@ namespace MiniFramework
         {
             return JsonUtility.ToJson(obj);
         }
-        public static void ToJson( string path,object obj)
+        public static void ToJson(string path, object obj)
         {
             FileUtil.WriteFile(path, ToJson(obj));
         }
@@ -73,7 +92,7 @@ namespace MiniFramework
         }
 
         public static T FromJsonFile<T>(string path)
-        {   
+        {
             string json = FileUtil.ReadFile(path);
             return JsonUtility.FromJson<T>(json);
         }
@@ -89,8 +108,11 @@ namespace MiniFramework
 
         public static T FromProtoBuff<T>(byte[] bytes)
         {
-            T t = ProtoBuf.Serializer.Deserialize<T>(new MemoryStream(bytes));
-            return t;
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                T t = ProtoBuf.Serializer.Deserialize<T>(ms);
+                return t;
+            }
         }
 
         public static byte[] ToPtr(object obj)

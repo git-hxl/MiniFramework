@@ -15,9 +15,9 @@ namespace MiniFramework
         private long totalLength;
         private float progress;
         private Action<bool> callback;
-        public float GetProgress { get { return progress; } }
-        public float GetCurLength { get { return curLength; } }
-        public float GetTotalLength { get { return totalLength; } }
+        public float Progress { get { return progress; } }
+        public float CurLength { get { return curLength; } }
+        public float TotalLength { get { return totalLength; } }
         public string FilePath { get { return filePath; } }
         public HttpDownload(string saveDir, Action<bool> callback = null)
         {
@@ -35,9 +35,9 @@ namespace MiniFramework
                 yield return headRequest.SendWebRequest();
                 if (headRequest.isHttpError || headRequest.isNetworkError)
                 {
+                    Debug.LogError(headRequest.error);
                     if (callback != null)
                         callback(false);
-                    Debug.LogError(headRequest.error);
                     yield break;
                 }
                 totalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
@@ -64,11 +64,11 @@ namespace MiniFramework
                         fileStream.Write(data, index, writeLength);
                         index = data.Length;
                         curLength += writeLength;
-                        progress = (curLength / (float)totalLength);
+                        progress = request.downloadProgress;
                     }
+                    Debug.Log("下载成功:" + fileName);
                     if (callback != null)
                         callback(true);
-                    Debug.Log("下载成功:" + fileName);
                 }
             }
             yield return null;

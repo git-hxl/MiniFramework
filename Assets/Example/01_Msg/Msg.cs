@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
-public class Example_Msg : MonoBehaviour
+public class Msg : MonoBehaviour
 {
     void Awake()
     {
