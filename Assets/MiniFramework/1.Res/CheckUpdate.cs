@@ -40,7 +40,7 @@ namespace MiniFramework
         {
             string assetsConfigPath = Application.streamingAssetsPath + "/config.txt";
             string dataConfigPath = Application.persistentDataPath + "/config.txt";
-            if (!FileUtil.IsExitFile(assetsConfigPath))
+            if (!File.Exists(assetsConfigPath))
             {
                 Debug.LogError("配置文件不存在");
                 yield break;
@@ -57,7 +57,7 @@ namespace MiniFramework
             Debug.Log("检查更新文件");
             string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
             string dataABPath = Application.persistentDataPath + "/" + curPlatform;
-            if (!FileUtil.IsExitFile(assetsABPath + "/" + curPlatform))
+            if (!File.Exists(assetsABPath + "/" + curPlatform))
             {
                 yield break;
             }

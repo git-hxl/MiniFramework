@@ -81,17 +81,6 @@ namespace MiniFramework
             }
             return file.Length;
         }
-
-        public static bool IsExitFile(string path)
-        {
-            FileInfo file = new FileInfo(path);
-            return file.Exists;
-        }
-        public static bool IsExitDir(string path)
-        {
-            DirectoryInfo info = new DirectoryInfo(path);
-            return info.Exists;
-        }
         public static void CreateDir(string path)
         {
             DirectoryInfo info = new DirectoryInfo(path);
@@ -102,7 +91,7 @@ namespace MiniFramework
         }
         public static void Open(string path)
         {
-            if (!IsExitDir(path) && !IsExitFile(path))
+            if (!Directory.Exists(path) && !File.Exists(path))
             {
                 return;
             }

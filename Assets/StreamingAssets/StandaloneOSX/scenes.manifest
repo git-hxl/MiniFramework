@@ -1,0 +1,14 @@
+ManifestFileVersion: 0
+CRC: 4102346025
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 78d03b20510cde2418a7ef7aaed54b4f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 31d6cfe0d16ae931b73c59d7e0c089c0
+HashAppended: 0
+ClassTypes: []
+Assets:
+- Assets/Example/06_Hotfix/Test.unity
+Dependencies: []

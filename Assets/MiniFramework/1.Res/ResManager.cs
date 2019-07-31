@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 namespace MiniFramework
 {
     public class ResManager : MonoSingleton<ResManager>
@@ -36,10 +38,14 @@ namespace MiniFramework
             }
             if (asset == null)
             {
-                Debug.LogError("加载失败:" + name);
+                Debug.LogError("加载资源对象失败:" + name);
             }
             return asset;
         }
+
+        public void LoadScene(string name)
+        {
+            SceneManager.LoadScene(name);
+        }
     }
 }
-

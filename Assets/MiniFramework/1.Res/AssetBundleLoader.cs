@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 namespace MiniFramework
 {
@@ -21,7 +21,7 @@ namespace MiniFramework
         public static Dictionary<string, Hash128> LoadABManifest(string path)
         {
             Dictionary<string, Hash128> bundlesHash = new Dictionary<string, Hash128>();
-            if (FileUtil.IsExitFile(path))
+            if (File.Exists(path))
             {
                 AssetBundle assetBundle = AssetBundle.LoadFromFile(path);
                 AssetBundleManifest manifest = assetBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");

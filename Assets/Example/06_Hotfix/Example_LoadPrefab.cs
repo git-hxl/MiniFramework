@@ -11,9 +11,9 @@ public class Example_LoadPrefab : MonoBehaviour
         {
             Instantiate(ResManager.Instance.Load("Prefab/Cube"));
         }
-        if (GUI.Button(new Rect(0, 600, 200, 200), TargetScene))
+        if (GUI.Button(new Rect(0, 600, 200, 200), "加载场景"))
         {
-            SceneManager.LoadScene(TargetScene);
+            SceneManager.LoadScene("Test");
         }
     }
 }
