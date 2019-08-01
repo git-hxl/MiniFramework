@@ -21,7 +21,6 @@ namespace MiniFramework
         private string curVersion;
         private List<string> updateFiles = new List<string>();
 
-
         // Use this for initialization
         IEnumerator Start()
         {

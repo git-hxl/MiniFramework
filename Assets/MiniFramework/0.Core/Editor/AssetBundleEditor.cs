@@ -50,7 +50,10 @@ namespace MiniFramework
             {
                 BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
                 CreateConfig();
-                FileUtil.Open(Application.streamingAssetsPath);
+            }
+            if (GUILayout.Button("生成config文件"))
+            {
+                CreateConfig();
             }
             if (GUILayout.Button("打开StreamingAssets目录"))
             {
@@ -59,10 +62,6 @@ namespace MiniFramework
             if (GUILayout.Button("打开PersistentData目录"))
             {
                 FileUtil.Open(Application.persistentDataPath);
-            }
-            if (GUILayout.Button("生成config文件"))
-            {
-                CreateConfig();
             }
         }
         private void OnDestroy()
@@ -88,7 +87,6 @@ namespace MiniFramework
             SerializeUtil.ToJson(Application.streamingAssetsPath + "/config.txt", config);
             AssetDatabase.Refresh();
             Debug.Log("写入成功");
-
         }
     }
 }

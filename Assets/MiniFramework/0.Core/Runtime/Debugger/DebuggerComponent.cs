@@ -10,7 +10,7 @@ namespace MiniFramework
         //调试器默认大小
         static readonly Rect DefaultWindowRect = new Rect(0, 0, Screen.width / 2, Screen.height / 2);
         static readonly float DefaultWindowScale = 1f;
-        static readonly Rect DefaultSmallWindowRect = new Rect(0, 0, 60f, 60f);
+        static readonly Rect DefaultSmallWindowRect = new Rect(10f, 10f, 60f, 60f);
 
         private Rect windowRect = DefaultWindowRect;
         private float windowScale = DefaultWindowScale;
