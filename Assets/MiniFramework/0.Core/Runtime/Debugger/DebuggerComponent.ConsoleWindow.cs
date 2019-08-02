@@ -18,8 +18,7 @@ namespace MiniFramework
             private Queue<LogNode> logNodes = new Queue<LogNode>();
             private LogNode selectedNode = null;
 
-            private bool lockScroll = true;
-
+            private bool lockScroll = false;
             private bool logFilter = true;
             private bool warningFilter = true;
             private bool errorFilter = true;
@@ -31,7 +30,6 @@ namespace MiniFramework
             private Color32 exceptionColor = Color.magenta;
 
             private Vector2 logScrollPosition = Vector2.zero;
-            private Vector2 stackTraceScrollPosition = Vector2.zero;
             private readonly static object locker = new object();
             public void Initialize(params object[] args)
             {
@@ -95,12 +93,12 @@ namespace MiniFramework
                                         }
                                         break;
                                 }
-                                if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode)))
+                                if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode), GUILayout.Height(30f)))
                                 {
                                     if (selectedNode != logNode)
                                     {
                                         selectedNode = logNode;
-                                        stackTraceScrollPosition = Vector2.zero;
+                                        lockScroll = false;
                                     }
                                 }
                             }
@@ -110,26 +108,21 @@ namespace MiniFramework
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical("box");
                     {
-                        stackTraceScrollPosition = GUILayout.BeginScrollView(stackTraceScrollPosition, GUILayout.Height(DebuggerComponent.Instance.windowRect.height / 6));
+                        if (selectedNode != null)
                         {
-                            if (selectedNode != null)
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label(selectedNode.LogMsg);
+                            if (GUILayout.Button("Copy", GUILayout.Width(60f), GUILayout.Height(30f)))
                             {
-                                GUILayout.BeginHorizontal();
-
-                                GUILayout.Label(selectedNode.LogMsg);
-                                if (GUILayout.Button("Copy", GUILayout.Width(60f), GUILayout.Height(30f)))
+                                TextEditor textEditor = new TextEditor
                                 {
-                                    TextEditor textEditor = new TextEditor
-                                    {
-                                        text = selectedNode.LogMsg + "\n" + selectedNode.StackTrace
-                                    };
-                                    textEditor.OnFocus();
-                                    textEditor.Copy();
-                                }
-                                GUILayout.EndHorizontal();
-                                GUILayout.Label(selectedNode.StackTrace);
+                                    text = selectedNode.LogMsg + "\n" + selectedNode.StackTrace
+                                };
+                                textEditor.OnFocus();
+                                textEditor.Copy();
                             }
-                            GUILayout.EndScrollView();
+                            GUILayout.EndHorizontal();
+                            GUILayout.Label(selectedNode.StackTrace);
                         }
                     }
                     GUILayout.EndVertical();
@@ -152,14 +145,14 @@ namespace MiniFramework
                     }
                     LogNode log = Pool<LogNode>.Instance.Allocate().Fill(logtype, logMsg, stackTrace);
                     logNodes.Enqueue(log);
-                    while (logNodes.Count > maxLine)
-                    {
-                        if (selectedNode == logNodes.Peek())
-                        {
-                            selectedNode = null;
-                        }
-                        Pool<LogNode>.Instance.Recycle(logNodes.Dequeue());
-                    }
+                    // while (logNodes.Count > maxLine)
+                    // {
+                    //     if (selectedNode == logNodes.Peek())
+                    //     {
+                    //         selectedNode = null;
+                    //     }
+                    //     Pool<LogNode>.Instance.Recycle(logNodes.Dequeue());
+                    // }
                 }
             }
             private string GetLogString(LogNode logNode)
