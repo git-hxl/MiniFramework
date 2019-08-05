@@ -18,7 +18,7 @@ namespace MiniFramework
             private Queue<LogNode> logNodes = new Queue<LogNode>();
             private LogNode selectedNode = null;
 
-            private bool lockScroll = false;
+            private bool lockScroll = true;
             private bool logFilter = true;
             private bool warningFilter = true;
             private bool errorFilter = true;
@@ -62,6 +62,7 @@ namespace MiniFramework
                         {
                             logScrollPosition.y = float.MaxValue;
                         }
+
                         logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
                         {
                             foreach (LogNode logNode in logNodes)
@@ -93,7 +94,7 @@ namespace MiniFramework
                                         }
                                         break;
                                 }
-                                if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode), GUILayout.Height(30f)))
+                                if (GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode)))
                                 {
                                     if (selectedNode != logNode)
                                     {
@@ -127,7 +128,25 @@ namespace MiniFramework
                     }
                     GUILayout.EndVertical();
                 }
+            }
+            void GetDrawLogs(Vector2 scorllPos, int logNum, int logHeight, float viewHeight)
+            {
+                float totalHeight = logNum * logHeight;
+                int canDrawNum = (int)viewHeight / logHeight;
+                float rate = viewHeight / totalHeight;
+                if (rate > 1)
+                {
+                    rate = 1f;
+                }
+                int drawLogIndex = (int)(rate * logNum);
 
+                List<LogNode> drawLogs = new List<LogNode>();
+                LogNode[] logs = logNodes.ToArray();
+
+                for (int i = drawLogIndex; i < drawLogIndex + canDrawNum; i++)
+                {
+                    drawLogs.Add(logs[i]);
+                }
             }
             public void Close()
             {
