@@ -8,15 +8,15 @@ namespace MiniFramework
         static readonly string DefaultWindowTitle = "<b>MiniFramework Debugger</b>";
         static readonly string DefaultMiniWindowTitle = "<b>Debugger</b>";
         //调试器默认大小
-        static readonly Rect DefaultWindowRect = new Rect(0, 0, Screen.width / 2, Screen.height / 2);
+        static readonly Rect DefaultWindowRect = new Rect(10, 10, Screen.width * 0.5f - 10, Screen.height * 0.5f - 10);
         static readonly float DefaultWindowScale = 1f;
-        static readonly Rect DefaultSmallWindowRect = new Rect(10f, 10f, 60f, 60f);
+        static readonly Rect DefaultSmallWindowRect = new Rect(10f, 10f, 100f, 60f);
 
         private Rect windowRect = DefaultWindowRect;
         private float windowScale = DefaultWindowScale;
         private Rect smallWindowRect = DefaultSmallWindowRect;
 
-        private Rect dragRect = new Rect(0, 0, float.MaxValue, float.MaxValue);
+        private Rect dragRect = new Rect(0, 0, DefaultWindowRect.width, DefaultWindowRect.height);
         public bool DefaultSmallWindow = true;
 
         private List<IDebuggerWindow> windowList = new List<IDebuggerWindow>();
@@ -41,13 +41,6 @@ namespace MiniFramework
         }
         private void OnGUI()
         {
-            // GUIStyle verticalScrollbar = GUI.skin.verticalScrollbar;
-            // verticalScrollbar.fixedWidth = 30f;
-            // GUIStyle verticalScrollbarThumb = GUI.skin.verticalScrollbarThumb;
-            // verticalScrollbarThumb.fixedWidth = 30f;
-            // GUIStyle label = GUI.skin.label;
-            // label.fontSize = 24;
-
             GUI.matrix = Matrix4x4.Scale(new Vector3(windowScale, windowScale, 1f));
             if (DefaultSmallWindow)
             {
@@ -61,7 +54,7 @@ namespace MiniFramework
         //绘制小窗口
         private void DrawSmallWindow(int windowId)
         {
-            if (GUILayout.Button("FPS:" + fpsCounter.CurFps.ToString("F2"), GUILayout.Width(100f), GUILayout.Height(40f)))
+            if (GUILayout.Button("FPS:" + fpsCounter.CurFps.ToString("F2"), GUILayout.Width(100f), GUILayout.Height(60f)))
             {
                 DefaultSmallWindow = false;
             }

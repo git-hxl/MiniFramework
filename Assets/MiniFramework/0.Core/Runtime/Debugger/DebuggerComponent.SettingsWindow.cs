@@ -7,17 +7,16 @@ namespace MiniFramework
         {
             public void Close()
             {
-                
+
             }
 
             public void Initialize(params object[] args)
             {
-                
+
             }
 
             public void OnDraw()
             {
-                //throw new System.NotImplementedException();
                 GUILayout.BeginVertical();
                 {
                     GUILayout.BeginHorizontal();
