@@ -8,34 +8,6 @@ namespace MiniFramework
 {
     public static class SecurityUtil
     {
-        // public static string AesEncrypt(string txt, string key)
-        // {
-        //     AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
-        //     byte[] data = Encoding.UTF8.GetBytes(txt);
-        //     aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32, '0').Substring(0, 32));
-        //     using (MemoryStream ms = new MemoryStream())
-        //     {
-        //         CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write);
-        //         cs.Write(data, 0, data.Length);
-        //         cs.FlushFinalBlock();
-        //         return Encoding.UTF8.GetString(ms.ToArray());
-        //     }
-        // }
-
-        // public static string AesDecrypt(string txt, string key)
-        // {
-        //     AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
-        //     byte[] data = Encoding.UTF8.GetBytes(txt);
-        //     aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32, '0').Substring(0, 32));
-        //     using (MemoryStream ms = new MemoryStream())
-        //     {
-        //         CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Write);
-        //         cs.Write(data, 0, data.Length);
-        //         cs.FlushFinalBlock();
-        //         return Encoding.UTF8.GetString(ms.ToArray());
-        //     }
-        // }
-
         public static string DesEncrypt(string txt, string key, string iv)
         {
             try
@@ -99,16 +71,9 @@ namespace MiniFramework
         /// <param name="xmlPublicKey">公钥</param>
         public static void GenerateRsaKey(out string xmlPrivateKey, out string xmlPublicKey)
         {
-            try
-            {
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                xmlPrivateKey = rsa.ToXmlString(true);
-                xmlPublicKey = rsa.ToXmlString(false);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            xmlPrivateKey = rsa.ToXmlString(true);
+            xmlPublicKey = rsa.ToXmlString(false);
         }
         public static string RsaEncrypt(string txt, string xmlPublicKey)
         {

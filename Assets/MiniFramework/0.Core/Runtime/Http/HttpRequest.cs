@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 namespace MiniFramework
@@ -19,12 +18,33 @@ namespace MiniFramework
 
                 if (www.isNetworkError || www.isHttpError)
                 {
-                    Debug.Log(www.error);
+                    Debug.LogError(www.error);
                 }
                 else
                 {
                     Debug.Log("Get complete!");
                     callback(www.downloadHandler.text);
+                }
+            }
+        }
+        public static void Get(this MonoBehaviour mono, string url, Action<Texture2D> callback)
+        {
+            mono.StartCoroutine(GetEnumerator(url, callback));
+        }
+        static IEnumerator GetEnumerator(string url, Action<Texture2D> callback)
+        {
+            using (UnityWebRequest www =  UnityWebRequestTexture.GetTexture(url))
+            {
+                yield return www.SendWebRequest();
+                if (www.isNetworkError || www.isHttpError)
+                {
+                    Debug.LogError(www.error);
+                }
+                else
+                {
+                    Debug.Log("Get complete!");
+                    Texture2D texture = DownloadHandlerTexture.GetContent(www);
+                    callback(texture);
                 }
             }
         }
@@ -40,7 +60,7 @@ namespace MiniFramework
 
                 if (www.isNetworkError || www.isHttpError)
                 {
-                    Debug.Log(www.error);
+                    Debug.LogError(www.error);
                 }
                 else
                 {
@@ -61,7 +81,7 @@ namespace MiniFramework
 
                 if (www.isNetworkError || www.isHttpError)
                 {
-                    Debug.Log(www.error);
+                    Debug.LogError(www.error);
                 }
                 else
                 {

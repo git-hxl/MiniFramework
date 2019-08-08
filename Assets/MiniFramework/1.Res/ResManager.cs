@@ -20,7 +20,7 @@ namespace MiniFramework
             Dictionary<string, Hash128> files = AssetBundleLoader.LoadABManifest(assetPath + "/" + platform);
             foreach (var item in files)
             {
-                Debug.Log("加载资源:" + item.Key);
+                Debug.Log("正在加载资源:" + item.Key);
                 yield return AssetBundleLoader.LoadAssetBundle(assetPath + "/" + item.Key);
                 bundles.Add(AssetBundleLoader.CurAssetBundle);
             }

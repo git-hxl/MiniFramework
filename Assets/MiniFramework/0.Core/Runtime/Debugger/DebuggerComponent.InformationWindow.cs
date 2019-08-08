@@ -8,7 +8,6 @@ namespace MiniFramework
         private class InformationWindow : IDebuggerWindow
         {
             private const float MBSize = 1024 * 1024;
-            private Vector2 logScrollPosition = Vector2.zero;
             public void Initialize(params object[] args)
             {
                 //throw new System.NotImplementedException();
@@ -29,18 +28,15 @@ namespace MiniFramework
 
                 GUILayout.Label("<b>Device Information</b>");
                 GUILayout.BeginVertical("box");
-                logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
-                {
-                    DrawItem("Device Name:", SystemInfo.deviceName);
-                    DrawItem("Device Model:", SystemInfo.deviceModel);  
-                    DrawItem("Processor Type:", SystemInfo.processorType);
-                    DrawItem("Graphics Device:", SystemInfo.graphicsDeviceName);
-                    DrawItem("Memory Size:", SystemInfo.systemMemorySize.ToString() + " MB");
-                    DrawItem("Operating System:", SystemInfo.operatingSystem);
-                    DrawItem("Device Unique ID:", SystemInfo.deviceUniqueIdentifier);
 
-                }
-                GUILayout.EndScrollView();
+                DrawItem("Device Name:", SystemInfo.deviceName);
+                DrawItem("Device Model:", SystemInfo.deviceModel);
+                DrawItem("Processor Type:", SystemInfo.processorType);
+                DrawItem("Graphics Device:", SystemInfo.graphicsDeviceName);
+                DrawItem("Memory Size:", SystemInfo.systemMemorySize.ToString() + " MB");
+                DrawItem("Operating System:", SystemInfo.operatingSystem);
+                DrawItem("Device Unique ID:", SystemInfo.deviceUniqueIdentifier);
+
                 GUILayout.EndVertical();
             }
 
@@ -48,9 +44,11 @@ namespace MiniFramework
             {
                 GUILayout.BeginHorizontal();
                 {
-                    GUILayout.Label(title);
-                    GUILayout.FlexibleSpace();
-                    GUILayout.Label(content);
+                    GUIStyle style = new GUIStyle("label");
+                    style.wordWrap = false;
+                    GUILayout.Label(title, style);
+                    style.alignment = TextAnchor.MiddleRight;
+                    GUILayout.Label(content, style);
                 }
                 GUILayout.EndHorizontal();
             }

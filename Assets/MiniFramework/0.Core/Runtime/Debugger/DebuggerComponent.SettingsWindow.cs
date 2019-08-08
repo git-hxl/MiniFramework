@@ -42,7 +42,6 @@ namespace MiniFramework
 
                     if (GUILayout.Button("Reset Window Setting", GUILayout.Height(30f)))
                     {
-                        DebuggerComponent.Instance.windowScale = DefaultWindowScale;
                         DebuggerComponent.Instance.windowRect = DefaultWindowRect;
                         DebuggerComponent.Instance.smallWindowRect = DefaultSmallWindowRect;
                     }

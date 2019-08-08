@@ -41,6 +41,10 @@ namespace MiniFramework
         }
         private void OnGUI()
         {
+            GUIStyle scrollBar = GUI.skin.verticalScrollbar;
+            scrollBar.fixedWidth = 30f;
+            GUIStyle Thumb = GUI.skin.verticalScrollbarThumb;
+            Thumb.fixedWidth = 30f;
             GUI.matrix = Matrix4x4.Scale(new Vector3(windowScale, windowScale, 1f));
             if (DefaultSmallWindow)
             {

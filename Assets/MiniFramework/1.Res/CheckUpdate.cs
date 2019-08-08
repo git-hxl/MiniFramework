@@ -14,7 +14,7 @@ namespace MiniFramework
     {
         //AssetBundle下载地址
         public string AssetBundleUrl;
-        public bool IsTest;
+        public bool IsLocal;
 
         private HttpDownload httpDownload;
         private string curPlatform;
@@ -25,7 +25,7 @@ namespace MiniFramework
         IEnumerator Start()
         {
             yield return CheckConfig();
-            if (IsTest)
+            if (IsLocal)
             {
                 yield return CheckLocalMainfest();
             }
@@ -75,7 +75,7 @@ namespace MiniFramework
             {
                 foreach (var item in updateFiles)
                 {
-                    Debug.Log("释放本地资源：" + item);
+                    Debug.Log("更新本地资源：" + item);
                     File.Copy(assetsABPath + "/" + item, dataABPath + "/" + item, true);
                     yield return null;
                 }
@@ -108,6 +108,7 @@ namespace MiniFramework
                 httpDownload = new HttpDownload(savePath, null);
                 foreach (var item in updateFiles)
                 {
+                    Debug.Log("更新本地资源：" + item);
                     string url = AssetBundleUrl + "/" + curPlatform + "/" + item;
                     yield return httpDownload.Download(url);
                 }

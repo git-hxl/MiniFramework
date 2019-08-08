@@ -1,14 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4062881280
+CRC: 3479244120
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 41762e936b0ec4fe2c599e6b2e199471
+    Hash: 804808be55e11c43406a5c77f742d7b6
   TypeTreeHash:
     serializedVersion: 2
     Hash: 31d6cfe0d16ae931b73c59d7e0c089c0
 HashAppended: 0
 ClassTypes: []
 Assets:
-- Assets/Example/06_Hotfix/Test.unity
-Dependencies: []
+- Assets/Example/Test/Test.unity
+Dependencies:
+- /Users/apple/Desktop/UnityProjects/MiniFramework/Assets/StreamingAssets/iOS/res

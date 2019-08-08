@@ -3,7 +3,6 @@ namespace MiniFramework
 {
     public static class PlatformUtil
     {
-
         public static bool IsEditor()
         {
 #if UNITY_EDITOR

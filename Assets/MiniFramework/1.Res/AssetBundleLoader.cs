@@ -7,10 +7,15 @@ namespace MiniFramework
     public static class AssetBundleLoader
     {
         public static AssetBundle CurAssetBundle;
+        public static float Progress;
         public static IEnumerator LoadAssetBundle(string path)
         {
-            AssetBundleCreateRequest request = UnityEngine.AssetBundle.LoadFromFileAsync(path);
-            yield return request.isDone;
+            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
+            while(!request.isDone){
+                yield return null;
+                Progress = request.progress;
+                Debug.Log(Progress);
+            }
             CurAssetBundle = request.assetBundle;
             if (CurAssetBundle == null)
             {
