@@ -16,7 +16,7 @@ namespace MiniFramework
         private float windowScale = DefaultWindowScale;
         private Rect smallWindowRect = DefaultSmallWindowRect;
 
-        private Rect dragRect = new Rect(0, 0, DefaultWindowRect.width, DefaultWindowRect.height);
+        private Rect dragRect = new Rect(0, 0, DefaultWindowRect.width, 100);
         public bool DefaultSmallWindow = true;
 
         private List<IDebuggerWindow> windowList = new List<IDebuggerWindow>();
@@ -52,7 +52,9 @@ namespace MiniFramework
             }
             else
             {
-                windowRect = GUILayout.Window(0, windowRect, DrawWindow, DefaultWindowTitle);
+                GUIStyle windowStyle = new GUIStyle("window");
+                windowStyle.padding.top = 40;
+                windowRect = GUILayout.Window(0, windowRect, DrawWindow, DefaultWindowTitle, windowStyle);
             }
         }
         //绘制小窗口

@@ -97,7 +97,7 @@ namespace MiniFramework
                     {
                         GUILayout.BeginVertical("box",GUILayout.Height(100));
                         stackTraceScrollPosition = GUILayout.BeginScrollView(stackTraceScrollPosition);
-                        GUILayout.TextField(selectedNode.LogMsg + "\n" + selectedNode.StackTrace,"label");
+                        GUILayout.Label(selectedNode.LogMsg + "\n" + selectedNode.StackTrace);
                         GUILayout.EndScrollView();
                         GUILayout.EndVertical();
                     }

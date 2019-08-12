@@ -11,7 +11,8 @@ namespace MiniFramework
         public static IEnumerator LoadAssetBundle(string path)
         {
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
-            while(!request.isDone){
+            while (!request.isDone)
+            {
                 yield return null;
                 Progress = request.progress;
                 Debug.Log(Progress);
