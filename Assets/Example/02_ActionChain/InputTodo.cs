@@ -17,7 +17,7 @@ public class InputTodo : MonoBehaviour
 
         //暂停队列
         Sequence sequence1 = this.Repeat(1, -1, () => { Debug.Log(Time.time); });
-        Sequence sequence2 = this.Sequence()
+        this.Sequence()
         .Event(() => Debug.Log("按下空格关闭队列"))
         .Until(() => Input.GetKeyDown(KeyCode.Space))
         .Event(() => { sequence1.Close(); Debug.Log("已关闭队列"); })

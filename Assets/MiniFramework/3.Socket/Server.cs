@@ -8,7 +8,6 @@ namespace MiniFramework
 {
     public class Server : MonoSingleton<Server>
     {
-        public int Port;
         public bool IsActive { get; set; }
         public Action<string> ClientConnected;
         public Action<string> ClientAborted;
@@ -18,11 +17,6 @@ namespace MiniFramework
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
-
-        private void Start()
-        {
-            Launch(Port);
-        }
         public void Launch(int port)
         {
             if (IsActive)
@@ -54,7 +48,7 @@ namespace MiniFramework
             NetworkStream networkStream = remoteClient.GetStream();
             networkStream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, remoteClient);
             tcpListener.BeginAcceptTcpClient(AcceptResult, tcpListener);
-            Debug.Log("远程客户端：" + remoteClient.Client.RemoteEndPoint + "接入成功");
+            Debug.Log("远程客户端:" + remoteClient.Client.RemoteEndPoint + "接入成功");
             if (ClientConnected != null)
             {
                 ClientConnected(remoteClient.Client.RemoteEndPoint.ToString());
@@ -70,7 +64,7 @@ namespace MiniFramework
                 int recvLength = stream.EndRead(ar);
                 if (recvLength <= 0)
                 {
-                    Debug.Log("远程客户端：" + tcpClient.Client.RemoteEndPoint + "已经断开");
+                    Debug.Log("远程客户端:" + tcpClient.Client.RemoteEndPoint + "已经断开");
                     if (ClientAborted != null)
                     {
                         ClientAborted(tcpClient.Client.RemoteEndPoint.ToString());
@@ -85,25 +79,26 @@ namespace MiniFramework
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
             }
         }
-        public void Send(PackHead head, byte[] bodyData)
+        public void Send(int msgID, byte[] bodyData)
         {
-            byte[] sendData = dataPacker.Packer(head, bodyData);
-            Send(sendData);
-        }
-        private void Send(byte[] data)
-        {
-            if (!IsActive)
+            if (IsActive)
             {
-                return;
-            }
-            for (int i = 0; i < remoteClients.Count; i++)
-            {
-                TcpClient client = remoteClients[i];
-                if (client.Connected)
+                PackHead head = new PackHead();
+                head.MsgID = (short)msgID;
+                byte[] sendData = dataPacker.Packer(head, bodyData);
+                for (int i = 0; i < remoteClients.Count; i++)
                 {
-                    client.GetStream().BeginWrite(data, 0, data.Length, SendResult, client);
-                    Debug.Log("发送数据：" + data.Length + "字节");
+                    TcpClient client = remoteClients[i];
+                    if (client.Connected)
+                    {
+                        client.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, client);
+                    }
                 }
+                Debug.Log("发送消息ID:" + head.MsgID + " 大小:" + sendData.Length + "字节");
+            }
+            else
+            {
+                Debug.LogError("服务器未启动，发送失败!");
             }
         }
         private void SendResult(IAsyncResult ar)
@@ -113,7 +108,7 @@ namespace MiniFramework
             stream.EndWrite(ar);
             Debug.Log("数据发送成功");
         }
-        public void Close()
+        public void Clear()
         {
             if (remoteClients != null)
             {
@@ -126,6 +121,10 @@ namespace MiniFramework
                 }
                 remoteClients.Clear();
             }
+        }
+        public void Close()
+        {
+            Clear();
             if (tcpListener != null)
             {
                 tcpListener.Stop();

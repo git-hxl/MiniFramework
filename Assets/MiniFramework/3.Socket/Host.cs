@@ -7,14 +7,10 @@ namespace MiniFramework
 {
     public class Host : MonoSingleton<Host>
     {
-        public int Port;
         public bool IsActive { get; set; }
         private byte[] recvBuffer;
         private UdpClient udpClient;
         private DataPacker dataPacker;
-        private void Start() {
-            Launch(Port);
-        }
         public void Launch(int port)
         {
             if (IsActive)
@@ -45,18 +41,16 @@ namespace MiniFramework
             dataPacker.UnPack(recvBuffer);
             udpClient.BeginReceive(ReceiveResult, udpClient);
         }
-        public void Send(PackHead head, byte[] bodyData, string remoteIP, int remotePort)
-        {
-            byte[] sendData = dataPacker.Packer(head, bodyData);
-            Send(sendData, remoteIP, remotePort);
-        }
-        private void Send(byte[] data, string remoteIP, int remotePort)
+        public void Send(int msgID, byte[] bodyData, string remoteIP, int remotePort)
         {
             if (IsActive)
             {
+                PackHead head = new PackHead();
+                head.MsgID = (short)msgID;
+                byte[] sendData = dataPacker.Packer(head, bodyData);
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(remoteIP), remotePort);
-                udpClient.BeginSend(data, data.Length, remoteEP, SendResult, udpClient);
-                Debug.Log("发送数据：" + data.Length + "字节");
+                udpClient.BeginSend(sendData, sendData.Length, remoteEP, SendResult, udpClient);
+                Debug.Log("发送消息ID:" + head.MsgID + " 大小:" + sendData.Length + "字节");
             }
             else
             {

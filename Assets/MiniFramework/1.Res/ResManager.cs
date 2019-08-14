@@ -22,7 +22,10 @@ namespace MiniFramework
             {
                 Debug.Log("正在加载资源:" + item.Key);
                 yield return AssetBundleLoader.LoadAssetBundle(assetPath + "/" + item.Key);
-                bundles.Add(AssetBundleLoader.CurAssetBundle);
+                if (AssetBundleLoader.CurAssetBundle != null)
+                {
+                    bundles.Add(AssetBundleLoader.CurAssetBundle);
+                }
             }
             AssetBundleLoader.CurAssetBundle = null;
             isInit = true;
@@ -49,9 +52,9 @@ namespace MiniFramework
             return asset;
         }
 
-        public void LoadScene(string name)
+        public void LoadScene(string name, LoadSceneMode mode)
         {
-            SceneManager.LoadScene(name);
+            SceneManager.LoadScene(name, mode);
         }
     }
 }
