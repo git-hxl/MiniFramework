@@ -6,11 +6,9 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class Server : MonoSingleton<Server>
+    public class MiniTcpServer : MonoSingleton<MiniTcpServer>
     {
         public bool IsActive { get; set; }
-        public Action<string> ClientConnected;
-        public Action<string> ClientAborted;
         private int maxConnections = 12;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
@@ -49,35 +47,24 @@ namespace MiniFramework
             networkStream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, remoteClient);
             tcpListener.BeginAcceptTcpClient(AcceptResult, tcpListener);
             Debug.Log("远程客户端:" + remoteClient.Client.RemoteEndPoint + "接入成功");
-            if (ClientConnected != null)
-            {
-                ClientConnected(remoteClient.Client.RemoteEndPoint.ToString());
-            }
         }
 
         private void ReadResult(IAsyncResult ar)
         {
             TcpClient tcpClient = (TcpClient)ar.AsyncState;
-            if (tcpClient.Connected)
+            NetworkStream stream = tcpClient.GetStream();
+            int recvLength = stream.EndRead(ar);
+            if (recvLength <= 0)
             {
-                NetworkStream stream = tcpClient.GetStream();
-                int recvLength = stream.EndRead(ar);
-                if (recvLength <= 0)
-                {
-                    Debug.Log("远程客户端:" + tcpClient.Client.RemoteEndPoint + "已经断开");
-                    if (ClientAborted != null)
-                    {
-                        ClientAborted(tcpClient.Client.RemoteEndPoint.ToString());
-                    }
-                    remoteClients.Remove(tcpClient);
-                    tcpClient.Close();
-                    return;
-                }
-                byte[] recvBytes = new byte[recvLength];
-                Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
-                dataPacker.UnPack(recvBytes);
-                stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
+                Debug.Log("远程客户端:" + tcpClient.Client.RemoteEndPoint + "已经断开");
+                remoteClients.Remove(tcpClient);
+                tcpClient.Close();
+                return;
             }
+            byte[] recvBytes = new byte[recvLength];
+            Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
+            dataPacker.UnPack(recvBytes);
+            stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
         }
         public void Send(int msgID, byte[] bodyData)
         {
@@ -106,7 +93,6 @@ namespace MiniFramework
             TcpClient tcpClient = (TcpClient)ar.AsyncState;
             NetworkStream stream = tcpClient.GetStream();
             stream.EndWrite(ar);
-            Debug.Log("数据发送成功");
         }
         public void Clear()
         {
@@ -120,17 +106,22 @@ namespace MiniFramework
                     }
                 }
                 remoteClients.Clear();
+                Debug.Log("已断开远程客户端");
             }
         }
         public void Close()
         {
             Clear();
-            if (tcpListener != null)
+            if (tcpListener != null && IsActive)
             {
                 tcpListener.Stop();
                 IsActive = false;
+                Debug.Log("服务器已关闭");
             }
-            Debug.Log("服务器已关闭");
+        }
+        private void OnDestroy()
+        {
+            Close();
         }
     }
 }

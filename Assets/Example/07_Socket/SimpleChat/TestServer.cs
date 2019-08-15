@@ -14,25 +14,25 @@ public class TestServer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Server.Instance.Launch(8888);
-
+        MiniTcpServer.Instance.Launch(8888);
+        //MiniUdpClient.Instance.Launch(8888);
         Send.onClick.AddListener(() =>
         {
-            Server.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+            MiniTcpServer.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
             Text.text = DateTime.Now + ":" + Content.text;
             Text.color = Color.black;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
         });
-
+        Close.onClick.AddListener(() =>
+        {
+            MiniTcpServer.Instance.Clear();
+        });
         MsgManager.Instance.RegisterMsg(this, MsgID.Test, (s) =>
         {
             string txt = SerializeUtil.FromProtoBuff<string>((byte[])s);
             Text.text = DateTime.Now + ":" + txt;
             Text.color = Color.blue;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
-        });
-		Close.onClick.AddListener(()=>{
-            Server.Instance.Clear();
         });
     }
 }

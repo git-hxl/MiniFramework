@@ -40,7 +40,7 @@ namespace MiniFramework
             head = SerializeUtil.FromPtr<PackHead>(headData);
             if (totalData.Length < head.PackLength)
             {
-                //消息体不足
+                //接受消息大小不足
                 OtherBytes = totalData;
                 return;
             }

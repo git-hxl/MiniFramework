@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class Host : MonoSingleton<Host>
+    public class MiniUdpClient : MonoSingleton<MiniUdpClient>
     {
         public bool IsActive { get; set; }
         private byte[] recvBuffer;
@@ -18,9 +18,9 @@ namespace MiniFramework
                 Debug.Log("主机已启动!");
                 return;
             }
-            dataPacker = new DataPacker();
             try
             {
+                dataPacker = new DataPacker();
                 IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
                 udpClient = new UdpClient(endPoint);
                 udpClient.EnableBroadcast = true;
@@ -61,16 +61,19 @@ namespace MiniFramework
         {
             udpClient = (UdpClient)ar.AsyncState;
             udpClient.EndSend(ar);
-            Debug.Log("数据发送成功");
         }
         public void Close()
         {
-            if (udpClient != null)
+            if (udpClient != null && IsActive)
             {
                 udpClient.Close();
                 IsActive = false;
+                Debug.Log("主动断开连接");
             }
-            Debug.Log("连接已断开");
+        }
+        private void OnDestroy()
+        {
+            Close();
         }
     }
 }

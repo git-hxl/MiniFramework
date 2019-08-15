@@ -5,15 +5,32 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class Client : MonoSingleton<Client>
+    public class MiniTcpClient : MonoSingleton<MiniTcpClient>
     {
+        public bool IsConnected;
+        private int connectTimeout = 5;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
+        private void Start()
+        {
+            MsgManager.Instance.RegisterMsg(this, MsgID.ConnectSuccess, (obj) =>
+            {
+
+            });
+            MsgManager.Instance.RegisterMsg(this, MsgID.ConnectFailed, (obj) =>
+            {
+
+            });
+            MsgManager.Instance.RegisterMsg(this, MsgID.ConnectAbort, (obj) =>
+            {
+
+            });
+        }
         public void Connect(string ip, int port)
         {
-            if (tcpClient != null && tcpClient.Connected)
+            if (IsConnected)
             {
                 Debug.Log("客户端已连接");
                 return;
@@ -22,17 +39,15 @@ namespace MiniFramework
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
             tcpClient.BeginConnect(IPAddress.Parse(ip), port, ConnectResult, tcpClient);
-
-            MsgManager.Instance.RegisterMsg(this,MsgID.ConnectSuccess,(obj)=>{
-                this.Repeat(5f,-1,()=>{
-                    Send(MsgID.HeartPack,new byte[0]);
-                });
-            });
-            MsgManager.Instance.RegisterMsg(this,MsgID.ConnectFailed,(obj)=>{
-
-            });
-            MsgManager.Instance.RegisterMsg(this,MsgID.ConnectAbort,(obj)=>{
-
+            this.Delay(connectTimeout, () =>
+            {
+                if (tcpClient.Client != null && !IsConnected)
+                {
+                    tcpClient.Close();
+                    IsConnected = false;
+                    Debug.Log("连接超时！");
+                    MsgManager.Instance.SendMsg(MsgID.ConnectFailed, null);
+                }
             });
         }
         private void ConnectResult(IAsyncResult ar)
@@ -40,46 +55,46 @@ namespace MiniFramework
             tcpClient = (TcpClient)ar.AsyncState;
             if (!tcpClient.Connected)
             {
+                tcpClient.Close();
+                IsConnected = false;
                 Debug.Log("连接服务器失败，请尝试重新连接!");
-                MsgManager.Instance.SendMsg(MsgID.ConnectFailed,null);
+                MsgManager.Instance.SendMsg(MsgID.ConnectFailed, null);
             }
             else
             {
                 tcpClient.EndConnect(ar);
                 NetworkStream stream = tcpClient.GetStream();
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
+                IsConnected = true;
                 Debug.Log("客户端连接成功");
-                MsgManager.Instance.SendMsg(MsgID.ConnectSuccess,null);
+                MsgManager.Instance.SendMsg(MsgID.ConnectSuccess, null);
             }
         }
         private void ReadResult(IAsyncResult ar)
         {
             tcpClient = (TcpClient)ar.AsyncState;
-            if (tcpClient.Connected)
+            NetworkStream stream = tcpClient.GetStream();
+            int recvLength = stream.EndRead(ar);
+            if (recvLength <= 0)
             {
-                NetworkStream stream = tcpClient.GetStream();
-                int recvLength = stream.EndRead(ar);
-                if (recvLength <= 0)
-                {
-                    Debug.LogError("网络中断");
-                     MsgManager.Instance.SendMsg(MsgID.ConnectAbort,null);
-                    Close();
-                    return;
-                }
-                byte[] recvBytes = new byte[recvLength];
-                Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
-                dataPacker.UnPack(recvBytes);
-                stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
+                tcpClient.Close();
+                IsConnected = false;
+                Debug.LogError("网络中断");
+                MsgManager.Instance.SendMsg(MsgID.ConnectAbort, null);
+                return;
             }
+            byte[] recvBytes = new byte[recvLength];
+            Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
+            dataPacker.UnPack(recvBytes);
+            stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
         }
         public void Send(int msgID, byte[] bodyData)
         {
-            if (tcpClient.Connected)
+            if (IsConnected)
             {
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
                 byte[] sendData = dataPacker.Packer(head, bodyData);
-
                 tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
                 Debug.Log("发送消息ID:" + head.MsgID + " 大小:" + sendData.Length + "字节");
             }
@@ -93,15 +108,19 @@ namespace MiniFramework
             tcpClient = (TcpClient)ar.AsyncState;
             NetworkStream stream = tcpClient.GetStream();
             stream.EndWrite(ar);
-            Debug.Log("数据发送成功");
         }
         public void Close()
         {
-            if (tcpClient != null && tcpClient.Connected)
+            if (tcpClient != null && IsConnected)
             {
                 tcpClient.Close();
+                IsConnected = false;
                 Debug.Log("主动断开连接");
             }
+        }
+        private void OnDestroy()
+        {
+            Close();
         }
     }
 }
