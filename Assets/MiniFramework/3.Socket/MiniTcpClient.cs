@@ -13,8 +13,9 @@ namespace MiniFramework
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
-        private void Start()
+        protected override void Awake()
         {
+            base.Awake();
             MsgManager.Instance.RegisterMsg(this, MsgID.ConnectSuccess, (obj) =>
             {
 

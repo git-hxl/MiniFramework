@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 namespace MiniFramework
 {
@@ -69,17 +70,24 @@ namespace MiniFramework
         //绘制默认窗口
         private void DrawWindow(int windowId)
         {
-            int toolbarIndex = GUILayout.Toolbar(curSelectedWindowIndex, toolList.ToArray(), GUILayout.Height(30f));
-            if (toolbarIndex >= windowList.Count)
+            try
             {
-                DefaultSmallWindow = true;
+                int toolbarIndex = GUILayout.Toolbar(curSelectedWindowIndex, toolList.ToArray(), GUILayout.Height(30f));
+                if (toolbarIndex >= windowList.Count)
+                {
+                    DefaultSmallWindow = true;
+                }
+                else
+                {
+                    windowList[toolbarIndex].OnDraw();
+                    curSelectedWindowIndex = toolbarIndex;
+                }
+                GUI.DragWindow(dragRect);
             }
-            else
+            catch (Exception e)
             {
-                windowList[toolbarIndex].OnDraw();
-                curSelectedWindowIndex = toolbarIndex;
+                throw e;
             }
-            GUI.DragWindow(dragRect);
         }
 
         private void RegisterDebuggerWindow(string title, IDebuggerWindow window)

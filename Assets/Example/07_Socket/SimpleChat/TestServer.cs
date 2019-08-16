@@ -18,7 +18,14 @@ public class TestServer : MonoBehaviour
         //MiniUdpClient.Instance.Launch(8888);
         Send.onClick.AddListener(() =>
         {
-            MiniTcpServer.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+            if (string.IsNullOrEmpty(Content.text))
+            {
+                MiniTcpServer.Instance.Send(MsgID.Test, null);
+            }
+            else
+            {
+                MiniTcpServer.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+            }
             Text.text = DateTime.Now + ":" + Content.text;
             Text.color = Color.black;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
@@ -33,6 +40,7 @@ public class TestServer : MonoBehaviour
             Text.text = DateTime.Now + ":" + txt;
             Text.color = Color.blue;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
+            Debug.Log(txt);
         });
     }
 }

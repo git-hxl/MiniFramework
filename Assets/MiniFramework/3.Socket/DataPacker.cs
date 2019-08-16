@@ -9,7 +9,11 @@ namespace MiniFramework
         //创建数据包
         public byte[] Packer(PackHead head, byte[] bodyData)
         {
-            head.PackLength  = (short)(Marshal.SizeOf(head)+bodyData.Length);
+            if (bodyData == null)
+            {
+                bodyData = new byte[0];
+            }
+            head.PackLength = (short)(Marshal.SizeOf(head) + bodyData.Length);
             byte[] headData = SerializeUtil.ToPtr(head);
             byte[] packData = new byte[headData.Length + bodyData.Length];
             Array.Copy(headData, packData, headData.Length);
@@ -23,9 +27,10 @@ namespace MiniFramework
             int headLength = SerializeUtil.ToPtr(head).Length;
 
             byte[] totalData = new byte[OtherBytes.Length + data.Length];
-            if(OtherBytes.Length>0){
+            if (OtherBytes.Length > 0)
+            {
                 Array.Copy(OtherBytes, totalData, OtherBytes.Length);
-            }           
+            }
             Array.Copy(data, 0, totalData, OtherBytes.Length, data.Length);
 
             if (totalData.Length < headLength)
@@ -44,17 +49,16 @@ namespace MiniFramework
                 OtherBytes = totalData;
                 return;
             }
-            byte[] bodyData = new byte[head.PackLength-headLength];
+            byte[] bodyData = new byte[head.PackLength - headLength];
             Array.Copy(totalData, headLength, bodyData, 0, bodyData.Length);
             //整包发送
             SendPack(head, bodyData);
 
             int leftLength = totalData.Length - head.PackLength;
-            
+            OtherBytes = new byte[leftLength];
             if (leftLength > 0)
             {
                 //发生粘包
-                OtherBytes = new byte[leftLength];
                 Array.Copy(totalData, head.PackLength, OtherBytes, 0, leftLength);
                 if (leftLength >= headLength)
                 {
@@ -66,8 +70,8 @@ namespace MiniFramework
         //发送消息体
         public void SendPack(PackHead head, byte[] bodyData)
         {
-            Debug.Log("接收到消息ID："+head.MsgID);
-            MsgManager.Instance.SendMsg(head.MsgID,bodyData);
+            Debug.Log("接收到消息ID：" + head.MsgID);
+            MsgManager.Instance.SendMsg(head.MsgID, bodyData);
         }
     }
 }

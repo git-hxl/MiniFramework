@@ -14,10 +14,17 @@ public class TestClient : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpClient.Instance.Connect("192.168.88.84", 8888);
+        MiniTcpClient.Instance.Connect("127.0.0.1", 8888);
         Send.onClick.AddListener(() =>
         {
-            MiniTcpClient.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+            if (string.IsNullOrEmpty(Content.text))
+            {
+                MiniTcpClient.Instance.Send(MsgID.Test, null);
+            }
+            else
+            {
+                MiniTcpClient.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+            }
             Text.text = DateTime.Now + ":" + Content.text;
             Text.color = Color.black;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
@@ -28,10 +35,16 @@ public class TestClient : MonoBehaviour
         });
         MsgManager.Instance.RegisterMsg(this, MsgID.Test, (s) =>
         {
-           string txt = SerializeUtil.FromProtoBuff<string>((byte[])s);
-           Text.text = DateTime.Now + ":" + txt;
-           Text.color = Color.blue;
-           Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
+            string txt = SerializeUtil.FromProtoBuff<string>((byte[])s);
+            Text.text = DateTime.Now + ":" + txt;
+            Text.color = Color.blue;
+            Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
         });
+    }
+    private void Update() {
+        if(MiniTcpClient.Instance.IsConnected)
+        {
+            MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123"));
+        }
     }
 }
