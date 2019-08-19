@@ -15,6 +15,16 @@ namespace MiniFramework
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
+        protected override void Awake()
+        {
+            base.Awake();
+            MsgManager.Instance.RegisterMsg(this, MsgID.HeartPack, (obj) =>
+            {
+                //接收到心跳包
+                Send(MsgID.HeartPack, null);
+                Debug.Log("接收到心跳包");
+            });
+        }
         public void Launch(int port)
         {
             if (IsActive)

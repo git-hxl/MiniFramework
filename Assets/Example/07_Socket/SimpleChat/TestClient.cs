@@ -44,7 +44,7 @@ public class TestClient : MonoBehaviour
     private void Update() {
         if(MiniTcpClient.Instance.IsConnected)
         {
-           // MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123"));
+            MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻寻寻寻寻寻寻寻寻"));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MiniFramework
     {
         public bool IsConnected;
         private int connectTimeout = 5;
-        private int heartTimeout = 5;
+        private int heartIntervalTime = 10;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
@@ -23,17 +23,18 @@ namespace MiniFramework
             {
                 //接收到心跳包
                 lastRecvHeartTime = DateTime.Now;
+                Debug.Log("接收到心跳包");
             });
             MsgManager.Instance.RegisterMsg(this, MsgID.ConnectSuccess, (obj) =>
             {
                 //心跳包发送
-                heartSequence = this.Repeat(5, -1, () =>
+                heartSequence = this.Repeat(heartIntervalTime/2, -1, () =>
                 {
                     if (lastRecvHeartTime == DateTime.MinValue)
                     {
                         lastRecvHeartTime = DateTime.Now;
                     }
-                    else if ((DateTime.Now - lastRecvHeartTime).TotalSeconds > heartTimeout)
+                    else if ((DateTime.Now - lastRecvHeartTime).TotalSeconds > heartIntervalTime)
                     {
                         tcpClient.Close();
                         IsConnected = false;
