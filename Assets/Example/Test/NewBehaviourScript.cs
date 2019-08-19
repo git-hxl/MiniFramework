@@ -19,15 +19,18 @@ public class NewBehaviourScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if(Time.captureFramerate%20 ==0){
-        // 	Debug.Log(Time.time);
-        // }
-        // if(Time.captureFramerate%40 ==0){
-        // 	Debug.LogWarning(Time.time);
-        // }
-        // if(Time.captureFramerate%60 ==0){
-        // 	Debug.LogError(Time.time);
-        // }
+        if (Time.frameCount % 20 == 0)
+        {
+            Debug.Log(Time.time);
+        }
+        if (Time.frameCount % 40 == 0)
+        {
+            Debug.LogWarning(Time.time);
+        }
+        if (Time.frameCount % 60 == 0)
+        {
+            Debug.LogError(Time.time);
+        }
     }
 
     private void OnGUI()

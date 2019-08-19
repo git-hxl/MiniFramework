@@ -9,16 +9,40 @@ namespace MiniFramework
     {
         public bool IsConnected;
         private int connectTimeout = 5;
+        private int heartTimeout = 5;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
+        private DateTime lastRecvHeartTime = DateTime.MinValue;
+        private Sequence heartSequence;
         protected override void Awake()
         {
             base.Awake();
+            MsgManager.Instance.RegisterMsg(this, MsgID.HeartPack, (obj) =>
+            {
+                //接收到心跳包
+                lastRecvHeartTime = DateTime.Now;
+            });
             MsgManager.Instance.RegisterMsg(this, MsgID.ConnectSuccess, (obj) =>
             {
-
+                //心跳包发送
+                heartSequence = this.Repeat(5, -1, () =>
+                {
+                    if (lastRecvHeartTime == DateTime.MinValue)
+                    {
+                        lastRecvHeartTime = DateTime.Now;
+                    }
+                    else if ((DateTime.Now - lastRecvHeartTime).TotalSeconds > heartTimeout)
+                    {
+                        tcpClient.Close();
+                        IsConnected = false;
+                        Debug.LogError("网络超时!");
+                        MsgManager.Instance.SendMsg(MsgID.NetTimeout, null);
+                        return;
+                    }
+                    Send(MsgID.HeartPack, null);
+                });
             });
             MsgManager.Instance.RegisterMsg(this, MsgID.ConnectFailed, (obj) =>
             {
@@ -27,6 +51,10 @@ namespace MiniFramework
             MsgManager.Instance.RegisterMsg(this, MsgID.ConnectAbort, (obj) =>
             {
 
+            });
+            MsgManager.Instance.RegisterMsg(this, MsgID.NetTimeout, (obj) =>
+            {
+                heartSequence.Close();
             });
         }
         public void Connect(string ip, int port)
@@ -46,7 +74,7 @@ namespace MiniFramework
                 {
                     tcpClient.Close();
                     IsConnected = false;
-                    Debug.Log("连接超时！");
+                    Debug.Log("连接超时!");
                     MsgManager.Instance.SendMsg(MsgID.ConnectFailed, null);
                 }
             });

@@ -28,13 +28,18 @@ namespace MiniFramework
         private MemoryWindow memoryWindow = new MemoryWindow();
         private SettingsWindow settingWindow = new SettingsWindow();
         private FPSCounter fpsCounter = new FPSCounter();
-        private void Start()
+        protected override void Awake()
         {
+            base.Awake();
             RegisterDebuggerWindow("<b>Console</b>", consoleWindow);
             RegisterDebuggerWindow("<b>Information</b>", informationWindow);
             RegisterDebuggerWindow("<b>Memory</b>", memoryWindow);
             RegisterDebuggerWindow("<b>Setting</b>", settingWindow);
             RegisterDebuggerWindow("<b>Close</b>", null);
+        }
+        private void Start()
+        {
+
         }
         private void Update()
         {
@@ -70,24 +75,17 @@ namespace MiniFramework
         //绘制默认窗口
         private void DrawWindow(int windowId)
         {
-            try
+            int toolbarIndex = GUILayout.Toolbar(curSelectedWindowIndex, toolList.ToArray(), GUILayout.Height(30f));
+            if (toolbarIndex >= windowList.Count)
             {
-                int toolbarIndex = GUILayout.Toolbar(curSelectedWindowIndex, toolList.ToArray(), GUILayout.Height(30f));
-                if (toolbarIndex >= windowList.Count)
-                {
-                    DefaultSmallWindow = true;
-                }
-                else
-                {
-                    windowList[toolbarIndex].OnDraw();
-                    curSelectedWindowIndex = toolbarIndex;
-                }
-                GUI.DragWindow(dragRect);
+                DefaultSmallWindow = true;
             }
-            catch (Exception e)
+            else
             {
-                throw e;
+                windowList[toolbarIndex].OnDraw();
+                curSelectedWindowIndex = toolbarIndex;
             }
+            GUI.DragWindow(dragRect);
         }
 
         private void RegisterDebuggerWindow(string title, IDebuggerWindow window)

@@ -7,5 +7,6 @@
         public const string ConnectSuccess = "ConnectSuccess";
         public const string ConnectFailed = "ConnectFailed";
         public const string ConnectAbort = "ConnectAbort";
+        public const string NetTimeout = "NetTimeout";
     }
 }

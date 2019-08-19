@@ -11,6 +11,10 @@ public class TestServer : MonoBehaviour
     public Button Send;
     public Text Text;
     public Button Close;
+    private void Awake()
+    {
+        Screen.SetResolution(750, 1334,false);
+    }
     // Use this for initialization
     void Start()
     {

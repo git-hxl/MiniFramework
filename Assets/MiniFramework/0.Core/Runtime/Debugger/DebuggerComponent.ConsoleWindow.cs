@@ -25,20 +25,19 @@ namespace MiniFramework
             private Color32 errorColor = Color.red;
             private Vector2 logScrollPosition = Vector2.zero;
             private Vector2 stackTraceScrollPosition = Vector2.zero;
-            LogNode[] tempLogNodes = null;
+            List<LogNode> tempLogNodes = new List<LogNode>();
             public void Initialize(params object[] args)
             {
                 Application.logMessageReceivedThreaded += OnLogMessageReceived;
-                tempLogNodes = logNodes.ToArray();
             }
             public void OnUpdate(float time, float realTime) { }
             public void OnDraw()
             {
                 if (Event.current.type == EventType.Layout)
                 {
-                    tempLogNodes = logNodes.ToArray();
+                    tempLogNodes = new List<LogNode>(logNodes.ToArray());
+                    RefreshCount();
                 }
-                RefreshCount();
                 GUILayout.BeginHorizontal();
                 {
                     if (GUILayout.Button("Clear All", GUILayout.Height(30f), GUILayout.Width(100f)))
@@ -48,25 +47,58 @@ namespace MiniFramework
                     lockScroll = GUILayout.Toggle(lockScroll, "Lock Scroll", GUILayout.Height(30f));
                     GUILayout.FlexibleSpace();
                     logFilter = GUILayout.Toggle(logFilter, "Info (" + logCount + ")", GUILayout.Height(30f));
+                    if (!logFilter)
+                    {
+
+                    }
                     warningFilter = GUILayout.Toggle(warningFilter, "Warning (" + warningCount + ")", GUILayout.Height(30f));
                     errorFilter = GUILayout.Toggle(errorFilter, "Error (" + errorCount + ")", GUILayout.Height(30f));
                 }
                 GUILayout.EndHorizontal();
+                if (!logFilter || !warningFilter || !errorFilter)
+                {
+                    List<LogNode> tempFilterLogs = tempLogNodes;
+                    for (int i = tempFilterLogs.Count - 1; i >= 0; i--)
+                    {
+                        switch (tempFilterLogs[i].LogType)
+                        {
+                            case LogType.Log:
+                                if (!logFilter)
+                                {
+                                    tempFilterLogs.Remove(tempFilterLogs[i]);
+                                }
+                                break;
+                            case LogType.Warning:
+                                if (!warningFilter)
+                                {
+                                    tempFilterLogs.Remove(tempFilterLogs[i]);
+                                }
+                                break;
+                            case LogType.Error:
+                                if (!errorFilter)
+                                {
+                                    tempFilterLogs.Remove(tempFilterLogs[i]);
+                                }
+                                break;
+                        }
+                    }
+                    tempLogNodes = tempFilterLogs;
+                }
                 GUILayout.BeginVertical("box");
                 {
                     if (lockScroll)
                     {
-                        logScrollPosition.y = tempLogNodes.Length * logHeight;
+                        logScrollPosition.y = tempLogNodes.Count * logHeight;
                     }
                     logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
                     {
                         int maxLine = 20;
-                        if (maxLine > tempLogNodes.Length)
+                        if (maxLine > tempLogNodes.Count)
                         {
-                            maxLine = tempLogNodes.Length;
+                            maxLine = tempLogNodes.Count;
                         }
                         int logIndex = (int)logScrollPosition.y / logHeight;
-                        logIndex = Mathf.Clamp(logIndex, 0, tempLogNodes.Length - maxLine);
+                        logIndex = Mathf.Clamp(logIndex, 0, tempLogNodes.Count - maxLine);
 
                         for (int i = 0; i < logIndex; i++)
                         {
@@ -74,8 +106,7 @@ namespace MiniFramework
                         }
                         for (int i = logIndex; i < logIndex + maxLine; i++)
                         {
-                            LogNode[] logsArray = tempLogNodes;
-                            LogNode logNode = logsArray[i];
+                            LogNode logNode = tempLogNodes[i];
                             bool isSelected = GUILayout.Toggle(selectedNode == logNode, GetLogString(logNode), GUILayout.Height(logHeight));
                             if (isSelected && selectedNode != logNode)
                             {
@@ -84,7 +115,7 @@ namespace MiniFramework
                                 stackTraceScrollPosition = Vector2.zero;
                             }
                         }
-                        for (int i = logIndex + maxLine; i < tempLogNodes.Length; i++)
+                        for (int i = logIndex + maxLine; i < tempLogNodes.Count; i++)
                         {
                             GUILayout.Space(logHeight);
                         }
@@ -112,18 +143,6 @@ namespace MiniFramework
                 if (logtype == LogType.Assert || logtype == LogType.Exception)
                 {
                     logtype = LogType.Error;
-                }
-                if (!logFilter && logtype == LogType.Log)
-                {
-                    return;
-                }
-                if (!warningFilter && logtype == LogType.Warning)
-                {
-                    return;
-                }
-                if (!errorFilter && logtype == LogType.Error)
-                {
-                    return;
                 }
                 LogNode log = new LogNode().Fill(logtype, logMsg, stackTrace);
                 logNodes.Enqueue(log);
