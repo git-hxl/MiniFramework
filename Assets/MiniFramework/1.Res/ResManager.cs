@@ -9,13 +9,15 @@ namespace MiniFramework
     {
         private List<AssetBundle> bundles = new List<AssetBundle>();
         private string assetPath;
-        private bool isInit;
-        public IEnumerator Init(string platform)
+        [SerializeField]
+        public CheckUpdate CheckUpdate = new CheckUpdate();
+        private IEnumerator Start()
         {
-            if (isInit)
-            {
-                yield break;
-            }
+            yield return CheckUpdate.Check();
+            yield return Init(CheckUpdate.CurPlatform);
+        }
+        private IEnumerator Init(string platform)
+        {
             assetPath = Application.persistentDataPath + "/" + platform;
             Dictionary<string, Hash128> files = AssetBundleLoader.LoadABManifest(assetPath + "/" + platform);
             foreach (var item in files)
@@ -28,7 +30,6 @@ namespace MiniFramework
                 }
             }
             AssetBundleLoader.CurAssetBundle = null;
-            isInit = true;
         }
         public Object Load(string name)
         {

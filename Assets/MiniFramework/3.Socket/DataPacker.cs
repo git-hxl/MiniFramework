@@ -5,7 +5,7 @@ namespace MiniFramework
 {
     public class DataPacker
     {
-        public byte[] OtherBytes = new byte[0];
+        public byte[] LeftBytes = new byte[0];
         //创建数据包
         public byte[] Packer(PackHead head, byte[] bodyData)
         {
@@ -26,18 +26,17 @@ namespace MiniFramework
             PackHead head = new PackHead();
             int headLength = SerializeUtil.ToPtr(head).Length;
 
-            byte[] totalData = new byte[OtherBytes.Length + data.Length];
-            if (OtherBytes.Length > 0)
+            byte[] totalData = new byte[LeftBytes.Length + data.Length];
+            if (LeftBytes.Length > 0)
             {
-                Array.Copy(OtherBytes, totalData, OtherBytes.Length);
+                Array.Copy(LeftBytes, totalData, LeftBytes.Length);
             }
-            Array.Copy(data, 0, totalData, OtherBytes.Length, data.Length);
+            Array.Copy(data, 0, totalData, LeftBytes.Length, data.Length);
 
             if (totalData.Length < headLength)
             {
                 //消息头不足
-                OtherBytes = totalData;
-                Debug.LogError("消息头长度不足！");
+                LeftBytes = totalData;
                 return;
             }
             byte[] headData = new byte[headLength];
@@ -46,21 +45,19 @@ namespace MiniFramework
             if (totalData.Length < head.PackLength)
             {
                 //接受消息大小不足
-                OtherBytes = totalData;
+                LeftBytes = totalData;
                 return;
             }
             byte[] bodyData = new byte[head.PackLength - headLength];
             Array.Copy(totalData, headLength, bodyData, 0, bodyData.Length);
             //整包发送
             SendPack(head, bodyData);
-
-            int leftLength = totalData.Length - head.PackLength;
-            OtherBytes = new byte[leftLength];
-            if (leftLength > 0)
+            LeftBytes = new byte[totalData.Length - head.PackLength];
+            if (LeftBytes.Length > 0)
             {
                 //发生粘包
-                Array.Copy(totalData, head.PackLength, OtherBytes, 0, leftLength);
-                if (leftLength >= headLength)
+                Array.Copy(totalData, head.PackLength, LeftBytes, 0, LeftBytes.Length);
+                if (LeftBytes.Length >= headLength)
                 {
                     //采用递归进行再次拆包
                     UnPack(new byte[0]);
@@ -70,7 +67,7 @@ namespace MiniFramework
         //发送消息体
         public void SendPack(PackHead head, byte[] bodyData)
         {
-            Debug.Log("接收到消息ID：" + head.MsgID);
+            Debug.Log("接收消息ID：" + head.MsgID);
             MsgManager.Instance.SendMsg(head.MsgID, bodyData);
         }
     }

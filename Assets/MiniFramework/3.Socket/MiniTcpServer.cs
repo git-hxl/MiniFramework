@@ -22,7 +22,6 @@ namespace MiniFramework
             {
                 //接收到心跳包
                 Send(MsgID.HeartPack, null);
-                Debug.Log("接收到心跳包");
             });
         }
         public void Launch(int port)
@@ -91,7 +90,7 @@ namespace MiniFramework
                         client.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, client);
                     }
                 }
-                Debug.Log("发送消息ID:" + head.MsgID + " 大小:" + sendData.Length + "字节");
+                Debug.Log("发送消息ID：" + head.MsgID + " 大小：" + sendData.Length + "字节");
             }
             else
             {

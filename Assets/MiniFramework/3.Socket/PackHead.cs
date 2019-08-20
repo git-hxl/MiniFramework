@@ -2,11 +2,10 @@
 
 namespace MiniFramework
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi,Pack = 2)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 2)]
     public class PackHead
     {
-        public short MsgID;
         public short PackLength;
+        public short MsgID;
     }
 }
-

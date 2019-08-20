@@ -4,8 +4,8 @@ namespace MiniFramework
     public class AudioManager : MonoSingleton<AudioManager>
     {
 
-        public AudioSource MusicSource;
-        public AudioSource SoundSource;
+        private AudioSource MusicSource;
+        private AudioSource SoundSource;
         private float musicVolume;
         private float soundVolume;
         protected override void Awake()

@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
+using LitJson;
 namespace MiniFramework
 {
     public static class SerializeUtil
@@ -79,7 +80,7 @@ namespace MiniFramework
 
         public static string ToJson(object obj)
         {
-            return JsonUtility.ToJson(obj);
+            return JsonMapper.ToJson(obj);
         }
         public static void ToJson(string path, object obj)
         {
@@ -88,13 +89,21 @@ namespace MiniFramework
 
         public static T FromJson<T>(string json)
         {
-            return JsonUtility.FromJson<T>(json);
+            return JsonMapper.ToObject<T>(json);
         }
-
+        public static JsonData FromJson(string json)
+        {
+            return JsonMapper.ToObject(json);
+        }
         public static T FromJsonFile<T>(string path)
         {
             string json = FileUtil.ReadFile(path);
-            return JsonUtility.FromJson<T>(json);
+            return FromJson<T>(json);
+        }
+        public static JsonData FromJsonFile(string path)
+        {
+            string json = FileUtil.ReadFile(path);
+            return FromJson(json);
         }
 
         public static byte[] ToProtoBuff(object obj)

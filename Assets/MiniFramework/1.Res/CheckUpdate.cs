@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -10,7 +11,8 @@ namespace MiniFramework
         public string version;
         public string platform;
     }
-    public class CheckUpdate : MonoBehaviour
+    [Serializable]
+    public class CheckUpdate
     {
         //AssetBundle下载地址
         public string AssetBundleUrl;
@@ -21,8 +23,11 @@ namespace MiniFramework
         private string curVersion;
         private List<string> updateFiles = new List<string>();
 
+        public string CurPlatform { get { return curPlatform; } }
+        public float CurProgress { get { return httpDownload.Progress; } }
+
         // Use this for initialization
-        IEnumerator Start()
+        public IEnumerator Check()
         {
             yield return CheckConfig();
             if (IsLocal)
@@ -33,7 +38,6 @@ namespace MiniFramework
             {
                 yield return CheckServerManifest();
             }
-            yield return ResManager.Instance.Init(curPlatform);
         }
         IEnumerator CheckConfig()
         {
