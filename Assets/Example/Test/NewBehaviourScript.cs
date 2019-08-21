@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.Events;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public class NewBehaviourScript : MonoBehaviour
 {
@@ -29,11 +30,14 @@ public class NewBehaviourScript : MonoBehaviour
         // TestEvent.Invoke("event");
         // TestEvent("event");
 
-        Debug.Log(Marshal.SizeOf(new PackHead()));
+        //Debug.Log(Marshal.SizeOf(new PackHead()));
+
+        //NetMsgManager.Instance.RegisterMsg(this,100,Test);
+        //NetMsgManager.Instance.UnRegisterMsg(this,100,Test);   
     }
-    void Test(string s)
+    void Test(byte[] data)
     {
-        Debug.Log(s);
+        Debug.Log(Encoding.UTF8.GetString(data));
     }
 
     // Update is called once per frame

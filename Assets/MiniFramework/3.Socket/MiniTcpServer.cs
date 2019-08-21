@@ -18,7 +18,7 @@ namespace MiniFramework
         protected override void Awake()
         {
             base.Awake();
-            MsgManager.Instance.RegisterMsg(this, MsgID.HeartPack, (obj) =>
+            NetMsgManager.Instance.RegisterMsg(this, MsgID.HeartPack, (obj) =>
             {
                 //接收到心跳包
                 Send(MsgID.HeartPack, null);

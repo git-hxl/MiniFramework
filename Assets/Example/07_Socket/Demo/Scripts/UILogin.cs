@@ -50,7 +50,7 @@ public class UILogin : MonoBehaviour
         });
 
         MiniTcpClient.Instance.Connect(Ip, port);
-		MsgManager.Instance.RegisterMsg(this,20001,(data)=>{
+		NetMsgManager.Instance.RegisterMsg(this,20001,(data)=>{
 			LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data);
 			if(loginResponse.Result ==0)
 			{
