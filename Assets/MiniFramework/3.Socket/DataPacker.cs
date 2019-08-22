@@ -68,7 +68,7 @@ namespace MiniFramework
         public void SendPack(PackHead head, byte[] bodyData)
         {
             Debug.Log("接收消息ID：" + head.MsgID);
-            NetMsgManager.Instance.SendMsg(head.MsgID, bodyData);
+            MsgDispatcher.Instance.Send(head.MsgID, bodyData);
         }
     }
 }

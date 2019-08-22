@@ -38,9 +38,9 @@ public class TestServer : MonoBehaviour
         {
             MiniTcpServer.Instance.Clear();
         });
-        NetMsgManager.Instance.RegisterMsg(this, MsgID.Test, (s) =>
+        MsgDispatcher.Instance.Regist(this, MsgID.Test, (s) =>
         {
-            string txt = SerializeUtil.FromProtoBuff<string>(s);
+            string txt = SerializeUtil.FromProtoBuff<string>((byte[])s[0]);
             Text.text = DateTime.Now + ":" + txt;
             Text.color = Color.blue;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);

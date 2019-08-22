@@ -18,7 +18,9 @@ public class UILogin : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Account.text = "SChange9";
+        MiniTcpClient.Instance.Connect("adventure.spetchange.com",port);
+        Account.text = "SChange1";
+        Password.text = "12345678";
         BtLogin.onClick.AddListener(() =>
         {
             WWWForm form = new WWWForm();
@@ -50,10 +52,10 @@ public class UILogin : MonoBehaviour
 
         });
 
-        MiniTcpClient.Instance.Connect(IPAddress.Parse(IP), port);
-        NetMsgManager.Instance.RegisterMsg(this, 20001, (data) =>
+      //  MiniTcpClient.Instance.Connect(IPAddress.Parse(IP), port);
+        MsgDispatcher.Instance.Regist(this, 20001, (data) =>
         {
-            LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data);
+            LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data[0]);
             if (loginResponse.Result == 0)
             {
                 Debug.Log("登录成功:" + loginResponse.NickName);

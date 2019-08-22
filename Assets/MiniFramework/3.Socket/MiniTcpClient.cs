@@ -19,37 +19,37 @@ namespace MiniFramework
         protected override void Awake()
         {
             base.Awake();
-            // NetMsgManager.Instance.RegisterMsg(this, MsgID.HeartPack, (obj) =>
-            // {
-            //     //接收到心跳包
-            //     heartPack--;
-            // });
-            // NetMsgManager.Instance.RegisterMsg(this, MsgID.ConnectSuccess, (obj) =>
-            // {
-            //     //心跳包发送
-            //     heartSequence = this.Repeat(heartIntervalTime, -1, () =>
-            //     {
-            //         if (heartPack != 0)
-            //         {
-            //             tcpClient.Close();
-            //             IsConnected = false;
-            //             Debug.LogError("网络超时!");
-            //             NetMsgManager.Instance.SendMsg(MsgID.ConnectAbort, null);
-            //             return;
-            //         }
-            //         Send(MsgID.HeartPack, null);
-            //         heartPack++;
-            //     });
-            // });
+            MsgDispatcher.Instance.Regist(this, MsgID.HeartPack, (obj) =>
+            {
+                //接收到心跳包
+                heartPack--;
+            });
+            MsgDispatcher.Instance.Regist(this, MsgID.ConnectSuccess, (obj) =>
+            {
+                //心跳包发送
+                heartSequence = this.Repeat(heartIntervalTime, -1, () =>
+                {
+                    if (heartPack != 0)
+                    {
+                        tcpClient.Close();
+                        IsConnected = false;
+                        Debug.LogError("网络超时!");
+                        MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
+                        return;
+                    }
+                    Send(MsgID.HeartPack, null);
+                    heartPack++;
+                });
+            });
             // NetMsgManager.Instance.RegisterMsg(this, MsgID.ConnectFailed, (obj) =>
             // {
 
             // });
-            // NetMsgManager.Instance.RegisterMsg(this, MsgID.ConnectAbort, (obj) =>
-            // {
-            //     //关闭心跳包
-            //     heartSequence.Close();
-            // });
+            MsgDispatcher.Instance.Regist(this, MsgID.ConnectAbort, (obj) =>
+            {
+                //关闭心跳包
+                heartSequence.Close();
+            });
         }
         public void Connect(string address, int port)
         {
@@ -75,7 +75,7 @@ namespace MiniFramework
                     tcpClient.Close();
                     IsConnected = false;
                     Debug.Log("连接超时!");
-                    //MsgManager.Instance.SendMsg(MsgID.ConnectFailed, null);
+                    MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
                 }
             });
         }
@@ -87,7 +87,7 @@ namespace MiniFramework
                 tcpClient.Close();
                 IsConnected = false;
                 Debug.Log("连接服务器失败，请尝试重新连接!");
-                //MsgManager.Instance.SendMsg(MsgID.ConnectFailed, null);
+                MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace MiniFramework
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
                 Debug.Log("客户端连接成功");
-                //MsgManager.Instance.SendMsg(MsgID.ConnectSuccess, null);
+                MsgDispatcher.Instance.Send(MsgID.ConnectSuccess);
             }
         }
         private void ReadResult(IAsyncResult ar)
@@ -109,7 +109,7 @@ namespace MiniFramework
                 tcpClient.Close();
                 IsConnected = false;
                 Debug.LogError("网络中断");
-                //MsgManager.Instance.SendMsg(MsgID.ConnectAbort, null);
+                MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
                 return;
             }
             byte[] recvBytes = new byte[recvLength];

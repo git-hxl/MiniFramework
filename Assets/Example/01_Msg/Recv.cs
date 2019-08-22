@@ -6,7 +6,7 @@ public class Recv : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		 MsgDispatcher.Instance.Regist(this,1003,Test);
+		 MsgDispatcher.Instance.Regist(this,1003,null);
 	}
 	
 	void Test(object[] data)

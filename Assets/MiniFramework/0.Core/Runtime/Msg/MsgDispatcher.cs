@@ -41,6 +41,10 @@ namespace MiniFramework
         {
             lock (locker)
             {
+                if (action == null)
+                {
+                    return;
+                }
                 List<MsgData> value;
                 if (!listeners.TryGetValue(msgId, out value))
                 {

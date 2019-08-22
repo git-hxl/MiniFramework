@@ -4,6 +4,7 @@ using UnityEngine;
 using MiniFramework;
 using UnityEngine.UI;
 using System;
+using System.Net;
 
 public class TestClient : MonoBehaviour
 {
@@ -33,9 +34,9 @@ public class TestClient : MonoBehaviour
         {
             MiniTcpClient.Instance.Close();
         });
-        NetMsgManager.Instance.RegisterMsg(this, MsgID.Test, (s) =>
+        MsgDispatcher.Instance.Regist(this, MsgID.Test, (s) =>
         {
-            string txt = SerializeUtil.FromProtoBuff<string>(s);
+            string txt = SerializeUtil.FromProtoBuff<string>((byte[])s[0]);
             Text.text = DateTime.Now + ":" + txt;
             Text.color = Color.blue;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);

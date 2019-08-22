@@ -17,6 +17,10 @@ namespace MiniFramework
         {
             lock (locker)
             {
+                if (listener == null)
+                {
+                    return;
+                }
                 Delegate value;
                 if (!listeners.TryGetValue(id, out value))
                 {
@@ -78,7 +82,7 @@ namespace MiniFramework
         public void Dispatch<T>(string id, T arg)
         {
             Delegate value;
-            if (listeners.TryGetValue(id, out value) && value != null)
+            if (listeners.TryGetValue(id, out value))
             {
                 Action<T> act = (Action<T>)value;
                 act(arg);

@@ -10,24 +10,16 @@ public class NewBehaviourScript1 : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        NetMsgManager.Instance.RegisterMsg(this, 100, (data) =>
+        MsgDispatcher.Instance.Regist(this, 100, (data) =>
         {
-            Debug.Log(Encoding.UTF8.GetString(data) + "xxxxxx");
+            Debug.Log(data[0]);
         });
-        NetMsgManager.Instance.RegisterMsg(this, 100, (data) =>
+        MsgDispatcher.Instance.Regist(this, 100, (data) =>
         {
-            Debug.Log(Encoding.UTF8.GetString(data) + "xxxxxx");
+            Debug.Log(data[0]);
         });
-        //NetMsgManager.Instance.UnRegisterMsg(100);
-        //NetMsgManager.Instance.UnRegisterMsg(this,100);
 
-
-        NetMsgManager.Instance.SendMsg(100, Encoding.UTF8.GetBytes("hello world"));
+        MsgDispatcher.Instance.Send(100, "hello world");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
