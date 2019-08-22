@@ -9,7 +9,7 @@ namespace MiniFramework
     public class Pool<T> : Singleton<Pool<T>> where T : IPoolable, new()
     {
         private Pool() { }
-        private uint mMaxCount=10;//缓存池最大个数
+        private uint mMaxCount = 10;//缓存池最大个数
 
         protected readonly Stack<T> mCacheStack = new Stack<T>();//缓存池
         //当前缓存池中对象个数
@@ -51,7 +51,7 @@ namespace MiniFramework
         /// <returns></returns>
         public bool Recycle(T obj)
         {
-            if (obj == null||obj.IsRecycled)
+            if (obj == null || obj.IsRecycled)
             {
                 return false;
             }

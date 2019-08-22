@@ -54,7 +54,11 @@ namespace MiniFramework
         public void Connect(string address, int port)
         {
             IPHostEntry hostInfo = Dns.GetHostEntry(address);
-            IPAddress ipAddress = hostInfo.AddressList[0];
+            IPAddress ip = hostInfo.AddressList[0];
+            Connect(ip, port);
+        }
+        public void Connect(IPAddress ip, int port)
+        {
             if (IsConnected)
             {
                 Debug.Log("客户端已连接");
@@ -63,7 +67,7 @@ namespace MiniFramework
             recvBuffer = new byte[maxBufferSize];
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
-            tcpClient.BeginConnect(ipAddress, port, ConnectResult, tcpClient);
+            tcpClient.BeginConnect(ip, port, ConnectResult, tcpClient);
             this.Delay(connectTimeout, () =>
             {
                 if (tcpClient.Client != null && !IsConnected)

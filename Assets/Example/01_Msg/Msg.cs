@@ -1,33 +1,42 @@
 ﻿using UnityEngine;
 using MiniFramework;
+using System.Text;
+
 public class Msg : MonoBehaviour
 {
     void Awake()
     {
-		//注册
-       // MsgManager.Instance.RegisterMsg(this, "Test", (txt) => Debug.Log(txt));
-       EventDispatcher.GameEvent.Regist("1000",Test);
-    //    EventDispatcher.GameEvent.Regist("1000",()=>{
-    //        Debug.Log("Hello world 2");
-    //    });
-       EventDispatcher.GameEvent.Regist<string>("1000",Test);
+        //注册
+        EventDispatcher.Instance.Regist("1000", Test);
+
+        EventDispatcher.Instance.Regist<string>("1001", Test);
+
+        MsgDispatcher.Instance.Regist(this,1002, Test);
     }
     void Start()
     {
-		//发送消息
-        //MsgManager.Instance.SendMsg("Test", "hello");
-        // EventDispatcher.GameEvent.UnRegist("1000",Test);
+        //发送消息
+        //EventDispatcher.Instance.UnRegist("1000",Test);
+        EventDispatcher.Instance.Dispatch("1000");
+        
+        EventDispatcher.Instance.Dispatch<string>("1001", "Hello world 2");
 
-        // EventDispatcher.GameEvent.DispatchEvent("1000");
-        // EventDispatcher.GameEvent.DispatchEvent<string>("10001","xxxxx");
+        //MsgDispatcher.Instance.UnRegist(this,1002,Test);
+        MsgDispatcher.Instance.Send(1002);
     }
 
     void Test()
     {
         Debug.Log("Hello world");
     }
+
     void Test(string s)
     {
         Debug.Log(s);
+    }
+
+    void Test(object[] data)
+    {
+        Debug.Log("Hello world 3");
     }
 }

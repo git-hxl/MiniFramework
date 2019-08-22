@@ -1,74 +1,118 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace MiniFramework
 {
     public class MsgDispatcher : MonoSingleton<MsgDispatcher>
     {
-        private class Msg<T>
+        private class MsgData : IPoolable
         {
-            public T arg;
-            public Delegate listener;
+            public bool IsRecycled { get; set; }
+
+            public void OnRecycled()
+            {
+                Recv = null;
+                Objs = null;
+                Action = null;
+            }
+
+            public object Recv;
+            public object[] Objs;
+            public Action<object[]> Action;
         }
-        private Dictionary<int, Delegate> listeners = new Dictionary<int, Delegate>();
-        private Queue<Msg> idleMsg = new Queue<Msg>();
+
+        private Dictionary<string, List<MsgData>> listeners = new Dictionary<string, List<MsgData>>();
+        private Queue<MsgData> idleListeners = new Queue<MsgData>();
         private static readonly object locker = new object();
         private void Update()
         {
-            while (idleMsg.Count > 0)
+            while (idleListeners.Count > 0)
             {
-                Msg msg = idleMsg.Dequeue();
-
-                msg.listener(msg.arg);
+                MsgData msg = idleListeners.Dequeue();
+                msg.Action(msg.Objs);
             }
         }
-        public void ClearEventListner()
+        public void Regist(object recv, int msgId, Action<object[]> action)
         {
-            listeners.Clear();
+            Regist(recv, msgId.ToString(), action);
         }
-        private void AddDelegate(int id, Delegate listener)
+        public void Regist(object recv, string msgId, Action<object[]> action)
         {
-            Delegate value;
-            if (!listeners.TryGetValue(id, out value))
+            lock (locker)
             {
-                listeners.Add(id, listener);
-            }
-            else
-            {
-                value = Delegate.Combine(value, listener);
-                listeners[id] = value;
-            }
-        }
-        private void RemoveDelegate(int id, Delegate listener)
-        {
-            Delegate value;
-            if (listeners.TryGetValue(id, out value))
-            {
-                if (value != null)
+                List<MsgData> value;
+                if (!listeners.TryGetValue(msgId, out value))
                 {
-                    value = Delegate.Remove(value, listener);
-                    listeners[id] = value;
+                    value = new List<MsgData>();
+                    listeners.Add(msgId, value);
+                }
+                foreach (var item in value)
+                {
+                    if (item.Recv == recv && item.Action == action)
+                    {
+                        Debug.LogWarning(recv + "重复注册!");
+                        return;
+                    }
+                }
+                MsgData msg = Pool<MsgData>.Instance.Allocate();
+                msg.Recv = recv;
+                msg.Action = action;
+                value.Add(msg);
+            }
+        }
+        public void UnRegist(object recv, int msgId, Action<object[]> action)
+        {
+            UnRegist(recv, msgId.ToString(), action);
+        }
+        public void UnRegist(object recv, string msgId, Action<object[]> action)
+        {
+            lock (locker)
+            {
+                List<MsgData> value;
+                if (listeners.TryGetValue(msgId, out value))
+                {
+                    for (int i = value.Count - 1; i >= 0; i--)
+                    {
+                        MsgData msg = value[i];
+                        if (msg.Recv == recv && msg.Action == action)
+                        {
+                            value.Remove(msg);
+                            Pool<MsgData>.Instance.Recycle(msg);
+                            break;
+                        }
+                    }
                 }
             }
         }
-         public void Regist<T>(int id, Action<T> listener)
-        {
-            AddDelegate(id, listener);
-        }
-        public void UnRegist<T>(int id, Action<T> listener)
-        {
-            RemoveDelegate(id, listener);
-        }
 
-        public void DispatchEvent<T>(int id, T arg)
+        public void Send(int msgId, params object[] objs)
         {
-            Delegate value;
-            if (listeners.TryGetValue(id, out value) && value != null)
+            Send(msgId.ToString(), objs);
+        }
+        public void Send(string msgId, params object[] objs)
+        {
+            List<MsgData> value;
+            if (listeners.TryGetValue(msgId, out value))
             {
-                Msg<T> msg = new Msg<T>();
-                msg.listener = value;
-                msg.arg = arg;
-                idleMsg.Enqueue(msg);
+                for (int i = value.Count - 1; i >= 0; i--)
+                {
+                    MsgData msg = value[i];
+                    if (!msg.Recv.Equals(null))
+                    {
+                        msg.Objs = objs;
+                        idleListeners.Enqueue(msg);
+                    }
+                    else
+                    {
+                        value.Remove(msg);
+                        Pool<MsgData>.Instance.Recycle(msg);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("消息ID:" + msgId + "未注册");
             }
         }
 

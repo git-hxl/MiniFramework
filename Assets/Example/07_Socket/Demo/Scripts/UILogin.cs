@@ -3,11 +3,12 @@ using UnityEngine.UI;
 using MiniFramework;
 using LitJson;
 using ProtoBuf;
+using System.Net;
 
 public class UILogin : MonoBehaviour
 {
     public readonly string UserUrl = "https://adventure.spetchange.com/fishoauth/system/login?";
-    public readonly string Ip = "adventure.spetchange.com";
+    public readonly string IP = "173.248.226.11";//"adventure.spetchange.com";
     public readonly int port = 58010;
 
     public InputField Account;
@@ -43,20 +44,21 @@ public class UILogin : MonoBehaviour
                     loginRequest.NickName = Player.NickName;
                     loginRequest.Avatar = Player.HeadUrl;
                     loginRequest.Platform = "PetCard";
-                    MiniTcpClient.Instance.Send(10001,SerializeUtil.ToProtoBuff(loginRequest));
+                    MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
                 }
             });
 
         });
 
-        MiniTcpClient.Instance.Connect(Ip, port);
-		NetMsgManager.Instance.RegisterMsg(this,20001,(data)=>{
-			LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data);
-			if(loginResponse.Result ==0)
-			{
-				Debug.Log("登录成功:"+loginResponse.NickName);
-			}
-		});
+        MiniTcpClient.Instance.Connect(IPAddress.Parse(IP), port);
+        NetMsgManager.Instance.RegisterMsg(this, 20001, (data) =>
+        {
+            LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data);
+            if (loginResponse.Result == 0)
+            {
+                Debug.Log("登录成功:" + loginResponse.NickName);
+            }
+        });
 
     }
 }
@@ -100,10 +102,10 @@ public class LoginResponse
     public long UserId;
     [ProtoMember(8)]
     public long Glod;
-	[ProtoMember(9)]
+    [ProtoMember(9)]
     public long Diamond;
-	[ProtoMember(10)]
+    [ProtoMember(10)]
     public int TopupSum;
-	[ProtoMember(11)]
+    [ProtoMember(11)]
     public int MaxWeaponMultiple;
 }

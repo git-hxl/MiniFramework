@@ -1,37 +1,46 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+
 namespace MiniFramework
 {
-    public class EventDispatcher
+    public class EventDispatcher : Singleton<EventDispatcher>
     {
-        public static EventDispatcher GameEvent = new EventDispatcher();
+        private EventDispatcher() { }
         private Dictionary<string, Delegate> listeners = new Dictionary<string, Delegate>();
+        private static readonly object locker = new object();
         public void ClearEventListner()
         {
             listeners.Clear();
         }
         private void AddDelegate(string id, Delegate listener)
         {
-            Delegate value;
-            if (!listeners.TryGetValue(id, out value))
+            lock (locker)
             {
-                listeners.Add(id, listener);
-            }
-            else
-            {
-                value = Delegate.Combine(value, listener);
-                listeners[id] = value;
+                Delegate value;
+                if (!listeners.TryGetValue(id, out value))
+                {
+                    listeners.Add(id, listener);
+                }
+                else
+                {
+                    value = Delegate.Combine(value, listener);
+                    listeners[id] = value;
+                }
             }
         }
         private void RemoveDelegate(string id, Delegate listener)
         {
-            Delegate value;
-            if (listeners.TryGetValue(id, out value))
+            lock (locker)
             {
-                if (value != null)
+                Delegate value;
+                if (listeners.TryGetValue(id, out value))
                 {
-                    value = Delegate.Remove(value, listener);
-                    listeners[id] = value;
+                    if (value != null)
+                    {
+                        value = Delegate.Remove(value, listener);
+                        listeners[id] = value;
+                    }
                 }
             }
         }
@@ -45,13 +54,17 @@ namespace MiniFramework
             RemoveDelegate(id, listener);
         }
 
-        public void DispatchEvent(string id)
+        public void Dispatch(string id)
         {
             Delegate value;
             if (listeners.TryGetValue(id, out value) && value != null)
             {
                 Action act = (Action)value;
                 act();
+            }
+            else
+            {
+                Debug.LogError("消息ID:" + id + "未注册");
             }
         }
         public void Regist<T>(string id, Action<T> listener)
@@ -62,13 +75,17 @@ namespace MiniFramework
         {
             RemoveDelegate(id, listener);
         }
-        public void DispatchEvent<T>(string id, T arg)
+        public void Dispatch<T>(string id, T arg)
         {
             Delegate value;
             if (listeners.TryGetValue(id, out value) && value != null)
             {
                 Action<T> act = (Action<T>)value;
                 act(arg);
+            }
+            else
+            {
+                Debug.LogError("消息ID:" + id + "未注册");
             }
         }
     }

@@ -41,10 +41,11 @@ public class TestClient : MonoBehaviour
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);
         });
     }
-    private void Update() {
-        if(MiniTcpClient.Instance.IsConnected)
+    private void Update()
+    {
+        if (MiniTcpClient.Instance.IsConnected)
         {
-           // MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻寻寻寻寻寻寻寻寻"));
+            // MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻寻寻寻寻寻寻寻寻"));
         }
     }
 }
