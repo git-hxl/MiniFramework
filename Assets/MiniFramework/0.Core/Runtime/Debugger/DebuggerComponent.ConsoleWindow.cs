@@ -26,6 +26,7 @@ namespace MiniFramework
             private Vector2 logScrollPosition = Vector2.zero;
             private Vector2 stackTraceScrollPosition = Vector2.zero;
             List<LogNode> tempLogNodes = new List<LogNode>();
+            private static readonly object locker = new object();
             public void Initialize(params object[] args)
             {
                 Application.logMessageReceivedThreaded += OnLogMessageReceived;
@@ -35,7 +36,7 @@ namespace MiniFramework
             {
                 if (Event.current.type == EventType.Layout)
                 {
-                    tempLogNodes = new List<LogNode>(logNodes.ToArray());
+                    tempLogNodes = new List<LogNode>(ToArray(logNodes));
                     RefreshCount();
                 }
                 GUILayout.BeginHorizontal();
@@ -93,11 +94,14 @@ namespace MiniFramework
                     logScrollPosition = GUILayout.BeginScrollView(logScrollPosition);
                     {
                         int maxLine = 20;
+
                         if (maxLine > tempLogNodes.Count)
                         {
                             maxLine = tempLogNodes.Count;
                         }
+
                         int logIndex = (int)logScrollPosition.y / logHeight;
+
                         logIndex = Mathf.Clamp(logIndex, 0, tempLogNodes.Count - maxLine);
 
                         for (int i = 0; i < logIndex; i++)
@@ -138,6 +142,20 @@ namespace MiniFramework
                 Application.logMessageReceivedThreaded -= OnLogMessageReceived;
                 Clear();
             }
+            private LogNode[] ToArray(Queue<LogNode> logNodes)
+            {
+                lock (locker)
+                {
+                    return logNodes.ToArray();
+                }
+            }
+            private void Enqueue(LogNode log)
+            {
+                lock (locker)
+                {
+                    logNodes.Enqueue(log);
+                }
+            }
             private void OnLogMessageReceived(string logMsg, string stackTrace, LogType logtype)
             {
                 if (logtype == LogType.Assert || logtype == LogType.Exception)
@@ -145,7 +163,7 @@ namespace MiniFramework
                     logtype = LogType.Error;
                 }
                 LogNode log = new LogNode().Fill(logtype, logMsg, stackTrace);
-                logNodes.Enqueue(log);
+                Enqueue(log);
             }
             private string GetLogString(LogNode logNode)
             {
@@ -181,8 +199,11 @@ namespace MiniFramework
             }
             private void Clear()
             {
-                logNodes.Clear();
-                selectedNode = null;
+                lock (locker)
+                {
+                    logNodes.Clear();
+                    selectedNode = null;
+                }
             }
         }
         /// <summary>

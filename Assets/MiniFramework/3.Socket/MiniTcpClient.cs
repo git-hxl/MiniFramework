@@ -9,13 +9,13 @@ namespace MiniFramework
     {
         public bool IsConnected;
         private int connectTimeout = 5;
-        private int heartIntervalTime = 10;
+        private int heartIntervalTime = 1;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
         private int heartPack;
-        private Sequence heartSequence;
+        private Coroutine heartEvent;
         protected override void Awake()
         {
             base.Awake();
@@ -27,28 +27,28 @@ namespace MiniFramework
             MsgDispatcher.Instance.Regist(this, MsgID.ConnectSuccess, (obj) =>
             {
                 //心跳包发送
-                heartSequence = this.Repeat(heartIntervalTime, -1, () =>
-                {
-                    if (heartPack != 0)
-                    {
-                        tcpClient.Close();
-                        IsConnected = false;
-                        Debug.LogError("网络超时!");
-                        MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
-                        return;
-                    }
-                    Send(MsgID.HeartPack, null);
-                    heartPack++;
-                });
+                heartEvent = RepeatEvent.Excute(this, heartIntervalTime, -1, () =>
+                 {
+                     if (heartPack != 0)
+                     {
+                         tcpClient.Close();
+                         IsConnected = false;
+                         Debug.LogError("网络超时!");
+                         MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
+                         return;
+                     }
+                     Send(MsgID.HeartPack, null);
+                     heartPack++;
+                 });
             });
-            // NetMsgManager.Instance.RegisterMsg(this, MsgID.ConnectFailed, (obj) =>
-            // {
+            MsgDispatcher.Instance.Regist(this, MsgID.ConnectFailed, (obj) =>
+            {
 
-            // });
+            });
             MsgDispatcher.Instance.Regist(this, MsgID.ConnectAbort, (obj) =>
             {
                 //关闭心跳包
-                heartSequence.Close();
+                StopCoroutine(heartEvent);
             });
         }
         public void Connect(string address, int port)
@@ -68,16 +68,16 @@ namespace MiniFramework
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
             tcpClient.BeginConnect(ip, port, ConnectResult, tcpClient);
-            this.Delay(connectTimeout, () =>
-            {
-                if (tcpClient.Client != null && !IsConnected)
-                {
-                    tcpClient.Close();
-                    IsConnected = false;
-                    Debug.Log("连接超时!");
-                    MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
-                }
-            });
+            DelayEvent.Excute(this, connectTimeout, () =>
+             {
+                 if (tcpClient.Client != null && !IsConnected)
+                 {
+                     tcpClient.Close();
+                     IsConnected = false;
+                     Debug.Log("连接超时!");
+                     MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
+                 }
+             });
         }
         private void ConnectResult(IAsyncResult ar)
         {

@@ -94,10 +94,6 @@ namespace MiniFramework
             obj.transform.SetParent(transform);
             objs[obj.name].Push(obj);
         }
-        public void Recycle(GameObject obj, float delay)
-        {
-            this.Delay(delay, () => Recycle(obj));
-        }
         //分配
         public GameObject Allocate(string key)
         {

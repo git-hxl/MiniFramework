@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Example/07_Socket/Demo/Login.unity
-    guid: d6722830866a44e37867018c68432f6b
+    path: Assets/Example/07_Socket/SimpleChat/Server.unity
+    guid: 8c4de7110d8094f9ab08e1b2d52badb7

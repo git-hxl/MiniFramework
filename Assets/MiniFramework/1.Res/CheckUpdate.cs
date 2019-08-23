@@ -26,7 +26,6 @@ namespace MiniFramework
         public string CurPlatform { get { return curPlatform; } }
         public float CurProgress { get { return httpDownload.Progress; } }
 
-        // Use this for initialization
         public IEnumerator Check()
         {
             yield return CheckConfig();
@@ -36,6 +35,7 @@ namespace MiniFramework
             }
             else
             {
+                yield return DisposeLocalRes();
                 yield return CheckServerManifest();
             }
         }
@@ -87,6 +87,29 @@ namespace MiniFramework
                 updateFiles.Clear();
             }
         }
+
+        IEnumerator DisposeLocalRes()
+        {
+            string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
+            string dataABPath = Application.persistentDataPath + "/" + curPlatform;
+            if (!File.Exists(assetsABPath + "/" + curPlatform))
+            {
+                yield break;
+            }
+            if (!Directory.Exists(dataABPath))
+            {
+                FileUtil.CreateDir(dataABPath);
+                Dictionary<string, Hash128> assetsManifest = AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
+                foreach (var item in assetsManifest)
+                {
+                    Debug.Log("释放本地资源：" + item.Key);
+                    File.Copy(assetsABPath + "/" + item.Key, dataABPath + "/" + item.Key, true);
+                    yield return null;
+                }
+                File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
+            }
+        }
+
         IEnumerator CheckServerManifest()
         {
             Debug.Log("检查更新文件");
