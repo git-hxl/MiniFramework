@@ -34,7 +34,7 @@ namespace MiniFramework
                          tcpClient.Close();
                          IsConnected = false;
                          Debug.LogError("网络超时!");
-                         MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
+                         MsgDispatcher.Instance.Dispatch(MsgID.ConnectAbort);
                          return;
                      }
                      Send(MsgID.HeartPack, null);
@@ -75,7 +75,7 @@ namespace MiniFramework
                      tcpClient.Close();
                      IsConnected = false;
                      Debug.Log("连接超时!");
-                     MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
+                     MsgDispatcher.Instance.Dispatch(MsgID.ConnectFailed);
                  }
              });
         }
@@ -87,7 +87,7 @@ namespace MiniFramework
                 tcpClient.Close();
                 IsConnected = false;
                 Debug.Log("连接服务器失败，请尝试重新连接!");
-                MsgDispatcher.Instance.Send(MsgID.ConnectFailed);
+                MsgDispatcher.Instance.Dispatch(MsgID.ConnectFailed);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace MiniFramework
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
                 Debug.Log("客户端连接成功");
-                MsgDispatcher.Instance.Send(MsgID.ConnectSuccess);
+                MsgDispatcher.Instance.Dispatch(MsgID.ConnectSuccess);
             }
         }
         private void ReadResult(IAsyncResult ar)
@@ -109,7 +109,7 @@ namespace MiniFramework
                 tcpClient.Close();
                 IsConnected = false;
                 Debug.LogError("网络中断");
-                MsgDispatcher.Instance.Send(MsgID.ConnectAbort);
+                MsgDispatcher.Instance.Dispatch(MsgID.ConnectAbort);
                 return;
             }
             byte[] recvBytes = new byte[recvLength];

@@ -12,14 +12,14 @@ public class SerializeClass : MonoBehaviour
         Test test = new Test();
         test.ID = 110;
         test.name = "xxoo";
-        test.random.Add(1.0f);
+        test.random = new double[] { 1 };
 
         string jsonData = SerializeUtil.ToJson(test);
         Debug.Log(jsonData);
         string xmlData = SerializeUtil.ToXml(test);
-         Debug.Log(xmlData);
+        Debug.Log(xmlData);
         SerializeUtil.ToXml(Application.streamingAssetsPath + "/test.xml", test);
-       
+
         TestProto proto = new TestProto();
         proto.ID = 110;
         proto.name = "xxoo";
@@ -39,7 +39,7 @@ public class Test
 {
     public int ID;
     public string name;
-    public List<float> random = new List<float>();
+    public double[] random;
 }
 [ProtoContract]
 public class TestProto

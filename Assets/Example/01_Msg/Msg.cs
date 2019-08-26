@@ -23,7 +23,7 @@ public class Msg : MonoBehaviour
         EventDispatcher.Instance.Dispatch<string>("1001", "Hello world 2");
 
         //MsgDispatcher.Instance.UnRegist(this,1002,Test);
-        MsgDispatcher.Instance.Send(1002);
+        MsgDispatcher.Instance.Dispatch(1002);
     }
 
     void Test()

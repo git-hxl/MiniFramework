@@ -6,7 +6,7 @@ public class Send : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		MsgDispatcher.Instance.Send(1003);
+		MsgDispatcher.Instance.Dispatch(1003);
 	}
 	
 	// Update is called once per frame

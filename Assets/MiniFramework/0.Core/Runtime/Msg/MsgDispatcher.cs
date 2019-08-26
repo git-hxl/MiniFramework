@@ -90,11 +90,11 @@ namespace MiniFramework
             }
         }
 
-        public void Send(int msgId, params object[] objs)
+        public void Dispatch(int msgId, params object[] objs)
         {
-            Send(msgId.ToString(), objs);
+            Dispatch(msgId.ToString(), objs);
         }
-        public void Send(string msgId, params object[] objs)
+        public void Dispatch(string msgId, params object[] objs)
         {
             List<MsgData> value;
             if (listeners.TryGetValue(msgId, out value))

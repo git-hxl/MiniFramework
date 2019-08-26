@@ -19,7 +19,7 @@ public class NewBehaviourScript1 : MonoBehaviour
             Debug.Log(data[0]);
         });
 
-        MsgDispatcher.Instance.Send(100, "hello world");
+        MsgDispatcher.Instance.Dispatch(100, "hello world");
     }
 
 }

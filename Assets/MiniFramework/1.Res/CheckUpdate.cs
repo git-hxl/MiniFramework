@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    struct Config
+    class Config
     {
         public string version;
         public string platform;
@@ -16,7 +16,6 @@ namespace MiniFramework
     {
         //AssetBundle下载地址
         public string AssetBundleUrl;
-        public bool IsLocal;
 
         private HttpDownload httpDownload;
         private string curPlatform;
@@ -29,15 +28,10 @@ namespace MiniFramework
         public IEnumerator Check()
         {
             yield return CheckConfig();
-            if (IsLocal)
-            {
-                yield return CheckLocalMainfest();
-            }
-            else
-            {
-                yield return DisposeLocalRes();
-                yield return CheckServerManifest();
-            }
+
+            yield return CheckLocalMainfest();
+
+            yield return CheckServerManifest();
         }
         IEnumerator CheckConfig()
         {
@@ -48,16 +42,58 @@ namespace MiniFramework
                 Debug.LogError("配置文件不存在");
                 yield break;
             }
-            File.Copy(assetsConfigPath, dataConfigPath, true);
-            yield return null;
-            Config config = SerializeUtil.FromJsonFile<Config>(dataConfigPath);
-            curPlatform = config.platform;
-            curVersion = config.version;
+            Config assetsConfig = SerializeUtil.FromJsonFile<Config>(assetsConfigPath);
+            curPlatform = assetsConfig.platform;
+            curVersion = assetsConfig.version;
             Debug.Log("平台:" + curPlatform + " 本地版本号:" + curVersion);
+            if (!File.Exists(dataConfigPath))
+            {
+                yield return DisposeLocalRes();
+            }
+            else
+            {
+                Config dataConfig = SerializeUtil.FromJsonFile<Config>(dataConfigPath);
+                if (dataConfig.platform != curPlatform)
+                {
+                    Debug.LogError("检测到错误的平台信息");
+                    yield break;
+                }
+                if (dataConfig.version != curVersion)
+                {
+                    yield return DisposeLocalRes();
+                }
+            }
+            File.Copy(assetsConfigPath, dataConfigPath, true);
         }
+
+        IEnumerator DisposeLocalRes()
+        {
+            string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
+            string dataABPath = Application.persistentDataPath + "/" + curPlatform;
+            if (!File.Exists(assetsABPath + "/" + curPlatform))
+            {
+                yield break;
+            }
+            if (Directory.Exists(dataABPath))
+            {
+                Directory.Delete(dataABPath, true);
+                yield return null;
+            }
+            FileUtil.CreateDir(dataABPath);
+            Dictionary<string, Hash128> assetsManifest = AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
+            foreach (var item in assetsManifest)
+            {
+                Debug.Log("释放本地资源：" + item.Key);
+                File.Copy(assetsABPath + "/" + item.Key, dataABPath + "/" + item.Key, true);
+                yield return null;
+            }
+            File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
+        }
+
+
         IEnumerator CheckLocalMainfest()
         {
-            Debug.Log("检查更新文件");
+            Debug.Log("检查更新本地文件");
             string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
             string dataABPath = Application.persistentDataPath + "/" + curPlatform;
             if (!File.Exists(assetsABPath + "/" + curPlatform))
@@ -88,31 +124,9 @@ namespace MiniFramework
             }
         }
 
-        IEnumerator DisposeLocalRes()
-        {
-            string assetsABPath = Application.streamingAssetsPath + "/" + curPlatform;
-            string dataABPath = Application.persistentDataPath + "/" + curPlatform;
-            if (!File.Exists(assetsABPath + "/" + curPlatform))
-            {
-                yield break;
-            }
-            if (!Directory.Exists(dataABPath))
-            {
-                FileUtil.CreateDir(dataABPath);
-                Dictionary<string, Hash128> assetsManifest = AssetBundleLoader.LoadABManifest(assetsABPath + "/" + curPlatform);
-                foreach (var item in assetsManifest)
-                {
-                    Debug.Log("释放本地资源：" + item.Key);
-                    File.Copy(assetsABPath + "/" + item.Key, dataABPath + "/" + item.Key, true);
-                    yield return null;
-                }
-                File.Copy(assetsABPath + "/" + curPlatform, dataABPath + "/" + curPlatform, true);
-            }
-        }
-
         IEnumerator CheckServerManifest()
         {
-            Debug.Log("检查更新文件");
+            Debug.Log("检查更新服务器文件");
             string downloadPath = AssetBundleUrl + "/" + curPlatform + "/" + curPlatform;
             string savePath = Application.persistentDataPath + "/Update";
             httpDownload = new HttpDownload(savePath, null);
@@ -135,7 +149,7 @@ namespace MiniFramework
                 httpDownload = new HttpDownload(savePath, null);
                 foreach (var item in updateFiles)
                 {
-                    Debug.Log("更新本地资源：" + item);
+                    Debug.Log("更新网络资源：" + item);
                     string url = AssetBundleUrl + "/" + curPlatform + "/" + item;
                     yield return httpDownload.Download(url);
                 }
