@@ -8,7 +8,7 @@ using System.Net;
 public class UILogin : MonoBehaviour
 {
     public readonly string UserUrl = "https://adventure.spetchange.com/fishoauth/system/login?";
-    public readonly string IP = "173.248.226.11";//"adventure.spetchange.com";
+    public readonly string IP = /*"173.248.226.11";*/"adventure.spetchange.com";
     public readonly int port = 58010;
 
     public InputField Account;
@@ -18,7 +18,7 @@ public class UILogin : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpClient.Instance.Connect("adventure.spetchange.com",port);
+        MiniTcpClient.Instance.Connect(IP, port);
         Account.text = "SChange1";
         Password.text = "12345678";
         BtLogin.onClick.AddListener(() =>
@@ -51,8 +51,6 @@ public class UILogin : MonoBehaviour
             });
 
         });
-
-      //  MiniTcpClient.Instance.Connect(IPAddress.Parse(IP), port);
         MsgDispatcher.Instance.Regist(this, 20001, (data) =>
         {
             LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data[0]);
@@ -61,53 +59,13 @@ public class UILogin : MonoBehaviour
                 Debug.Log("登录成功:" + loginResponse.NickName);
             }
         });
-
+        
+        MsgDispatcher.Instance.Regist(this,30040,(data)=>{
+            ScrollNoticesUpdate notices = SerializeUtil.FromProtoBuff<ScrollNoticesUpdate>((byte[])data[0]);
+            foreach (var item in notices.notices)
+            {
+                Debug.Log(item.Content+":"+item.contentZh);
+            }
+        });
     }
-}
-[ProtoContract]
-public class LoginRequest
-{
-    [ProtoMember(1)]
-    public int Gender;
-    [ProtoMember(2)]
-    public string OpenId;
-    [ProtoMember(3)]
-    public string NickName;
-    [ProtoMember(4)]
-    public string Avatar;
-    [ProtoMember(5)]
-    public int ChannelId;
-    [ProtoMember(6)]
-    public string Account;
-    [ProtoMember(7)]
-    public int Language;
-    [ProtoMember(8)]
-    public string Platform;
-}
-
-[ProtoContract]
-public class LoginResponse
-{
-    [ProtoMember(1)]
-    public int Result;
-    [ProtoMember(2)]
-    public string NickName;
-    [ProtoMember(3)]
-    public string Avatar;
-    [ProtoMember(4)]
-    public int VipLevel;
-    [ProtoMember(5)]
-    public int Level;
-    [ProtoMember(6)]
-    public int Experience;
-    [ProtoMember(7)]
-    public long UserId;
-    [ProtoMember(8)]
-    public long Glod;
-    [ProtoMember(9)]
-    public long Diamond;
-    [ProtoMember(10)]
-    public int TopupSum;
-    [ProtoMember(11)]
-    public int MaxWeaponMultiple;
 }

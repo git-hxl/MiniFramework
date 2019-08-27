@@ -8,11 +8,12 @@ namespace MiniFramework
     {
         public static CSVData FromCSV(string txt)
         {
-            CSVData csv = new CSVData();
+            CSVData csv = new CSVData(txt);
             string[] rows = txt.Split('\n');
             string[] title = rows[0].Split(',');
             for (int i = 0; i < rows.Length; i++)
             {
+                csv[i] = rows[i];
                 string[] columns = rows[i].Split(',');
                 for (int j = 0; j < columns.Length; j++)
                 {
@@ -22,7 +23,6 @@ namespace MiniFramework
             return csv;
         }
     }
-
     class CSVData : IEnumerable
     {
         public CSVData()
@@ -35,8 +35,6 @@ namespace MiniFramework
         }
         private string str;
         private IDictionary<string, CSVData> data = new Dictionary<string, CSVData>();
-        private string lineData;
-
         public CSVData this[string key]
         {
             get
@@ -50,8 +48,6 @@ namespace MiniFramework
             set
             {
                 data[key] = value;
-                str = (string)value;
-                lineData += str;
             }
         }
         public CSVData this[int key]
@@ -67,8 +63,6 @@ namespace MiniFramework
             set
             {
                 data[key.ToString()] = value;
-                str = (string)value;
-                lineData += str;
             }
         }
         public static implicit operator CSVData(string data)
@@ -81,7 +75,7 @@ namespace MiniFramework
         }
         public override string ToString()
         {
-            return lineData;
+            return str;
         }
         IEnumerator IEnumerable.GetEnumerator()
         {

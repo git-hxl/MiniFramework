@@ -18,6 +18,8 @@ public class NewBehaviourScript2 : MonoBehaviour
 
         thread2 = new Thread(Test2);
         thread2.Start();
+
+        
     }
 
 

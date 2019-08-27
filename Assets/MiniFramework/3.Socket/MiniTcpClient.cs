@@ -9,7 +9,7 @@ namespace MiniFramework
     {
         public bool IsConnected;
         private int connectTimeout = 5;
-        private int heartIntervalTime = 1;
+        private int heartIntervalTime = 10;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
@@ -53,11 +53,15 @@ namespace MiniFramework
         }
         public void Connect(string address, int port)
         {
-            IPHostEntry hostInfo = Dns.GetHostEntry(address);
-            IPAddress ip = hostInfo.AddressList[0];
+            IPAddress ip;
+            if (!IPAddress.TryParse(address, out ip))
+            {
+                IPHostEntry hostInfo = Dns.GetHostEntry(address);
+                ip = hostInfo.AddressList[0];
+            }
             Connect(ip, port);
         }
-        public void Connect(IPAddress ip, int port)
+        private void Connect(IPAddress ip, int port)
         {
             if (IsConnected)
             {

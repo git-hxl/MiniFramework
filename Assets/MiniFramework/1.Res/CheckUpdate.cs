@@ -39,7 +39,7 @@ namespace MiniFramework
             string dataConfigPath = Application.persistentDataPath + "/config.txt";
             if (!File.Exists(assetsConfigPath))
             {
-                Debug.LogError("配置文件不存在");
+                Debug.LogError("未生成本地配置文件！");
                 yield break;
             }
             Config assetsConfig = SerializeUtil.FromJsonFile<Config>(assetsConfigPath);
@@ -53,12 +53,7 @@ namespace MiniFramework
             else
             {
                 Config dataConfig = SerializeUtil.FromJsonFile<Config>(dataConfigPath);
-                if (dataConfig.platform != curPlatform)
-                {
-                    Debug.LogError("检测到错误的平台信息");
-                    yield break;
-                }
-                if (dataConfig.version != curVersion)
+                if (dataConfig.version != assetsConfig.version)
                 {
                     yield return DisposeLocalRes();
                 }
