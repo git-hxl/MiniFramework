@@ -15,10 +15,10 @@ public class UILogin : MonoBehaviour
     public InputField Password;
 
     public Button BtLogin;
+    LoginRequest loginRequest;
     // Use this for initialization
     void Start()
     {
-        MiniTcpClient.Instance.Connect(IP, port);
         Account.text = "SChange1";
         Password.text = "12345678";
         BtLogin.onClick.AddListener(() =>
@@ -39,32 +39,45 @@ public class UILogin : MonoBehaviour
                     Player.NickName = info["data"]["nickname"].ToString(); ;
                     Player.UserId = (int)(info["data"]["userId"]);
 
-                    LoginRequest loginRequest = new LoginRequest();
+                    loginRequest = new LoginRequest();
                     loginRequest.ChannelId = 0;
                     loginRequest.Gender = Player.Sex;
                     loginRequest.OpenId = Player.UserId.ToString();
                     loginRequest.NickName = Player.NickName;
                     loginRequest.Avatar = Player.HeadUrl;
                     loginRequest.Platform = "PetCard";
-                    MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
+                    if (!MiniTcpClient.Instance.IsConnected)
+                    {
+                        MiniTcpClient.Instance.Connect(IP, port);
+                    }
+                    else
+                    {
+                        MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
+                    }
                 }
             });
-
         });
+        MsgDispatcher.Instance.Regist(this, MsgID.ConnectSuccess, (data) =>
+        {
+            MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
+        });
+
         MsgDispatcher.Instance.Regist(this, 20001, (data) =>
         {
-            LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>((byte[])data[0]);
+            LoginResponse loginResponse = SerializeUtil.FromProtoBuff<LoginResponse>(data);
             if (loginResponse.Result == 0)
             {
                 Debug.Log("登录成功:" + loginResponse.NickName);
+
             }
         });
-        
-        MsgDispatcher.Instance.Regist(this,30040,(data)=>{
-            ScrollNoticesUpdate notices = SerializeUtil.FromProtoBuff<ScrollNoticesUpdate>((byte[])data[0]);
+
+        MsgDispatcher.Instance.Regist(this, 30040, (data) =>
+        {
+            ScrollNoticesUpdate notices = SerializeUtil.FromProtoBuff<ScrollNoticesUpdate>(data);
             foreach (var item in notices.notices)
             {
-                Debug.Log(item.Content+":"+item.contentZh);
+                Debug.Log(item.Content + ":" + item.contentZh);
             }
         });
     }

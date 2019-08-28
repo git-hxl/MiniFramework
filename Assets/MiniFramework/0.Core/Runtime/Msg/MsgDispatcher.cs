@@ -13,13 +13,13 @@ namespace MiniFramework
             public void OnRecycled()
             {
                 Recv = null;
-                Objs = null;
+                data = null;
                 Action = null;
             }
 
             public object Recv;
-            public object[] Objs;
-            public Action<object[]> Action;
+            public byte[] data;
+            public Action<byte[]> Action;
         }
 
         private Dictionary<string, List<MsgData>> listeners = new Dictionary<string, List<MsgData>>();
@@ -30,14 +30,14 @@ namespace MiniFramework
             while (idleListeners.Count > 0)
             {
                 MsgData msg = idleListeners.Dequeue();
-                msg.Action(msg.Objs);
+                msg.Action(msg.data);
             }
         }
-        public void Regist(object recv, int msgId, Action<object[]> action)
+        public void Regist(object recv, int msgId, Action<byte[]> action)
         {
             Regist(recv, msgId.ToString(), action);
         }
-        public void Regist(object recv, string msgId, Action<object[]> action)
+        public void Regist(object recv, string msgId, Action<byte[]> action)
         {
             lock (locker)
             {
@@ -65,11 +65,11 @@ namespace MiniFramework
                 value.Add(msg);
             }
         }
-        public void UnRegist(object recv, int msgId, Action<object[]> action)
+        public void UnRegist(object recv, int msgId, Action<byte[]> action)
         {
             UnRegist(recv, msgId.ToString(), action);
         }
-        public void UnRegist(object recv, string msgId, Action<object[]> action)
+        public void UnRegist(object recv, string msgId, Action<byte[]> action)
         {
             lock (locker)
             {
@@ -90,11 +90,11 @@ namespace MiniFramework
             }
         }
 
-        public void Dispatch(int msgId, params object[] objs)
+        public void Dispatch(int msgId, byte[] data)
         {
-            Dispatch(msgId.ToString(), objs);
+            Dispatch(msgId.ToString(), data);
         }
-        public void Dispatch(string msgId, params object[] objs)
+        public void Dispatch(string msgId, byte[] data)
         {
             List<MsgData> value;
             if (listeners.TryGetValue(msgId, out value))
@@ -104,7 +104,7 @@ namespace MiniFramework
                     MsgData msg = value[i];
                     if (!msg.Recv.Equals(null))
                     {
-                        msg.Objs = objs;
+                        msg.data = data;
                         idleListeners.Enqueue(msg);
                     }
                     else

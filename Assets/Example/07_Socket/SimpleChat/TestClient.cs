@@ -36,7 +36,7 @@ public class TestClient : MonoBehaviour
         });
         MsgDispatcher.Instance.Regist(this, MsgID.Test, (s) =>
         {
-            string txt = SerializeUtil.FromProtoBuff<string>((byte[])s[0]);
+            string txt = SerializeUtil.FromProtoBuff<string>(s);
             Text.text = DateTime.Now + ":" + txt;
             Text.color = Color.blue;
             Instantiate(Text.gameObject, Text.transform.parent).SetActive(true);

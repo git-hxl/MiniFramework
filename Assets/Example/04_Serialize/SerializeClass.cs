@@ -49,7 +49,7 @@ public class TestProto
     [ProtoMember(2)]
     public string name;
     [ProtoMember(3)]
-    public List<float> random = new List<float>();
+    public List<float> random;
     [ProtoMember(4)]
     public TestEnum testEnum = TestEnum.B;
 }

@@ -12,14 +12,14 @@ public class NewBehaviourScript1 : MonoBehaviour
     {
         MsgDispatcher.Instance.Regist(this, 100, (data) =>
         {
-            Debug.Log(data[0]);
+            //Debug.Log(data);
         });
         MsgDispatcher.Instance.Regist(this, 100, (data) =>
         {
-            Debug.Log(data[0]);
+            //Debug.Log(data);
         });
 
-        MsgDispatcher.Instance.Dispatch(100, "hello world");
+        MsgDispatcher.Instance.Dispatch(100,null);
     }
 
 }

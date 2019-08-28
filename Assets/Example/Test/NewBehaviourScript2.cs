@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-
+using MiniFramework;
 public class NewBehaviourScript2 : MonoBehaviour
 {
 

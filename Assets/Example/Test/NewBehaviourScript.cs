@@ -31,9 +31,7 @@ public class NewBehaviourScript : MonoBehaviour
         // TestEvent("event");
 
         //Debug.Log(Marshal.SizeOf(new PackHead()));
-
-        //NetMsgManager.Instance.RegisterMsg(this,100,Test);
-        //NetMsgManager.Instance.UnRegisterMsg(this,100,Test);   
+ 
     }
     void Test(byte[] data)
     {
