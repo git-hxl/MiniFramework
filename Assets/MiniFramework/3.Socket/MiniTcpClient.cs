@@ -128,7 +128,8 @@ namespace MiniFramework
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
                 byte[] sendData = dataPacker.Packer(head, bodyData);
-                tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
+                //tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
+                tcpClient.GetStream().Write(sendData, 0, sendData.Length);
                 Debug.Log("发送消息ID：" + head.MsgID + " 大小：" + sendData.Length + "字节");
             }
             else

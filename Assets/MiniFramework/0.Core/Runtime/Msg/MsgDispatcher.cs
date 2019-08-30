@@ -22,6 +22,7 @@ namespace MiniFramework
             public Action<byte[]> Action;
         }
 
+
         private Dictionary<string, List<MsgData>> listeners = new Dictionary<string, List<MsgData>>();
         private Queue<MsgData> idleListeners = new Queue<MsgData>();
         private static readonly object locker = new object();
@@ -31,6 +32,7 @@ namespace MiniFramework
             {
                 MsgData msg = idleListeners.Dequeue();
                 msg.Action(msg.data);
+                Pool<MsgData>.Instance.Recycle(msg);
             }
         }
         public void Regist(object recv, int msgId, Action<byte[]> action)
@@ -101,16 +103,18 @@ namespace MiniFramework
             {
                 for (int i = value.Count - 1; i >= 0; i--)
                 {
-                    MsgData msg = value[i];
-                    if (!msg.Recv.Equals(null))
+                    if (!value[i].Recv.Equals(null))
                     {
+                        MsgData msg = Pool<MsgData>.Instance.Allocate();
+                        msg.Recv = value[i].Recv;
+                        msg.Action = value[i].Action;
                         msg.data = data;
                         idleListeners.Enqueue(msg);
                     }
                     else
                     {
-                        value.Remove(msg);
-                        Pool<MsgData>.Instance.Recycle(msg);
+                        value.Remove(value[i]);
+                        Pool<MsgData>.Instance.Recycle(value[i]);
                     }
                 }
             }
