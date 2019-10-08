@@ -14,7 +14,7 @@ namespace MiniFramework
         private IEnumerator Start()
         {
             yield return CheckUpdate.Check();
-            yield return Init(CheckUpdate.CurPlatform);
+            yield return Init(CheckUpdate.Platform);
         }
         private IEnumerator Init(string platform)
         {

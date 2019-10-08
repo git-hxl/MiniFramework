@@ -46,11 +46,7 @@ namespace MiniFramework
             GUILayout.Label("版本信息");
             version = GUILayout.TextField(version);
 
-            if (GUILayout.Button("打包"))
-            {
-                BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
-                CreateConfig();
-            }
+            
             if (GUILayout.Button("生成config文件"))
             {
                 CreateConfig();
@@ -62,6 +58,11 @@ namespace MiniFramework
             if (GUILayout.Button("打开PersistentData目录"))
             {
                 FileUtil.Open(Application.persistentDataPath);
+            }
+            if (GUILayout.Button("打包"))
+            {
+                BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
+                CreateConfig();
             }
         }
         private void OnDestroy()
@@ -84,7 +85,7 @@ namespace MiniFramework
             Config config = new Config();
             config.version = version;
             config.platform = platform.ToString();
-            SerializeUtil.ToJson(Application.streamingAssetsPath + "/config.txt", config);
+            File.WriteAllText(Application.streamingAssetsPath + "/config.txt", SerializeUtil.ToJson(config));
             AssetDatabase.Refresh();
             Debug.Log("写入成功");
         }

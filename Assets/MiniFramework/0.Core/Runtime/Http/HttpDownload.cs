@@ -23,7 +23,7 @@ namespace MiniFramework
         {
             this.saveDir = saveDir;
             this.callback = callback;
-            FileUtil.CreateDir(saveDir);
+            Directory.CreateDirectory(saveDir);
         }
         public IEnumerator Download(string url)
         {

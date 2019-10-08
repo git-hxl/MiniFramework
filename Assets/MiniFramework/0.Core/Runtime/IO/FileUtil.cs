@@ -1,76 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 namespace MiniFramework
 {
     public static class FileUtil
     {
-        /// <summary>
-        /// 采用,分割符号读取，使用“,”可保留,分割符号
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static Dictionary<int, string[]> ReadCSV(string path)
+        public static IEnumerator ReadStreamingFile(string path, Action<string> callback)
         {
-            string txts = ReadFile(path);
-            Dictionary<int, string[]> csv = new Dictionary<int, string[]>();
-            try
+            string result = "";
+            if (path.Contains("://"))
             {
-                string[] txt2Array = txts.Split('\n');
-                for (int i = 1; i < txt2Array.Length; i++)
-                {
-                    List<string> txt = txt2Array[i].Split(',').ToList();
-                    int id = int.Parse(txt[0]);
-                    txt.RemoveAt(0);
-                    int head = 0;
-                    for (int j = 0; j < txt.Count; j++)
-                    {
-                        txt[j] = txt[j].Replace("\\n", "\n");
-                        if (txt[j].IndexOf("\"") == 0)
-                        {
-                            head = j;
-                            continue;
-                        }
-                        if (txt[j].IndexOf("\"") == txt[j].Length - 1)
-                        {
-                            txt[head] = (txt[head] + "," + txt[j]).Trim('"');
-                            txt.RemoveAt(j);
-                            j--;
-                        }
-                    }
-                    csv.Add(id, txt.ToArray());
-                }
-                return csv;
+                UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequest.Get(path);
+                yield return www.SendWebRequest();
+                result = www.downloadHandler.text;
             }
-            catch (Exception e)
+            else
             {
-                throw e;
+                result = File.ReadAllText(path);
             }
+            callback(result);
         }
-        public static void WriteFile(string path, string content, bool append = false)
+        public static IEnumerator CopyStreamingFile(string sourcePath, string destPath)
         {
-            using (StreamWriter writer = new StreamWriter(path, append, Encoding.UTF8))
+            byte[] result = null;
+            if (sourcePath.Contains("://"))
             {
-                writer.Write(content);
+                UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequest.Get(sourcePath);
+                yield return www.SendWebRequest();
+                result = www.downloadHandler.data;
             }
+            else
+            {
+                result = File.ReadAllBytes(sourcePath);
+            }
+            File.WriteAllBytes(destPath, result);
         }
-        public static string ReadFile(string path)
-        {
-            FileInfo file = new FileInfo(path);
-            if (!file.Exists)
-            {
-                UnityEngine.Debug.LogError(path + ":不存在");
-                return "";
-            }
-            using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
-            {
-                return reader.ReadToEnd();
-            }
-        }
+
+
         public static long GetFileLength(string path)
         {
             FileInfo file = new FileInfo(path);
@@ -79,14 +47,6 @@ namespace MiniFramework
                 return 0;
             }
             return file.Length;
-        }
-        public static void CreateDir(string path)
-        {
-            DirectoryInfo info = new DirectoryInfo(path);
-            if (!info.Exists)
-            {
-                info.Create();
-            }
         }
         public static void Open(string path)
         {

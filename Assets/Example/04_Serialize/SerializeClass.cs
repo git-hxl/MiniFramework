@@ -16,9 +16,7 @@ public class SerializeClass : MonoBehaviour
 
         string jsonData = SerializeUtil.ToJson(test);
         Debug.Log(jsonData);
-        string xmlData = SerializeUtil.ToXml(test);
-        Debug.Log(xmlData);
-        SerializeUtil.ToXml(Application.streamingAssetsPath + "/test.xml", test);
+
 
         TestProto proto = new TestProto();
         proto.ID = 110;

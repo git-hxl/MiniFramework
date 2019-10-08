@@ -186,7 +186,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 615227901}
-  - component: {fileID: 615227902}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -207,17 +206,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &615227902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 615227900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbc741424810e46ce9e3ca2fd3fcebba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &650635815
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,7 +217,6 @@ GameObject:
   - component: {fileID: 650635818}
   - component: {fileID: 650635817}
   - component: {fileID: 650635816}
-  - component: {fileID: 650635820}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -303,18 +290,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &650635820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 650635815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cad87ad64b8e144cead74cb60db6ae6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Texture: {fileID: 0}
 --- !u!1 &1644856339
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +298,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1644856340}
-  - component: {fileID: 1644856341}
   m_Layer: 0
   m_Name: Lock
   m_TagString: Untagged
@@ -344,14 +318,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1644856341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1644856339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39872dbd4854547f7a8ebcc85d33d60a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
