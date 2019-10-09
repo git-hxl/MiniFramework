@@ -48,7 +48,7 @@ public class UILogin : MonoBehaviour
                     loginRequest.Platform = "PetCard";
                     if (!MiniTcpClient.Instance.IsConnected)
                     {
-                        MiniTcpClient.Instance.Connect(IP, port);
+                        MiniTcpClient.Instance.Launch(IP, port);
                     }
                     else
                     {

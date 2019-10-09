@@ -5,53 +5,16 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniTcpClient : MonoSingleton<MiniTcpClient>
+    public class MiniTcpClient : Singleton<MiniTcpClient>
     {
         public bool IsConnected;
-        private int connectTimeout = 5;
-        private int heartIntervalTime = 10;
+        public Action ConnectSuccess;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
-        private int heartPack;
-        private Coroutine heartEvent;
-        protected override void Awake()
-        {
-            base.Awake();
-            MsgDispatcher.Instance.Regist(this, MsgID.HeartPack, (obj) =>
-            {
-                //接收到心跳包
-                heartPack--;
-            });
-            MsgDispatcher.Instance.Regist(this, MsgID.ConnectSuccess, (obj) =>
-            {
-                //心跳包发送
-                heartEvent = RepeatEvent.Excute(this, heartIntervalTime, -1, () =>
-                 {
-                     if (heartPack != 0)
-                     {
-                         tcpClient.Close();
-                         IsConnected = false;
-                         Debug.LogError("网络超时!");
-                         MsgDispatcher.Instance.Dispatch(MsgID.ConnectAbort,null);
-                         return;
-                     }
-                     Send(MsgID.HeartPack, null);
-                     heartPack++;
-                 });
-            });
-            MsgDispatcher.Instance.Regist(this, MsgID.ConnectFailed, (obj) =>
-            {
-
-            });
-            MsgDispatcher.Instance.Regist(this, MsgID.ConnectAbort, (obj) =>
-            {
-                //关闭心跳包
-                StopCoroutine(heartEvent);
-            });
-        }
-        public void Connect(string address, int port)
+        private MiniTcpClient() { }
+        public void Launch(string address, int port)
         {
             IPAddress ip;
             if (!IPAddress.TryParse(address, out ip))
@@ -72,35 +35,21 @@ namespace MiniFramework
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
             tcpClient.BeginConnect(ip, port, ConnectResult, tcpClient);
-            DelayEvent.Excute(this, connectTimeout, () =>
-             {
-                 if (tcpClient.Client != null && !IsConnected)
-                 {
-                     tcpClient.Close();
-                     IsConnected = false;
-                     Debug.Log("连接超时!");
-                     MsgDispatcher.Instance.Dispatch(MsgID.ConnectFailed,null);
-                 }
-             });
         }
         private void ConnectResult(IAsyncResult ar)
         {
             tcpClient = (TcpClient)ar.AsyncState;
-            if (!tcpClient.Connected)
+            tcpClient.EndConnect(ar);
+            if (tcpClient.Connected)
             {
-                tcpClient.Close();
-                IsConnected = false;
-                Debug.Log("连接服务器失败，请尝试重新连接!");
-                MsgDispatcher.Instance.Dispatch(MsgID.ConnectFailed,null);
-            }
-            else
-            {
-                tcpClient.EndConnect(ar);
                 NetworkStream stream = tcpClient.GetStream();
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
                 Debug.Log("客户端连接成功");
-                MsgDispatcher.Instance.Dispatch(MsgID.ConnectSuccess,null);
+                if (ConnectSuccess != null)
+                {
+                    ConnectSuccess();
+                }
             }
         }
         private void ReadResult(IAsyncResult ar)
@@ -108,18 +57,13 @@ namespace MiniFramework
             tcpClient = (TcpClient)ar.AsyncState;
             NetworkStream stream = tcpClient.GetStream();
             int recvLength = stream.EndRead(ar);
-            if (recvLength <= 0)
+            if (recvLength > 0)
             {
-                tcpClient.Close();
-                IsConnected = false;
-                Debug.LogError("网络中断");
-                MsgDispatcher.Instance.Dispatch(MsgID.ConnectAbort,null);
-                return;
+                byte[] recvBytes = new byte[recvLength];
+                Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
+                dataPacker.UnPack(recvBytes);
+                stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
             }
-            byte[] recvBytes = new byte[recvLength];
-            Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
-            dataPacker.UnPack(recvBytes);
-            stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
         }
         public void Send(int msgID, byte[] bodyData)
         {
@@ -128,8 +72,8 @@ namespace MiniFramework
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
                 byte[] sendData = dataPacker.Packer(head, bodyData);
-                //tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
-                tcpClient.GetStream().Write(sendData, 0, sendData.Length);
+                tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
+                //tcpClient.GetStream().Write(sendData, 0, sendData.Length);
                 Debug.Log("发送消息ID：" + head.MsgID + " 大小：" + sendData.Length + "字节");
             }
             else
@@ -145,16 +89,21 @@ namespace MiniFramework
         }
         public void Close()
         {
-            if (tcpClient != null && IsConnected)
+            if (tcpClient != null)
             {
                 tcpClient.Close();
+                tcpClient = null;
                 IsConnected = false;
-                Debug.Log("主动断开连接");
+                Debug.LogError("主动断开连接");
             }
         }
         private void OnDestroy()
         {
-            Close();
+            if (tcpClient != null)
+            {
+                tcpClient.Close();
+                IsConnected = false;
+            }
         }
     }
 }

@@ -5,12 +5,13 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniUdpClient : MonoSingleton<MiniUdpClient>
+    public class MiniUdpClient : Singleton<MiniUdpClient>
     {
         public bool IsActive { get; set; }
         private byte[] recvBuffer;
         private UdpClient udpClient;
         private DataPacker dataPacker;
+        private MiniUdpClient() { }
         public void Launch(int port)
         {
             if (IsActive)
@@ -70,10 +71,6 @@ namespace MiniFramework
                 IsActive = false;
                 Debug.Log("主动断开连接");
             }
-        }
-        private void OnDestroy()
-        {
-            Close();
         }
     }
 }

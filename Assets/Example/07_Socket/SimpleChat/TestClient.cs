@@ -15,7 +15,7 @@ public class TestClient : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpClient.Instance.Connect("127.0.0.1", 8888);
+        MiniTcpClient.Instance.Launch("127.0.0.1", 8888);
         Send.onClick.AddListener(() =>
         {
             if (string.IsNullOrEmpty(Content.text))

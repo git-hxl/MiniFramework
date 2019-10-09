@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniTcpServer : MonoSingleton<MiniTcpServer>
+    public class MiniTcpServer : Singleton<MiniTcpServer>
     {
         public bool IsActive { get; set; }
         private int maxConnections = 12;
@@ -15,15 +15,7 @@ namespace MiniFramework
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
-        protected override void Awake()
-        {
-            base.Awake();
-            MsgDispatcher.Instance.Regist(this, MsgID.HeartPack, (obj) =>
-            {
-                //接收到心跳包
-                Send(MsgID.HeartPack, null);
-            });
-        }
+        private MiniTcpServer() { }
         public void Launch(int port)
         {
             if (IsActive)
@@ -127,10 +119,6 @@ namespace MiniFramework
                 IsActive = false;
                 Debug.Log("服务器已关闭");
             }
-        }
-        private void OnDestroy()
-        {
-            Close();
         }
     }
 }
