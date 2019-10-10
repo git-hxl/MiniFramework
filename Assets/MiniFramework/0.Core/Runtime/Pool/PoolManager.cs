@@ -30,7 +30,7 @@ namespace MiniFramework
             poolGroup.Objects = objs.ToList();
             Groups.Add(poolGroup);
         }
-        public void Init()
+        public override void Init()
         {
             foreach (var item in Groups)
             {

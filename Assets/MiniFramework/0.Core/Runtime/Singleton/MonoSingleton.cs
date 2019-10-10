@@ -20,17 +20,23 @@ namespace MiniFramework
                 return mInstance;
             }
         }
-        protected virtual void Awake()
+        private void Awake()
         {
             if (mInstance == null)
             {
                 mInstance = this as T;
+                Init();
                 DontDestroyOnLoad(gameObject);
+
             }
             else
             {
                 Destroy(gameObject);
             }
+        }
+        public virtual void Init()
+        {
+
         }
         public virtual void Dispose()
         {

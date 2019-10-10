@@ -7,15 +7,18 @@ namespace MiniFramework
     {
         public Action ConnectTimeout;
         public Action NetWorkTimeout;
+        public float NetWorkLatency;
         private Coroutine heartAction;
         private float sendTime;
         private float recvTime;
-        private void Start()
+
+        public override void Init()
         {
             MsgDispatcher.Instance.Regist(this, MsgID.HeartPack, (obj) =>
             {
                 //接收心跳包 
                 recvTime = Time.time;
+                NetWorkLatency = recvTime - sendTime;
             });
         }
         /// <summary>
@@ -39,7 +42,7 @@ namespace MiniFramework
         /// <summary>
         /// 心跳超时
         /// </summary>
-        public void CheckHeartPack()
+        public void CheckTcpHeartPack()
         {
             RepeatAction.Excute(this, 5, -1, () =>
             {
@@ -49,7 +52,7 @@ namespace MiniFramework
                     recvTime = 0;
                     return;
                 }
-                if (sendTime - recvTime > 0)
+                if (recvTime - sendTime < 0)
                 {
                     Debug.LogError("心跳包接收超时!");
                     MiniTcpClient.Instance.Close();
@@ -60,6 +63,31 @@ namespace MiniFramework
                     return;
                 }
                 MiniTcpClient.Instance.Send(MsgID.HeartPack, null);
+                sendTime = Time.time;
+            });
+        }
+
+        public void CheckUdpHeartPack()
+        {
+            RepeatAction.Excute(this, 5, -1, () =>
+            {
+                if (!MiniUdpClient.Instance.IsActive)
+                {
+                    sendTime = 0;
+                    recvTime = 0;
+                    return;
+                }
+                if (recvTime - sendTime < 0)
+                {
+                    Debug.LogError("心跳包接收超时!");
+                    MiniUdpClient.Instance.Close();
+                    if (NetWorkTimeout != null)
+                    {
+                        NetWorkTimeout();
+                    }
+                    return;
+                }
+                MiniUdpClient.Instance.Send(MsgID.HeartPack, null);
                 sendTime = Time.time;
             });
         }

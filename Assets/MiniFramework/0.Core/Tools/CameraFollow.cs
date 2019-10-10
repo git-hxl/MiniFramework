@@ -12,15 +12,13 @@ namespace MiniFramework
         {
             mCamera = Camera.main.transform;
         }
-
-        // Update is called once per frame
         void LateUpdate()
         {
             if (Target != null)
             {
-                //mCamera.LookAt(Target);
-                mCamera.position = Vector3.Lerp(mCamera.position, Target.position - mCamera.forward * Distance, Time.deltaTime*10);
-                mCamera.eulerAngles = Vector3.Lerp(mCamera.eulerAngles, new Vector3(Angle, 0, 0), Time.deltaTime*10);
+                Vector3 targetPos = Target.position - mCamera.forward * Distance;
+                mCamera.position = Vector3.Lerp(mCamera.position, targetPos, Time.deltaTime * 5);
+                mCamera.eulerAngles = Vector3.Lerp(mCamera.eulerAngles, new Vector3(Angle, 0, 0), Time.deltaTime * 5);
             }
         }
     }

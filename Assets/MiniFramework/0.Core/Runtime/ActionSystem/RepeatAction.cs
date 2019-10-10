@@ -13,10 +13,9 @@ namespace MiniFramework
         {
             while (times > 0 || times < 0)
             {
-                yield return new WaitForSeconds(interval);
                 action();
-                if (times > 0)
-                    times--;
+                times--;
+                yield return new WaitForSeconds(interval);
             }
         }
     }

@@ -12,17 +12,9 @@ public class FrameClient : MonoBehaviour
     {
         MiniTcpClient.Instance.Launch("127.0.0.1", 8888);
         TimeoutChecker.Instance.CheckConnectTimeout();
-        TimeoutChecker.Instance.CheckHeartPack();
+        TimeoutChecker.Instance.CheckTcpHeartPack();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (MiniTcpClient.Instance.IsConnected)
-        {
-            
-        }
-    }
 
 	private void OnDestroy() {
 		MiniTcpClient.Instance.Close();

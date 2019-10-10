@@ -110,9 +110,10 @@ namespace MiniFramework
                 Debug.Log("已断开远程客户端");
             }
         }
-        public void Close()
+        public void Close(bool isClear = true)
         {
-            Clear();
+            if (isClear)
+                Clear();
             if (tcpListener != null && IsActive)
             {
                 tcpListener.Stop();

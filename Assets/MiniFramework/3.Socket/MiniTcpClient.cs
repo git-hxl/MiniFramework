@@ -35,6 +35,7 @@ namespace MiniFramework
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
             tcpClient.BeginConnect(ip, port, ConnectResult, tcpClient);
+            Debug.Log("开始连接服务器："+ip+" 端口："+port);
         }
         private void ConnectResult(IAsyncResult ar)
         {
@@ -67,18 +68,13 @@ namespace MiniFramework
         }
         public void Send(int msgID, byte[] bodyData)
         {
-            if (IsConnected)
+            if (tcpClient != null && tcpClient.Connected)
             {
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
                 byte[] sendData = dataPacker.Packer(head, bodyData);
                 tcpClient.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, tcpClient);
-                //tcpClient.GetStream().Write(sendData, 0, sendData.Length);
                 Debug.Log("发送消息ID：" + head.MsgID + " 大小：" + sendData.Length + "字节");
-            }
-            else
-            {
-                Debug.LogError("连接已断开，发送失败!");
             }
         }
         private void SendResult(IAsyncResult ar)
@@ -95,14 +91,6 @@ namespace MiniFramework
                 tcpClient = null;
                 IsConnected = false;
                 Debug.LogError("主动断开连接");
-            }
-        }
-        private void OnDestroy()
-        {
-            if (tcpClient != null)
-            {
-                tcpClient.Close();
-                IsConnected = false;
             }
         }
     }
