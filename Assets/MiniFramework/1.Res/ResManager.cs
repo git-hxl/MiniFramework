@@ -31,6 +31,11 @@ namespace MiniFramework
             }
             AssetBundleLoader.CurAssetBundle = null;
         }
+        /// <summary>
+        /// 加载资源
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Object Load(string name)
         {
             Object asset = Resources.Load(name);

@@ -41,11 +41,21 @@ namespace MiniFramework
             SoundSource.volume = volume;
             PlayerPrefs.SetFloat("SoundVolume", volume);
         }
+        /// <summary>
+        /// 播放音效
+        /// </summary>
+        /// <param name="clipName"></param>
+        /// <param name="isCover"></param>
         public void PlaySound(string clipName, bool isCover = false)
         {
             AudioClip clip = ResManager.Instance.Load(clipName) as AudioClip;
             PlaySound(clip, isCover);
         }
+        /// <summary>
+        /// 播放音效
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <param name="isCover"></param>
         public void PlaySound(AudioClip clip, bool isCover = false)
         {
             if (isCover)
@@ -58,11 +68,19 @@ namespace MiniFramework
                 SoundSource.PlayOneShot(clip);
             }
         }
+        /// <summary>
+        /// 播放音乐
+        /// </summary>
+        /// <param name="clipName"></param>
         public void PlayMusic(string clipName)
         {
             AudioClip clip = ResManager.Instance.Load(clipName) as AudioClip;
             PlayMusic(clip);
         }
+        /// <summary>
+        /// 播放音乐
+        /// </summary>
+        /// <param name="clip"></param>
         public void PlayMusic(AudioClip clip)
         {
             MusicSource.clip = clip;

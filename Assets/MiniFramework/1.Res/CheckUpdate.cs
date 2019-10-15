@@ -13,15 +13,14 @@ namespace MiniFramework
         public string AssetBundleUrl;
         public string Platform;
         public string Version;
+        public bool IsLocal;
         private HttpDownload httpDownload;
         private List<string> updateFiles = new List<string>();
         public IEnumerator Check()
         {
             yield return CheckConfig();
 
-            yield return CheckLocalMainfest();
-
-            yield return CheckServerManifest();
+            yield return IsLocal ? CheckLocalMainfest() : CheckServerManifest();
         }
         IEnumerator CheckConfig()
         {

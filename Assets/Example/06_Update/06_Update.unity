@@ -157,6 +157,7 @@ MonoBehaviour:
     AssetBundleUrl: 
     Platform: 
     Version: 
+    IsLocal: 0
 --- !u!1 &61376092
 GameObject:
   m_ObjectHideFlags: 0
