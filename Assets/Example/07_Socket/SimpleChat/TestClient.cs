@@ -15,16 +15,16 @@ public class TestClient : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpClient.Instance.Launch("127.0.0.1", 8888);
+        SocketManager.Instance.MiniTcpClient.Launch("127.0.0.1", 8888);
         Send.onClick.AddListener(() =>
         {
             if (string.IsNullOrEmpty(Content.text))
             {
-                MiniTcpClient.Instance.Send(MsgID.Test, null);
+                SocketManager.Instance.MiniTcpClient.Send(MsgID.Test, null);
             }
             else
             {
-                MiniTcpClient.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+                SocketManager.Instance.MiniTcpClient.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
             }
             Text.text = DateTime.Now + ":" + Content.text;
             Text.color = Color.black;
@@ -32,7 +32,7 @@ public class TestClient : MonoBehaviour
         });
         Close.onClick.AddListener(() =>
         {
-            MiniTcpClient.Instance.Close();
+            SocketManager.Instance.MiniTcpClient.Close();
         });
         MsgDispatcher.Instance.Regist(this, MsgID.Test, (s) =>
         {
@@ -44,10 +44,10 @@ public class TestClient : MonoBehaviour
     }
     private void Update()
     {
-        if (MiniTcpClient.Instance.IsConnected)
+        if (SocketManager.Instance.MiniTcpClient.IsConnected)
         {
             // MiniTcpClient.Instance.Send(MsgID.Test,SerializeUtil.ToProtoBuff("123213nkasjnakdad123132ansklncasdl123嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻寻寻寻寻寻寻寻寻"));
         }
     }
-    
+
 }

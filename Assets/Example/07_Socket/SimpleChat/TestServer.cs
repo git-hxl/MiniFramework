@@ -19,17 +19,17 @@ public class TestServer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpServer.Instance.Launch(8888);
+        SocketManager.Instance.MiniTcpServer.Launch(8888);
         //MiniUdpClient.Instance.Launch(8888);
         Send.onClick.AddListener(() =>
         {
             if (string.IsNullOrEmpty(Content.text))
             {
-                MiniTcpServer.Instance.Send(MsgID.Test, null);
+                SocketManager.Instance.MiniTcpServer.Send(MsgID.Test, null);
             }
             else
             {
-                MiniTcpServer.Instance.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
+                SocketManager.Instance.MiniTcpServer.Send(MsgID.Test, SerializeUtil.ToProtoBuff(Content.text));
             }
             Text.text = DateTime.Now + ":" + Content.text;
             Text.color = Color.black;
@@ -37,7 +37,7 @@ public class TestServer : MonoBehaviour
         });
         Close.onClick.AddListener(() =>
         {
-            MiniTcpServer.Instance.Clear();
+            SocketManager.Instance.MiniTcpServer.Clear();
         });
         MsgDispatcher.Instance.Regist(this, MsgID.Test, (s) =>
         {
@@ -52,7 +52,7 @@ public class TestServer : MonoBehaviour
         {
             MoveData data2 = SerializeUtil.FromProtoBuff<MoveData>(data);
             Debug.LogWarning("当前帧：" + data2.frame + "当前时间：" + data2.Time);
-            MiniTcpServer.Instance.Send(8888, data);
+            SocketManager.Instance.MiniTcpServer.Send(8888, data);
         });
     }
 }

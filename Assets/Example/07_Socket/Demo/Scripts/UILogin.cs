@@ -46,20 +46,20 @@ public class UILogin : MonoBehaviour
                     loginRequest.NickName = Player.NickName;
                     loginRequest.Avatar = Player.HeadUrl;
                     loginRequest.Platform = "PetCard";
-                    if (!MiniTcpClient.Instance.IsConnected)
+                    if (!SocketManager.Instance.MiniTcpClient.IsConnected)
                     {
-                        MiniTcpClient.Instance.Launch(IP, port);
+                        SocketManager.Instance.MiniTcpClient.Launch(IP, port);
                     }
                     else
                     {
-                        MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
+                        SocketManager.Instance.MiniTcpClient.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
                     }
                 }
             });
         });
         MsgDispatcher.Instance.Regist(this, MsgID.ConnectSuccess, (data) =>
         {
-            MiniTcpClient.Instance.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
+            SocketManager.Instance.MiniTcpClient.Send(10001, SerializeUtil.ToProtoBuff(loginRequest));
         });
 
         MsgDispatcher.Instance.Regist(this, 20001, (data) =>

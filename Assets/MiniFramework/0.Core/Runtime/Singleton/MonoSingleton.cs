@@ -27,7 +27,6 @@ namespace MiniFramework
                 mInstance = this as T;
                 Init();
                 DontDestroyOnLoad(gameObject);
-
             }
             else
             {

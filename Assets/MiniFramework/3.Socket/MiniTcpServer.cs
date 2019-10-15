@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniTcpServer : Singleton<MiniTcpServer>
+    public class MiniTcpServer
     {
         public bool IsActive { get; set; }
         private int maxConnections = 12;
@@ -15,7 +15,6 @@ namespace MiniFramework
         private List<TcpClient> remoteClients;
         private TcpListener tcpListener;
         private DataPacker dataPacker;
-        private MiniTcpServer() { }
         public void Launch(int port)
         {
             if (IsActive)
@@ -84,10 +83,6 @@ namespace MiniFramework
                 }
                 Debug.Log("发送消息ID：" + head.MsgID + " 大小：" + sendData.Length + "字节");
             }
-            else
-            {
-                Debug.LogError("服务器未启动，发送失败!");
-            }
         }
         private void SendResult(IAsyncResult ar)
         {
@@ -110,10 +105,9 @@ namespace MiniFramework
                 Debug.Log("已断开远程客户端");
             }
         }
-        public void Close(bool isClear = true)
+        public void Close()
         {
-            if (isClear)
-                Clear();
+            Clear();
             if (tcpListener != null && IsActive)
             {
                 tcpListener.Stop();

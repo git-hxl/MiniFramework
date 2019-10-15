@@ -13,9 +13,9 @@ public class Controller : MonoBehaviour
     {
         MsgDispatcher.Instance.Regist(this, MsgID.Test, (data) =>
          {
-              string[] s = Encoding.UTF8.GetString(data).Split('/');
-              x = float.Parse(s[0]);
-              y = float.Parse(s[1]);
+             string[] s = Encoding.UTF8.GetString(data).Split('/');
+             x = float.Parse(s[0]);
+             y = float.Parse(s[1]);
          });
     }
 
@@ -24,13 +24,13 @@ public class Controller : MonoBehaviour
     {
         float sendx = Input.GetAxisRaw("Horizontal");
         float sendy = Input.GetAxisRaw("Vertical");
-        if (MiniTcpClient.Instance.IsConnected)
+        if (SocketManager.Instance.MiniTcpClient.IsConnected)
         {
 
             if (sendx != x || sendy != y)
             {
                 string s = sendx + "/" + sendy;
-                MiniTcpClient.Instance.Send(MsgID.Test, Encoding.UTF8.GetBytes(s));
+                SocketManager.Instance.MiniTcpClient.Send(MsgID.Test, Encoding.UTF8.GetBytes(s));
             }
         }
         Move(x, y);
@@ -38,7 +38,7 @@ public class Controller : MonoBehaviour
 
     private void OnGUI()
     {
-        GUILayout.Label("延迟：" + TimeoutChecker.Instance.NetWorkLatency * 1000 + "ms");
+        GUILayout.Label("网络延迟：" + TimeoutChecker.Instance.NetWorkLatency + "ms" + " 心跳延迟：" + TimeoutChecker.Instance.HeartPackLatency + "ms");
     }
 
     void Move(float x, float y)

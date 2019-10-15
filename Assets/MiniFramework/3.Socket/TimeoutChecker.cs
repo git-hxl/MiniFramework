@@ -7,7 +7,8 @@ namespace MiniFramework
     {
         public Action ConnectTimeout;
         public Action NetWorkTimeout;
-        public float NetWorkLatency;
+        public int NetWorkLatency;
+        public int HeartPackLatency;
         private Coroutine heartAction;
         private float sendTime;
         private float recvTime;
@@ -18,20 +19,33 @@ namespace MiniFramework
             {
                 //接收心跳包 
                 recvTime = Time.time;
-                NetWorkLatency = recvTime - sendTime;
+                HeartPackLatency = (int)((recvTime - sendTime) * 1000);
+            });
+        }
+        public void AutoSendPing(string address)
+        {
+            RepeatAction.Excute(this, 1, -1, () => SendPing(address));
+        }
+        private void SendPing(string address)
+        {
+            Ping ping = new Ping(address);
+            UntilAction.Excute(this, () => ping.isDone, () =>
+            {
+                NetWorkLatency = ping.time;
+                ping.DestroyPing();
             });
         }
         /// <summary>
         /// 连接超时
         /// </summary>
-        public void CheckConnectTimeout()
+        public void CheckConnectTimeout(MiniTcpClient tcpClient)
         {
             DelayAction.Excute(this, 3, () =>
             {
-                if (!MiniTcpClient.Instance.IsConnected)
+                if (!tcpClient.IsConnected)
                 {
                     Debug.LogError("连接超时!");
-                    MiniTcpClient.Instance.Close();
+                    tcpClient.Close();
                     if (ConnectTimeout != null)
                     {
                         ConnectTimeout();
@@ -42,11 +56,11 @@ namespace MiniFramework
         /// <summary>
         /// 心跳超时
         /// </summary>
-        public void CheckTcpHeartPack()
+        public void CheckHeartPack(MiniTcpClient miniTcpClient)
         {
             RepeatAction.Excute(this, 5, -1, () =>
             {
-                if (!MiniTcpClient.Instance.IsConnected)
+                if (!miniTcpClient.IsConnected)
                 {
                     sendTime = 0;
                     recvTime = 0;
@@ -55,23 +69,23 @@ namespace MiniFramework
                 if (recvTime - sendTime < 0)
                 {
                     Debug.LogError("心跳包接收超时!");
-                    MiniTcpClient.Instance.Close();
+                    miniTcpClient.Close();
                     if (NetWorkTimeout != null)
                     {
                         NetWorkTimeout();
                     }
                     return;
                 }
-                MiniTcpClient.Instance.Send(MsgID.HeartPack, null);
+                miniTcpClient.Send(MsgID.HeartPack, null);
                 sendTime = Time.time;
             });
         }
 
-        public void CheckUdpHeartPack()
+        public void CheckHeartPack(MiniUdpClient miniUdpClient)
         {
             RepeatAction.Excute(this, 5, -1, () =>
             {
-                if (!MiniUdpClient.Instance.IsActive)
+                if (!miniUdpClient.IsActive)
                 {
                     sendTime = 0;
                     recvTime = 0;
@@ -80,14 +94,14 @@ namespace MiniFramework
                 if (recvTime - sendTime < 0)
                 {
                     Debug.LogError("心跳包接收超时!");
-                    MiniUdpClient.Instance.Close();
+                    miniUdpClient.Close();
                     if (NetWorkTimeout != null)
                     {
                         NetWorkTimeout();
                     }
                     return;
                 }
-                MiniUdpClient.Instance.Send(MsgID.HeartPack, null);
+                miniUdpClient.Send(MsgID.HeartPack, null);
                 sendTime = Time.time;
             });
         }

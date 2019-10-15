@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniUdpClient : Singleton<MiniUdpClient>
+    public class MiniUdpClient
     {
         public bool IsActive;
         private byte[] recvBuffer;
@@ -13,7 +13,6 @@ namespace MiniFramework
         private DataPacker dataPacker;
         private IPAddress ip;
         private int port;
-        private MiniUdpClient() { }
         public void Launch(int port)
         {
             if (IsActive)
@@ -55,7 +54,7 @@ namespace MiniFramework
         }
         public void Send(int msgID, byte[] bodyData)
         {
-            if (udpClient != null && IsActive)
+            if (IsActive)
             {
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
@@ -72,10 +71,9 @@ namespace MiniFramework
         }
         public void Close()
         {
-            if (udpClient != null)
+            if (udpClient != null && IsActive)
             {
                 udpClient.Close();
-                udpClient = null;
                 IsActive = false;
                 Debug.Log("主动断开连接");
             }

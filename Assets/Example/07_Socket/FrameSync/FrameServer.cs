@@ -13,28 +13,28 @@ public class FrameServer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MiniTcpServer.Instance.Launch(8888);
+        SocketManager.Instance.MiniTcpServer.Launch(8888);
 
         MsgDispatcher.Instance.Regist(this, MsgID.HeartPack, (data) =>
         {
-            MiniTcpServer.Instance.Send(MsgID.HeartPack, data);
+            SocketManager.Instance.MiniTcpServer.Send(MsgID.HeartPack, data);
         });
 
         MsgDispatcher.Instance.Regist(this, MsgID.Test, (data) =>
         {
-            MiniTcpServer.Instance.Send(MsgID.Test, data);
+            SocketManager.Instance.MiniTcpServer.Send(MsgID.Test, data);
         });
         Launch.onClick.AddListener(() =>
         {
-            MiniTcpServer.Instance.Launch(8888);
+            SocketManager.Instance.MiniTcpServer.Launch(8888);
         });
         Close.onClick.AddListener(() =>
         {
-            MiniTcpServer.Instance.Close(false);
+            SocketManager.Instance.MiniTcpServer.Close();
         });
         Clear.onClick.AddListener(() =>
         {
-            MiniTcpServer.Instance.Clear();
+            SocketManager.Instance.MiniTcpServer.Clear();
         });
     }
 

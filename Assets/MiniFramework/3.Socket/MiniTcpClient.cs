@@ -5,24 +5,25 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class MiniTcpClient : Singleton<MiniTcpClient>
+    public class MiniTcpClient
     {
         public bool IsConnected;
         public Action ConnectSuccess;
+        public IPAddress IP;
+        public int Port;
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
         private TcpClient tcpClient;
         private DataPacker dataPacker;
-        private MiniTcpClient() { }
         public void Launch(string address, int port)
         {
-            IPAddress ip;
-            if (!IPAddress.TryParse(address, out ip))
+            Port = port;
+            if (!IPAddress.TryParse(address, out IP))
             {
                 IPHostEntry hostInfo = Dns.GetHostEntry(address);
-                ip = hostInfo.AddressList[0];
+                IP = hostInfo.AddressList[0];
             }
-            Connect(ip, port);
+            Connect(IP, Port);
         }
         private void Connect(IPAddress ip, int port)
         {
@@ -35,7 +36,7 @@ namespace MiniFramework
             dataPacker = new DataPacker();
             tcpClient = new TcpClient();
             tcpClient.BeginConnect(ip, port, ConnectResult, tcpClient);
-            Debug.Log("开始连接服务器："+ip+" 端口："+port);
+            Debug.Log("开始连接服务器：" + ip + " 端口：" + port);
         }
         private void ConnectResult(IAsyncResult ar)
         {
@@ -68,7 +69,7 @@ namespace MiniFramework
         }
         public void Send(int msgID, byte[] bodyData)
         {
-            if (tcpClient != null && tcpClient.Connected)
+            if (IsConnected)
             {
                 PackHead head = new PackHead();
                 head.MsgID = (short)msgID;
@@ -85,10 +86,9 @@ namespace MiniFramework
         }
         public void Close()
         {
-            if (tcpClient != null)
+            if (tcpClient != null && IsConnected)
             {
                 tcpClient.Close();
-                tcpClient = null;
                 IsConnected = false;
                 Debug.LogError("主动断开连接");
             }
