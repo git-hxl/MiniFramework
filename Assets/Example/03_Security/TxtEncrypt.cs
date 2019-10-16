@@ -24,7 +24,7 @@ public class TxtEncrypt : MonoBehaviour {
 		Debug.Log("rsa加密后："+rsaTxt);
 		string rsadecryptTxt = SecurityUtil.RsaDecrypt(rsaTxt,privateKey);
 		Debug.Log("rsa解密后："+rsadecryptTxt);
-
+		
 	}
 	
 	// Update is called once per frame

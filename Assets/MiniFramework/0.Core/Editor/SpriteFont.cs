@@ -16,13 +16,11 @@ namespace MiniFramework
             string matPath = assetDir + "/" + Selection.objects[0].name + ".mat";
 
             Material mat = new Material(Shader.Find("GUI/Text Shader"));
-            AssetDatabase.CreateAsset(mat, matPath);
             mat.SetTexture("_MainTex", tex);
+            AssetDatabase.CreateAsset(mat, matPath);
 
             Font myFont = new Font();
             myFont.material = mat;
-            AssetDatabase.CreateAsset(myFont, fontPath);
-
             CharacterInfo[] characterInfo = new CharacterInfo[sprites.Length - 1];
             for (int i = 1; i < sprites.Length; i++)
             {
@@ -46,7 +44,7 @@ namespace MiniFramework
                 characterInfo[i - 1] = info;
             }
             myFont.characterInfo = characterInfo;
-            AssetDatabase.Refresh();
+            AssetDatabase.CreateAsset(myFont, fontPath);
             Debug.Log("创建字体成功");
         }
     }
