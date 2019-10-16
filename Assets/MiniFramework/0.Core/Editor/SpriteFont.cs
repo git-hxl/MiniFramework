@@ -46,8 +46,6 @@ namespace MiniFramework
                 characterInfo[i - 1] = info;
             }
             myFont.characterInfo = characterInfo;
-            EditorUtility.SetDirty(myFont);
-            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("创建字体成功");
         }
