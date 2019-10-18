@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class EventDispatcher : Singleton<EventDispatcher>
+    public class DelegateDispatcher : Singleton<DelegateDispatcher>
     {
-        private EventDispatcher() { }
+        private DelegateDispatcher() { }
         private Dictionary<string, Delegate> listeners = new Dictionary<string, Delegate>();
         private static readonly object locker = new object();
         public void ClearEventListner()

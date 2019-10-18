@@ -23,14 +23,14 @@ namespace MiniFramework
         }
 
 
-        private Dictionary<string, List<MsgData>> listeners = new Dictionary<string, List<MsgData>>();
-        private Queue<MsgData> idleListeners = new Queue<MsgData>();
+        private Dictionary<string, List<MsgData>> msgDict = new Dictionary<string, List<MsgData>>();
+        private Queue<MsgData> msgQueue = new Queue<MsgData>();
         private static readonly object locker = new object();
         private void Update()
         {
-            while (idleListeners.Count > 0)
+            while (msgQueue.Count > 0)
             {
-                MsgData msg = idleListeners.Dequeue();
+                MsgData msg = msgQueue.Dequeue();
                 msg.Action(msg.data);
                 Pool<MsgData>.Instance.Recycle(msg);
             }
@@ -48,10 +48,10 @@ namespace MiniFramework
                     return;
                 }
                 List<MsgData> value;
-                if (!listeners.TryGetValue(msgId, out value))
+                if (!msgDict.TryGetValue(msgId, out value))
                 {
                     value = new List<MsgData>();
-                    listeners.Add(msgId, value);
+                    msgDict.Add(msgId, value);
                 }
                 foreach (var item in value)
                 {
@@ -76,7 +76,7 @@ namespace MiniFramework
             lock (locker)
             {
                 List<MsgData> value;
-                if (listeners.TryGetValue(msgId, out value))
+                if (msgDict.TryGetValue(msgId, out value))
                 {
                     for (int i = value.Count - 1; i >= 0; i--)
                     {
@@ -99,22 +99,23 @@ namespace MiniFramework
         public void Dispatch(string msgId, byte[] data)
         {
             List<MsgData> value;
-            if (listeners.TryGetValue(msgId, out value))
+            if (msgDict.TryGetValue(msgId, out value))
             {
                 for (int i = value.Count - 1; i >= 0; i--)
                 {
+                    MsgData msg = value[i];
                     if (!value[i].Recv.Equals(null))
                     {
-                        MsgData msg = Pool<MsgData>.Instance.Allocate();
-                        msg.Recv = value[i].Recv;
-                        msg.Action = value[i].Action;
-                        msg.data = data;
-                        idleListeners.Enqueue(msg);
+                        MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
+                        queueMsg.Recv = msg.Recv;
+                        queueMsg.Action = msg.Action;
+                        queueMsg.data = data;
+                        msgQueue.Enqueue(queueMsg);
                     }
                     else
                     {
-                        value.Remove(value[i]);
-                        Pool<MsgData>.Instance.Recycle(value[i]);
+                        value.Remove(msg);
+                        Pool<MsgData>.Instance.Recycle(msg);
                     }
                 }
             }
