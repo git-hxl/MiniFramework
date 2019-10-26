@@ -8,7 +8,7 @@ namespace MiniFramework
         private AudioSource SoundSource;
         private float musicVolume;
         private float soundVolume;
-        public override void Init()
+        protected override void Init()
         {
             GameObject music = new GameObject("MusicSource", typeof(AudioSource));
             music.transform.SetParent(transform);

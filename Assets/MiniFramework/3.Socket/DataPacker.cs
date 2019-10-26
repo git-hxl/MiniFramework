@@ -5,10 +5,18 @@ namespace MiniFramework
 {
     public class DataPacker
     {
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 2)]
+        public class PackHead
+        {
+            public short PackLength;
+            public int MsgID;
+        }
         public byte[] LeftBytes = new byte[0];
         //创建数据包
-        public byte[] Packer(PackHead head, byte[] bodyData)
+        public byte[] Packer(int msgID, byte[] bodyData)
         {
+            PackHead head = new PackHead();
+            head.MsgID = msgID;
             if (bodyData == null)
             {
                 bodyData = new byte[0];
@@ -68,7 +76,7 @@ namespace MiniFramework
         public void SendPack(PackHead head, byte[] bodyData)
         {
             Debug.Log("接收消息ID：" + head.MsgID);
-            MsgDispatcher.Instance.Dispatch(head.MsgID, bodyData);
+            NetMsgDispatcher.Instance.Dispatch(head.MsgID, bodyData);
         }
     }
 }

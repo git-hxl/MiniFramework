@@ -33,7 +33,7 @@ namespace MiniFramework
                 Destroy(gameObject);
             }
         }
-        public virtual void Init()
+        protected virtual void Init()
         {
 
         }

@@ -28,7 +28,7 @@ namespace MiniFramework
         private MemoryWindow memoryWindow = new MemoryWindow();
         private SettingsWindow settingWindow = new SettingsWindow();
         private FPSCounter fpsCounter = new FPSCounter();
-        public override void Init()
+        protected override void Init()
         {
             RegisterDebuggerWindow("<b>Console</b>", consoleWindow);
             RegisterDebuggerWindow("<b>Information</b>", informationWindow);

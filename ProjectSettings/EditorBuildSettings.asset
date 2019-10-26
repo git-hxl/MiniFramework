@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Example/07_Socket/FrameSync/FrameServer.unity
-    guid: fe461ccfac5b74432b476358ddb143d1
+    path: Assets/Example/07_Socket/SimpleChat/Client.unity
+    guid: a7b0c70ca33cf3c44bae52746648ad73
