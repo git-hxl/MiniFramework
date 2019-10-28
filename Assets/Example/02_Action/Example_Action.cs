@@ -8,14 +8,15 @@ public class Example_Action : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        RepeatAction.Excute(this, 1, -1, () => Debug.Log(Time.time));
+        DelayAction.Excute(this, 2, () => Debug.Log(222222));
+        UntilAction.Excute(this, () => Input.GetKeyDown(KeyCode.Space), () => Debug.Log("Space"));
+        RepeatAction.Excute(this, 1, -1, () => Debug.Log("repeat 1"));
 
         ActionChain chain = new ActionChain(this);
-        chain.Until(() => Input.GetKeyDown(KeyCode.Space), () => {Debug.Log("按下空格键");})
-        .Delay(5, () => Debug.Log("5s"))
-        .Excute();
-
-		UntilAction.Excute(this,()=>Input.GetKeyDown(KeyCode.E),()=>{chain.Stop();Debug.Log("执行中断");});
+        chain.Delay(5, () => Debug.Log(555555))
+            .Until(() => Input.GetKeyDown(KeyCode.W), () => Debug.Log("W"))
+            .Repeat(2, 2, () => Debug.Log("repeat 2"))
+            .Excute();
     }
 
     // Update is called once per frame

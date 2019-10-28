@@ -15,7 +15,9 @@ public class SerializeClass : MonoBehaviour
         test.random = new double[] { 1 };
 
         string jsonData = SerializeUtil.ToJson(test);
+        
         Debug.Log(jsonData);
+        Debug.Log(SerializeUtil.FromJson(jsonData));
 
 
         TestProto proto = new TestProto();

@@ -24,7 +24,11 @@ namespace MiniFramework
             iEnumerators.Add(UntilAction.Until(func, action));
             return this;
         }
-
+        public ActionChain Repeat(float interval, int times, Action action)
+        {
+            iEnumerators.Add(RepeatAction.Repeat(interval,times,action));
+            return this;
+        }
         public void Excute()
         {
             curCoroutine = mono.StartCoroutine(ActionChainCoroutine());

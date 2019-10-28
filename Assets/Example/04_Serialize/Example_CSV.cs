@@ -21,7 +21,7 @@ public class Example_CSV : MonoBehaviour
         //Debug.Log(cSVData[2]["奖励金币数值"]);
 
 
-         //三种写法结果相同;目前只支持string格式
+         //三种写法结果相同;目前只支持string格式 下标从0开始
          Debug.Log(cSVData[3]);
          Debug.Log(cSVData[3].ToString());
          Debug.Log((string)cSVData[3]);
