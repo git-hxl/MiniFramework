@@ -1,9 +1,10 @@
 ﻿using System.Net;
+using UnityEngine;
+
 namespace MiniFramework
 {
     public static class NetworkUtil
     {
-
         public static IPAddress ParseIP(string address)
         {
             IPAddress ip;

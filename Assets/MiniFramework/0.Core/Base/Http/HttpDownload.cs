@@ -8,29 +8,30 @@ namespace MiniFramework
 {
     public class HttpDownload
     {
-        private string fileName;
-        private string saveDir;
-        private string filePath;
-        private long curLength;
-        private long totalLength;
-        private float progress;
-        private Action<bool> callback;
-        public float Progress { get { return progress; } }
-        public float CurLength { get { return curLength; } }
-        public float TotalLength { get { return totalLength; } }
-        public string FilePath { get { return filePath; } }
-        public HttpDownload(string saveDir, Action<bool> callback = null)
+        public string FileName;
+        public string SaveDir;
+        public string FilePath;
+        public float Progress;
+        public long CurLength;
+        public long TotalLength;
+        private bool isReady;
+        public HttpDownload(string saveDir)
         {
-            this.saveDir = saveDir;
-            this.callback = callback;
+            SaveDir = saveDir;
             Directory.CreateDirectory(saveDir);
+            isReady = true;
         }
-        public IEnumerator Download(string url)
+        public IEnumerator Download(string url, Action<bool> callback = null)
         {
-            fileName = url.Substring(url.LastIndexOf('/') + 1);
-            filePath = saveDir + "/" + fileName;
-            string tempFilePath = filePath + ".tmp";
-            curLength = FileUtil.GetFileLength(tempFilePath);
+            if (!isReady)
+            {
+                Debug.LogError("下载失败");
+            }
+            isReady = false;
+            FileName = url.Substring(url.LastIndexOf('/') + 1);
+            FilePath = SaveDir + "/" + FileName;
+            string tempFilePath = FilePath + ".tmp";
+            CurLength = FileUtil.GetFileLength(tempFilePath);
             using (UnityWebRequest headRequest = UnityWebRequest.Head(url))
             {
                 yield return headRequest.SendWebRequest();
@@ -39,18 +40,19 @@ namespace MiniFramework
                     Debug.LogError(headRequest.error);
                     if (callback != null)
                         callback(false);
+                    isReady = true;
                     yield break;
                 }
-                totalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
+                TotalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
             }
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
-                request.SetRequestHeader("Range", "bytes=" + curLength + "-" + totalLength);
+                request.SetRequestHeader("Range", "bytes=" + CurLength + "-" + TotalLength);
                 request.SendWebRequest();
-                Debug.Log("开始下载:" + fileName + " 大小:" + UnitConvert.ByteAutoConvert(totalLength) + " 已下载:" + UnitConvert.ByteAutoConvert(curLength));
+                Debug.Log("开始下载:" + FileName + " 大小:" + UnitConvert.ByteAutoConvert(TotalLength) + " 已下载:" + UnitConvert.ByteAutoConvert(CurLength));
                 using (FileStream fileStream = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
-                    fileStream.Seek(curLength, SeekOrigin.Begin);
+                    fileStream.Seek(CurLength, SeekOrigin.Begin);
                     int index = 0;
                     while (!request.isDone)
                     {
@@ -59,20 +61,20 @@ namespace MiniFramework
                         int writeLength = data.Length - index;
                         fileStream.Write(data, index, writeLength);
                         index = data.Length;
-                        curLength += writeLength;
-                        progress = request.downloadProgress;
+                        CurLength += writeLength;
+                        Progress = request.downloadProgress;
                     }
                 }
-                if (File.Exists(filePath))
+                if (File.Exists(FilePath))
                 {
-                    File.Delete(filePath);
+                    File.Delete(FilePath);
                 }
-                File.Move(tempFilePath, filePath);
-                Debug.Log("下载成功:" + fileName);
+                File.Move(tempFilePath, FilePath);
+                Debug.Log("下载成功:" + FileName);
                 if (callback != null)
                     callback(true);
+                isReady = true;
             }
-            yield return null;
         }
     }
 }

@@ -4,11 +4,10 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SimpleChat : MonoBehaviour {
+public class SimpleChat: MonoBehaviour {
     public Text Msg;
     public InputField InputField;
     public Button ButtonSend;
-	// Use this for initialization
 	void Start () {
         NetMsgDispatcher.Instance.Regist(NetMsgID.Test, (data) =>
         {

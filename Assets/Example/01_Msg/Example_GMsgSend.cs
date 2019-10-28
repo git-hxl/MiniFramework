@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
-public class Example_GMsgSend : MonoBehaviour {
+public class Example_GMsgSend : MonoBehaviour
+{
 
-	// Use this for initialization
-	void Start () {
+    void Start()
+    {
         GameMsgDispatcher.Instance.Dispatch<string>(GameMsgID.Test, "hello");
-	}
-	
+    }
 }

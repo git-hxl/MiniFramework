@@ -7,30 +7,30 @@ namespace MiniFramework
 {
     public class ResManager : MonoSingleton<ResManager>
     {
-        private List<AssetBundle> bundles = new List<AssetBundle>();
+        public List<AssetBundle> bundles = new List<AssetBundle>();
         private string assetPath;
         [SerializeField]
         public CheckUpdate CheckUpdate = new CheckUpdate();
-        private IEnumerator Start()
-        {
-            yield return CheckUpdate.Check();
-            yield return Init(CheckUpdate.Platform);
-        }
-        private IEnumerator Init(string platform)
-        {
-            assetPath = Application.persistentDataPath + "/" + platform;
-            Dictionary<string, Hash128> files = AssetBundleLoader.LoadABManifest(assetPath + "/" + platform);
-            foreach (var item in files)
-            {
-                Debug.Log("正在加载资源:" + item.Key);
-                yield return AssetBundleLoader.LoadAssetBundle(assetPath + "/" + item.Key);
-                if (AssetBundleLoader.CurAssetBundle != null)
-                {
-                    bundles.Add(AssetBundleLoader.CurAssetBundle);
-                }
-            }
-            AssetBundleLoader.CurAssetBundle = null;
-        }
+        //private IEnumerator Start()
+        //{
+        //    yield return CheckUpdate.Check();
+        //    yield return Init(CheckUpdate.Platform);
+        //}
+        //private IEnumerator Init(string platform)
+        //{
+        //    assetPath = Application.persistentDataPath + "/" + platform;
+        //    Dictionary<string, Hash128> files = AssetBundleLoader.LoadABManifest(assetPath + "/" + platform);
+        //    foreach (var item in files)
+        //    {
+        //        Debug.Log("正在加载资源:" + item.Key);
+        //        yield return AssetBundleLoader.LoadAssetBundle(assetPath + "/" + item.Key);
+        //        if (AssetBundleLoader.CurAssetBundle != null)
+        //        {
+        //            bundles.Add(AssetBundleLoader.CurAssetBundle);
+        //        }
+        //    }
+        //    AssetBundleLoader.CurAssetBundle = null;
+        //}
         /// <summary>
         /// 加载资源
         /// </summary>
@@ -57,6 +57,10 @@ namespace MiniFramework
             }
             return asset;
         }
+        //public T LoadFromPath<T>(string path) where T : Object
+        //{
+        //    return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+        //}
 
         public void LoadScene(string name, LoadSceneMode mode)
         {

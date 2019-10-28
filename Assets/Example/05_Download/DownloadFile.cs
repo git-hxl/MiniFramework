@@ -10,14 +10,19 @@ public class DownloadFile : MonoBehaviour
     // Use this for initialization
     IEnumerator Start()
     {
-        httpDownload = new HttpDownload(Application.streamingAssetsPath);
-        yield return httpDownload.Download(Url);
+        httpDownload = new HttpDownload(Application.dataPath);
+        yield return httpDownload.Download(Url, Callback);
+        yield return AssetBundleLoader.LoadAssetBundle(Application.streamingAssetsPath + "/StandaloneWindows/prefab");
+        ResManager.Instance.bundles.Add(AssetBundleLoader.CurAssetBundle);
+        Instantiate(ResManager.Instance.Load("Cube"));
     }
 
-    // Update is called once per frame
-    void Update()
+    void Callback(bool isSuccess)
     {
-        if (httpDownload.Progress < 1)
-            Debug.Log(httpDownload.Progress);
+        if (isSuccess)
+        {
+            //AudioClip ac = ResManager.Instance.LoadFromPath<AudioClip>("Assets/5aefb81824683_all.mp3");
+            //AudioManager.Instance.PlayMusic(ac);
+        }
     }
 }
