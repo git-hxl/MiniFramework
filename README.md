@@ -3,7 +3,7 @@ U3D客户端框架
 
 一、消息模块
 	主线程消息通信
-'''
+'''C#
 	//注册
 	GameMsgDispatcher.Instance.Regist<string>(GameMsgID.Test, OnRecv);
 	//回调
@@ -17,7 +17,7 @@ U3D客户端框架
 	GameMsgDispatcher.Instance.Dispatch<string>(GameMsgID.Test, "hello");
 '''
 	子线程消息同步到主线程
-'''
+'''C#
 	//注册
 	NetMsgDispatcher.Instance.Regist(NetMsgID.Test, OnRecv);
 	//回调
