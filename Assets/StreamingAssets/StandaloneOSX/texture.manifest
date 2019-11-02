@@ -1,0 +1,26 @@
+ManifestFileVersion: 0
+CRC: 3481598918
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6604a540d34d898d52425f92887dfddd
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6f5f72e227be8e50077cb63ab72d9f53
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- "Assets/Texture/\u5546\u57CE\u6570\u5B57.mat"
+- "Assets/Texture/\u5546\u57CE\u6570\u5B57.png"
+- "Assets/Texture/\u5546\u57CE\u6570\u5B57.fontsettings"
+Dependencies: []

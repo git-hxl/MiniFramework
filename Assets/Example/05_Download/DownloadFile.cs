@@ -12,19 +12,14 @@ public class DownloadFile : MonoBehaviour
     {
         httpDownload = new HttpDownload(Application.dataPath);
         yield return httpDownload.Download(Url, Callback);
-        yield return AssetBundleLoader.LoadAssetBundle(Application.streamingAssetsPath + "/StandaloneWindows/prefab",(bundle)=>
-        {
-            ResManager.Instance.bundles.Add(bundle);
-            Instantiate(ResManager.Instance.Load("Cube"));
-        });
     }
 
     void Callback(bool isSuccess)
     {
         if (isSuccess)
         {
-            //AudioClip ac = ResManager.Instance.LoadFromPath<AudioClip>("Assets/5aefb81824683_all.mp3");
-            //AudioManager.Instance.PlayMusic(ac);
+            AudioClip ac = ResourceManager.Instance.Load<AudioClip>("5aefb81824683_all.mp3");
+            AudioManager.Instance.PlayMusic(ac);
         }
     }
 }

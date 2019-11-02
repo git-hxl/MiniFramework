@@ -41,7 +41,7 @@ namespace MiniFramework
             }
             else
             {
-                Object asset = ResManager.Instance.Load(panelName);
+                GameObject asset = ResourceManager.Instance.Load<GameObject>(panelName);
                 if (asset != null)
                 {
                     panel = Instantiate(asset, transform) as GameObject;

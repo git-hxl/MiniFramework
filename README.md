@@ -2,7 +2,7 @@
 U3D客户端框架
 
 一、消息模块
-主线程消息通信
+* 主线程消息通信
 ```
 //注册
 GameMsgDispatcher.Instance.Regist<string>(GameMsgID.Test, OnRecv);
@@ -16,7 +16,7 @@ GameMsgDispatcher.Instance.UnRegist<string>(GameMsgID.Test, OnRecv);
 //发送
 GameMsgDispatcher.Instance.Dispatch<string>(GameMsgID.Test, "hello");
 ```
-子线程消息同步到主线程
+* 网络消息通信
 ```
 //注册
 NetMsgDispatcher.Instance.Regist(NetMsgID.Test, OnRecv);
@@ -48,7 +48,7 @@ chain.Delay(5, () => Debug.Log(555555))
 ```
 三、序列化模块
 ```
-//支持第三方Json、Protobuf解析，自定义CSV解析
+//自定义CSV解析（json、protobuf采用了第三方库）
 CSVData cSVData = CSVUtil.FromCSV(Csv.text);
 Debug.Log(cSVData[1]["Level"]);
 ```

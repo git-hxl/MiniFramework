@@ -17,7 +17,7 @@ namespace MiniFramework
             }
             else
             {
-                Debug.LogError("AssetBundleº”‘ÿ ß∞‹");
+                Debug.LogError("AssetBundleÂä†ËΩΩÂ§±Ë¥•");
             }
         }
         public static Dictionary<string, Hash128> LoadABManifest(string path)

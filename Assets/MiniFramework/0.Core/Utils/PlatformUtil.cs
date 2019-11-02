@@ -11,7 +11,10 @@ namespace MiniFramework
             return false;
 #endif
         }
-
+        /// <summary>
+        /// Mac OS X, Windows or Linux
+        /// </summary>
+        /// <returns></returns>
         public static bool IsPC()
         {
 #if UNITY_STANDALONE
@@ -53,7 +56,10 @@ namespace MiniFramework
             return false;
 #endif
         }
-
+        /// <summary>
+        /// 安卓或者iOS
+        /// </summary>
+        /// <returns></returns>
         public static bool IsPhone()
         {
             if (IsiOS() || IsAndroid())

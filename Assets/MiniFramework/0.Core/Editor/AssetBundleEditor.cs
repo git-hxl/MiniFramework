@@ -46,7 +46,7 @@ namespace MiniFramework
             GUILayout.Label("版本信息");
             version = GUILayout.TextField(version);
 
-            
+
             if (GUILayout.Button("生成config文件"))
             {
                 CreateConfig();
@@ -84,8 +84,7 @@ namespace MiniFramework
         {
             Config config = new Config();
             config.version = version;
-            config.platform = platform.ToString();
-            File.WriteAllText(Application.streamingAssetsPath + "/config.txt", SerializeUtil.ToJson(config));
+            File.WriteAllText(Application.streamingAssetsPath + "/" + platform + "/config.txt", SerializeUtil.ToJson(config));
             AssetDatabase.Refresh();
             Debug.Log("写入成功");
         }

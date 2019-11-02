@@ -48,7 +48,7 @@ namespace MiniFramework
         /// <param name="isCover"></param>
         public void PlaySound(string clipName, bool isCover = false)
         {
-            AudioClip clip = ResManager.Instance.Load(clipName) as AudioClip;
+            AudioClip clip = ResourceManager.Instance.Load<AudioClip>(clipName);
             PlaySound(clip, isCover);
         }
         /// <summary>
@@ -74,7 +74,7 @@ namespace MiniFramework
         /// <param name="clipName"></param>
         public void PlayMusic(string clipName)
         {
-            AudioClip clip = ResManager.Instance.Load(clipName) as AudioClip;
+            AudioClip clip = ResourceManager.Instance.Load<AudioClip>(clipName);
             PlayMusic(clip);
         }
         /// <summary>
