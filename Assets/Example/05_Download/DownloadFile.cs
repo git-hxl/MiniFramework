@@ -12,9 +12,11 @@ public class DownloadFile : MonoBehaviour
     {
         httpDownload = new HttpDownload(Application.dataPath);
         yield return httpDownload.Download(Url, Callback);
-        yield return AssetBundleLoader.LoadAssetBundle(Application.streamingAssetsPath + "/StandaloneWindows/prefab");
-        ResManager.Instance.bundles.Add(AssetBundleLoader.CurAssetBundle);
-        Instantiate(ResManager.Instance.Load("Cube"));
+        yield return AssetBundleLoader.LoadAssetBundle(Application.streamingAssetsPath + "/StandaloneWindows/prefab",(bundle)=>
+        {
+            ResManager.Instance.bundles.Add(bundle);
+            Instantiate(ResManager.Instance.Load("Cube"));
+        });
     }
 
     void Callback(bool isSuccess)

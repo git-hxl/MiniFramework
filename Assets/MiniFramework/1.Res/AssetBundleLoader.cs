@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,16 +7,17 @@ namespace MiniFramework
 {
     public static class AssetBundleLoader
     {
-        public static AssetBundle CurAssetBundle;
-        public static IEnumerator LoadAssetBundle(string path)
+        public static IEnumerator LoadAssetBundle(string path,Action<AssetBundle> callback)
         {
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
             yield return request;
-            CurAssetBundle = request.assetBundle;
-            if (CurAssetBundle == null)
+            if(request.assetBundle != null)
             {
-                Debug.Log("Failed to load AssetBundle!");
-                yield break;
+                callback(request.assetBundle);
+            }
+            else
+            {
+                Debug.LogError("AssetBundleº”‘ÿ ß∞‹");
             }
         }
         public static Dictionary<string, Hash128> LoadABManifest(string path)

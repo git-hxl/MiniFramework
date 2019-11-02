@@ -24,7 +24,7 @@ namespace MiniFramework
         }
         IEnumerator CheckConfig()
         {
-            string assetsConfigPath = "file://" + Application.streamingAssetsPath + "/config.txt";
+            string assetsConfigPath = Application.streamingAssetsPath + "/config.txt";
             yield return FileUtil.ReadStreamingFile(assetsConfigPath, (result) =>
              {
                  LitJson.JsonData jsonData = SerializeUtil.FromJson(result);
