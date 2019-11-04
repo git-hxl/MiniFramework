@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,12 +14,6 @@ namespace MiniFramework
         public T Load<T>(string name) where T : Object
         {
             T asset = Resources.Load<T>(name);
-#if UNITY_EDITOR
-            if (asset == null)
-            {
-                asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>("Assets/" + name);
-            }
-#endif
             if (asset == null)
             {
                 foreach (var item in Bundles)

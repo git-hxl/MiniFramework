@@ -8,14 +8,14 @@ public class Example_Action : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        DelayAction.Excute(this, 2, () => Debug.Log(222222));
-        UntilAction.Excute(this, () => Input.GetKeyDown(KeyCode.Space), () => Debug.Log("Space"));
-        RepeatAction.Excute(this, 1, -1, () => Debug.Log("repeat 1"));
+        DelayAction.Excute(this, 2, () => Debug.Log("2s执行"));
+        UntilAction.Excute(this, () => Input.GetKeyDown(KeyCode.Space), () => Debug.Log("按下Space"));
+        RepeatAction.Excute(this, 5, -1, () => Debug.Log("每隔5秒 重复无限次"));
 
         ActionChain chain = new ActionChain(this);
-        chain.Delay(5, () => Debug.Log(555555))
-            .Until(() => Input.GetKeyDown(KeyCode.W), () => Debug.Log("W"))
-            .Repeat(2, 2, () => Debug.Log("repeat 2"))
+        chain.Delay(5, () => Debug.Log("hello"))
+            .Until(() => Input.GetKeyDown(KeyCode.Space), () => Debug.Log("Space"))
+            .Repeat(2, 2, () => Debug.Log("每隔2秒 重复2次"))
             .Excute();
     }
 

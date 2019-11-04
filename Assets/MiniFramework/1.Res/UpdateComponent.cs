@@ -57,27 +57,30 @@ namespace MiniFramework
         {
             httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
             yield return httpDownload.Download(ResUrl + "/" + platform + "/config.txt");
-            if (File.Exists(httpDownload.FilePath))
+            if (httpDownload.IsError)
             {
-                LitJson.JsonData newData = SerializeUtil.FromJson(File.ReadAllText(httpDownload.FilePath));
-                Version NewVersion = new Version(newData["version"].ToString());
-
-                string configPath = Application.persistentDataPath + "/" + platform + "/config.txt";
-                if (File.Exists(configPath))
-                {
-                    LitJson.JsonData localData = SerializeUtil.FromJson(File.ReadAllText(configPath));
-                    Version LocalVersion = new Version(localData["version"].ToString());
-                    Debug.Log("当前版本号：" + LocalVersion + "最新版本号：" + NewVersion);
-                    if (NewVersion != LocalVersion)
-                    {
-                        Debug.Log("版本号不一致，请前往平台更新");
-                        Application.OpenURL(AppUrl);
-                        yield break;
-                    }
-                }
-                File.Copy(httpDownload.FilePath, configPath, true);
-                yield return DownloadAssetBundle();
+                UpdateFail.Invoke();
+                yield break;
             }
+
+            LitJson.JsonData newData = SerializeUtil.FromJson(File.ReadAllText(httpDownload.FilePath));
+            Version NewVersion = new Version(newData["version"].ToString());
+
+            string configPath = Application.persistentDataPath + "/" + platform + "/config.txt";
+            if (File.Exists(configPath))
+            {
+                LitJson.JsonData localData = SerializeUtil.FromJson(File.ReadAllText(configPath));
+                Version LocalVersion = new Version(localData["version"].ToString());
+                Debug.Log("当前版本号：" + LocalVersion + "最新版本号：" + NewVersion);
+                if (NewVersion != LocalVersion)
+                {
+                    Debug.Log("版本号不一致，请前往平台更新");
+                    Application.OpenURL(AppUrl);
+                    yield break;
+                }
+            }
+            File.Copy(httpDownload.FilePath, configPath, true);
+            yield return DownloadAssetBundle();
         }
         /// <summary>
         /// 下载差异化AssetBundle
@@ -87,34 +90,41 @@ namespace MiniFramework
         {
             httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
             yield return httpDownload.Download(ResUrl + "/" + platform + "/" + platform);
-            string newManifestPath = httpDownload.FilePath;
-            if (File.Exists(newManifestPath))
+            if (httpDownload.IsError)
             {
-                string oldManifestPath = Application.persistentDataPath + "/" + platform + "/" + platform;
-                Dictionary<string, Hash128> newManifest = AssetBundleLoader.LoadABManifest(newManifestPath);
-                Dictionary<string, Hash128> oldManifest = AssetBundleLoader.LoadABManifest(oldManifestPath);
-                foreach (var item in newManifest)
-                {
-                    if (oldManifest.ContainsKey(item.Key) && oldManifest[item.Key] == oldManifest[item.Key])
-                    {
-                        continue;
-                    }
-                    updateFiles.Add(item.Key);
-                }
-                if (updateFiles.Count > 0)
-                {
-                    httpDownload = new HttpDownload(Application.persistentDataPath + "/" + platform);
-                    foreach (var item in updateFiles)
-                    {
-                        Debug.Log("下载网络资源：" + item);
-                        string fileUrl = ResUrl + "/" + platform + "/" + item;
-                        yield return httpDownload.Download(fileUrl);
-                    }
-                    updateFiles.Clear();
-                }
-                File.Copy(newManifestPath, oldManifestPath, true);
-                yield return LoadAssetBundle(Application.persistentDataPath + "/" + platform);
+                UpdateFail.Invoke();
+                yield break;
             }
+
+            string newManifestPath = httpDownload.FilePath;
+            string oldManifestPath = Application.persistentDataPath + "/" + platform + "/" + platform;
+            Dictionary<string, Hash128> newManifest = AssetBundleLoader.LoadABManifest(newManifestPath);
+            Dictionary<string, Hash128> oldManifest = AssetBundleLoader.LoadABManifest(oldManifestPath);
+            foreach (var item in newManifest)
+            {
+                if (oldManifest.ContainsKey(item.Key) && oldManifest[item.Key] == oldManifest[item.Key])
+                {
+                    continue;
+                }
+                updateFiles.Add(item.Key);
+            }
+            if (updateFiles.Count > 0)
+            {
+                httpDownload = new HttpDownload(Application.persistentDataPath + "/" + platform);
+                foreach (var item in updateFiles)
+                {
+                    Debug.Log("下载网络资源：" + item);
+                    string fileUrl = ResUrl + "/" + platform + "/" + item;
+                    yield return httpDownload.Download(fileUrl);
+                    if (httpDownload.IsError)
+                    {
+
+                    }
+                }
+                updateFiles.Clear();
+            }
+            File.Copy(newManifestPath, oldManifestPath, true);
+            yield return LoadAssetBundle(Application.persistentDataPath + "/" + platform);
         }
         /// <summary>
         /// 加载AssetsBundle
@@ -132,6 +142,7 @@ namespace MiniFramework
                     ResourceManager.Instance.Bundles.Add(assetBundle);
                 });
             }
+            UpdateSuccess.Invoke();
         }
     }
 }

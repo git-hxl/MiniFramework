@@ -6,6 +6,7 @@ namespace MiniFramework
         public Transform Target;
         public float Distance;
         public float Angle;
+        public float LerpSpeed = 5;
         private Transform mCamera;
         // Use this for initialization
         void Start()
@@ -17,8 +18,8 @@ namespace MiniFramework
             if (Target != null)
             {
                 Vector3 targetPos = Target.position - mCamera.forward * Distance;
-                mCamera.position = Vector3.Lerp(mCamera.position, targetPos, Time.deltaTime * 5);
-                mCamera.eulerAngles = Vector3.Lerp(mCamera.eulerAngles, new Vector3(Angle, 0, 0), Time.deltaTime * 5);
+                mCamera.position = Vector3.Lerp(mCamera.position, targetPos, Time.deltaTime * LerpSpeed);
+                mCamera.eulerAngles = Vector3.Lerp(mCamera.eulerAngles, new Vector3(Angle, 0, 0), Time.deltaTime * LerpSpeed);
             }
         }
     }

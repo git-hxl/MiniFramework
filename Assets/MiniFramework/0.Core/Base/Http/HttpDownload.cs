@@ -14,20 +14,22 @@ namespace MiniFramework
         public float Progress;
         public long CurLength;
         public long TotalLength;
-        private bool isReady;
+        public bool IsDone;
+        public bool IsError;
         public HttpDownload(string saveDir)
         {
             SaveDir = saveDir;
             Directory.CreateDirectory(saveDir);
-            isReady = true;
+            IsDone = true;
         }
         public IEnumerator Download(string url, Action<bool> callback = null)
         {
-            if (!isReady)
+            if (!IsDone)
             {
-                Debug.LogError("下载失败");
+                Debug.LogError("下载失败,当前下载任务未完成");
+                yield break;
             }
-            isReady = false;
+            IsDone = false;
             FileName = url.Substring(url.LastIndexOf('/') + 1);
             FilePath = SaveDir + "/" + FileName;
             string tempFilePath = FilePath + ".tmp";
@@ -38,9 +40,10 @@ namespace MiniFramework
                 if (headRequest.isHttpError || headRequest.isNetworkError)
                 {
                     Debug.LogError(headRequest.error);
+                    IsError = true;
+                    IsDone = true;
                     if (callback != null)
                         callback(false);
-                    isReady = true;
                     yield break;
                 }
                 TotalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
@@ -71,9 +74,10 @@ namespace MiniFramework
                 }
                 File.Move(tempFilePath, FilePath);
                 Debug.Log("下载成功:" + FileName);
+                IsError = false;
+                IsDone = true;
                 if (callback != null)
                     callback(true);
-                isReady = true;
             }
         }
     }
