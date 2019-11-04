@@ -57,6 +57,7 @@ namespace MiniFramework
                 {
                     fileStream.Seek(CurLength, SeekOrigin.Begin);
                     int index = 0;
+
                     while (!request.isDone)
                     {
                         yield return null;
@@ -67,6 +68,7 @@ namespace MiniFramework
                         CurLength += writeLength;
                         Progress = request.downloadProgress;
                     }
+
                 }
                 if (File.Exists(FilePath))
                 {

@@ -206,7 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7133e5b03b94fc0b73abc43fa12023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Url: http://img95.699pic.com/audio/967/677/5aefb81824683_all.mp3
+  Url: http://pic.rmb.bdstatic.com/4dfeeb2552426849343869f851c287ca.jpeg
+  Texture2D: {fileID: 0}
 --- !u!1 &1251773582
 GameObject:
   m_ObjectHideFlags: 0

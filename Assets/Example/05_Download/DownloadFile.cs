@@ -5,21 +5,27 @@ using UnityEngine.UI;
 
 public class DownloadFile : MonoBehaviour
 {
-    public string Url = "http://img95.699pic.com/audio/967/677/5aefb81824683_all.mp3";
+    public string Url;
+    public Texture2D Texture2D;
     HttpDownload httpDownload;
     // Use this for initialization
     IEnumerator Start()
     {
-        httpDownload = new HttpDownload(Application.dataPath);
+        httpDownload = new HttpDownload(Application.dataPath+"/Resources");
         yield return httpDownload.Download(Url, Callback);
     }
-
+    private void Update()
+    {
+        if (!httpDownload.IsDone)
+        {
+            Debug.Log(httpDownload.Progress);
+        }
+    }
     void Callback(bool isSuccess)
     {
         if (isSuccess)
         {
-            AudioClip ac = ResourceManager.Instance.Load<AudioClip>("5aefb81824683_all.mp3");
-            AudioManager.Instance.PlayMusic(ac);
+            Texture2D = ResourceManager.Instance.Load<Texture2D>(httpDownload.FileName);
         }
     }
 }
