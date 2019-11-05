@@ -2,12 +2,8 @@
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.IO;
-
 namespace MiniFramework
 {
-    /// <summary>
-    /// 注:中文命名文件会出错！
-    /// </summary>
     public class ZipUtil
     {
         /// <summary>
@@ -16,7 +12,7 @@ namespace MiniFramework
         /// <param name="DirectoryPath">文件夹路径</param>
         /// <param name="savePath">压缩包保存路径</param>
         /// <param name="zipName">压缩包名</param>
-        public static void ZipDirectory(string DirectoryPath, string savePath, string zipName)
+        public static void ZipDirectory(string DirectoryPath, string savePath, string zipName, string password = null)
         {
             if (!Directory.Exists(DirectoryPath))
             {
@@ -34,6 +30,8 @@ namespace MiniFramework
             {
                 using (ZipOutputStream outStream = new ZipOutputStream(fileStream))
                 {
+                    outStream.SetLevel(9);
+                    outStream.Password = password;
                     ZipStep(DirectoryPath, outStream, "");
                 }
             }
@@ -44,7 +42,7 @@ namespace MiniFramework
         /// <param name="zipFilePath">压缩包路径</param>
         /// <param name="saveDir">解压文件存放路径</param>
         /// <returns></returns>
-        public static bool UpZipFile(string zipFilePath, string saveDir)
+        public static bool UpZipFile(string zipFilePath, string saveDir, string password = null)
         {
             if (!File.Exists(zipFilePath))
             {
@@ -60,18 +58,17 @@ namespace MiniFramework
             }
             using (ZipInputStream inputStream = new ZipInputStream(File.OpenRead(zipFilePath)))
             {
+                inputStream.Password = password;
                 ZipEntry theEntry;
                 while ((theEntry = inputStream.GetNextEntry()) != null)
                 {
                     string directoryName = Path.GetDirectoryName(theEntry.Name);
                     string fileName = Path.GetFileName(theEntry.Name);
-                    if (directoryName.Length > 0)
+                    if (!string.IsNullOrEmpty(directoryName))
                     {
                         Directory.CreateDirectory(saveDir + directoryName);
                     }
-                    if (!directoryName.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                        directoryName += Path.DirectorySeparatorChar.ToString();
-                    if (fileName != string.Empty)
+                    if (!string.IsNullOrEmpty(fileName))
                     {
                         using (FileStream writer = File.Create(saveDir + theEntry.Name))
                         {
@@ -101,7 +98,6 @@ namespace MiniFramework
         /// </summary>
         private static void ZipStep(string targetDirectory, ZipOutputStream stream, string parentPath)
         {
-            Crc32 crc = new Crc32();
             string[] fileNames = Directory.GetFileSystemEntries(targetDirectory);
             foreach (var file in fileNames)
             {
@@ -116,18 +112,20 @@ namespace MiniFramework
                 {
                     using (FileStream fs = File.OpenRead(file))
                     {
-                        byte[] buffer = new byte[fs.Length];
-                        fs.Read(buffer, 0, buffer.Length);
-                        string fileName = parentPath + file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
-                        ZipEntry entry = new ZipEntry(fileName);
-                        entry.DateTime = DateTime.Now;
-                        entry.Size = fs.Length;
-                        fs.Close();
-                        crc.Reset();
-                        crc.Update(buffer);
-                        entry.Crc = crc.Value;
-                        stream.PutNextEntry(entry);
-                        stream.Write(buffer, 0, buffer.Length);
+                        if (fs.Length > 0)
+                        {
+                            byte[] buffer = new byte[fs.Length];
+                            fs.Read(buffer, 0, buffer.Length);
+                            string fileName = parentPath + file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
+                            ZipEntry entry = new ZipEntry(fileName);
+                            entry.IsUnicodeText = true;
+                            entry.DateTime = DateTime.Now;
+                            entry.Size = fs.Length;
+                            entry.CompressionMethod = CompressionMethod.Deflated;
+                            fs.Close();
+                            stream.PutNextEntry(entry);
+                            stream.Write(buffer, 0, buffer.Length);
+                        }
                     }
                 }
             }

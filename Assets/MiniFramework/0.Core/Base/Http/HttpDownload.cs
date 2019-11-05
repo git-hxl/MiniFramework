@@ -14,22 +14,14 @@ namespace MiniFramework
         public float Progress;
         public long CurLength;
         public long TotalLength;
-        public bool IsDone;
-        public bool IsError;
+        public bool isError;
         public HttpDownload(string saveDir)
         {
             SaveDir = saveDir;
             Directory.CreateDirectory(saveDir);
-            IsDone = true;
         }
         public IEnumerator Download(string url, Action<bool> callback = null)
         {
-            if (!IsDone)
-            {
-                Debug.LogError("下载失败,当前下载任务未完成");
-                yield break;
-            }
-            IsDone = false;
             FileName = url.Substring(url.LastIndexOf('/') + 1);
             FilePath = SaveDir + "/" + FileName;
             string tempFilePath = FilePath + ".tmp";
@@ -40,8 +32,7 @@ namespace MiniFramework
                 if (headRequest.isHttpError || headRequest.isNetworkError)
                 {
                     Debug.LogError(headRequest.error);
-                    IsError = true;
-                    IsDone = true;
+                    isError = true;
                     if (callback != null)
                         callback(false);
                     yield break;
@@ -57,7 +48,6 @@ namespace MiniFramework
                 {
                     fileStream.Seek(CurLength, SeekOrigin.Begin);
                     int index = 0;
-
                     while (!request.isDone)
                     {
                         yield return null;
@@ -66,9 +56,8 @@ namespace MiniFramework
                         fileStream.Write(data, index, writeLength);
                         index = data.Length;
                         CurLength += writeLength;
-                        Progress = request.downloadProgress;
+                        Progress = (float)CurLength / TotalLength;
                     }
-
                 }
                 if (File.Exists(FilePath))
                 {
@@ -76,8 +65,7 @@ namespace MiniFramework
                 }
                 File.Move(tempFilePath, FilePath);
                 Debug.Log("下载成功:" + FileName);
-                IsError = false;
-                IsDone = true;
+                isError = false;
                 if (callback != null)
                     callback(true);
             }

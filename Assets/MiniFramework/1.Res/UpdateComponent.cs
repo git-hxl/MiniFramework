@@ -57,7 +57,7 @@ namespace MiniFramework
         {
             httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
             yield return httpDownload.Download(ResUrl + "/" + platform + "/config.txt");
-            if (httpDownload.IsError)
+            if (httpDownload.isError)
             {
                 UpdateFail.Invoke();
                 yield break;
@@ -90,7 +90,7 @@ namespace MiniFramework
         {
             httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
             yield return httpDownload.Download(ResUrl + "/" + platform + "/" + platform);
-            if (httpDownload.IsError)
+            if (httpDownload.isError)
             {
                 UpdateFail.Invoke();
                 yield break;
@@ -116,9 +116,10 @@ namespace MiniFramework
                     Debug.Log("下载网络资源：" + item);
                     string fileUrl = ResUrl + "/" + platform + "/" + item;
                     yield return httpDownload.Download(fileUrl);
-                    if (httpDownload.IsError)
+                    if (httpDownload.isError)
                     {
-
+                        UpdateFail.Invoke();
+                        yield break;
                     }
                 }
                 updateFiles.Clear();
