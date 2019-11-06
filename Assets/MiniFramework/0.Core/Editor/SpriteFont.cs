@@ -1,14 +1,20 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 namespace MiniFramework
 {
     public class SpriteFont
     {
-        [MenuItem("Assets/SpriteFont")]
+        [MenuItem("Assets/创建SpriteFont")]
         static void CreateFont()
         {
             if (Selection.assetGUIDs == null) return;
             string assetPath = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+            if (!File.Exists(assetPath))
+            {
+                Debug.LogError("请右键选择精灵图集");
+                return;
+            }
             string assetDir = assetPath.Substring(0, assetPath.LastIndexOf('/'));
             Object[] sprites = AssetDatabase.LoadAllAssetsAtPath(assetPath);
             Texture2D tex = sprites[0] as Texture2D;

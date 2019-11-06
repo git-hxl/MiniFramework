@@ -39,11 +39,11 @@ namespace MiniFramework
                 }
                 TotalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
             }
+            Debug.Log("开始下载:" + FileName + " 大小:" + UnitConvert.ByteAutoConvert(TotalLength) + " 已下载:" + UnitConvert.ByteAutoConvert(CurLength));
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
-                request.SetRequestHeader("Range", "bytes=" + CurLength + "-" + TotalLength);
+                request.SetRequestHeader("Range", "bytes=" + CurLength + "-");
                 request.SendWebRequest();
-                Debug.Log("开始下载:" + FileName + " 大小:" + UnitConvert.ByteAutoConvert(TotalLength) + " 已下载:" + UnitConvert.ByteAutoConvert(CurLength));
                 using (FileStream fileStream = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
                     fileStream.Seek(CurLength, SeekOrigin.Begin);
@@ -56,7 +56,16 @@ namespace MiniFramework
                         fileStream.Write(data, index, writeLength);
                         index = data.Length;
                         CurLength += writeLength;
-                        Progress = (float)CurLength / TotalLength;
+                        Progress = CurLength * 1.0f / TotalLength;
+                    }
+
+                    if (request.isHttpError || request.isNetworkError)
+                    {
+                        Debug.LogError(request.error);
+                        isError = true;
+                        if (callback != null)
+                            callback(false);
+                        yield break;
                     }
                 }
                 if (File.Exists(FilePath))

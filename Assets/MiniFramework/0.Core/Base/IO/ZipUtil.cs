@@ -1,6 +1,6 @@
-﻿using ICSharpCode.SharpZipLib.Checksums;
-using ICSharpCode.SharpZipLib.Zip;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using System;
+using System.Collections;
 using System.IO;
 namespace MiniFramework
 {
@@ -33,6 +33,43 @@ namespace MiniFramework
                     outStream.SetLevel(9);
                     outStream.Password = password;
                     ZipStep(DirectoryPath, outStream, "");
+                }
+            }
+        }
+        /// <summary>
+        /// 递归目录
+        /// </summary>
+        private static void ZipStep(string targetDirectory, ZipOutputStream stream, string parentPath)
+        {
+            string[] fileNames = Directory.GetFileSystemEntries(targetDirectory);
+            foreach (var file in fileNames)
+            {
+                if (Directory.Exists(file))
+                {
+                    string pPath = parentPath;
+                    pPath += file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
+                    pPath += Path.DirectorySeparatorChar.ToString();
+                    ZipStep(file, stream, pPath);
+                }
+                else
+                {
+                    using (FileStream fs = File.OpenRead(file))
+                    {
+                        if (fs.Length > 0)
+                        {
+                            byte[] buffer = new byte[fs.Length];
+                            fs.Read(buffer, 0, buffer.Length);
+                            string fileName = parentPath + file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
+                            ZipEntry entry = new ZipEntry(fileName);
+                            entry.IsUnicodeText = true;
+                            entry.DateTime = DateTime.Now;
+                            entry.Size = fs.Length;
+                            entry.CompressionMethod = CompressionMethod.Deflated;
+                            fs.Close();
+                            stream.PutNextEntry(entry);
+                            stream.Write(buffer, 0, buffer.Length);
+                        }
+                    }
                 }
             }
         }
@@ -94,40 +131,64 @@ namespace MiniFramework
         }
 
         /// <summary>
-        /// 递归目录
+        /// 解压
         /// </summary>
-        private static void ZipStep(string targetDirectory, ZipOutputStream stream, string parentPath)
+        /// <param name="zipFilePath">压缩包路径</param>
+        /// <param name="saveDir">解压文件存放路径</param>
+        /// <returns></returns>
+        public static IEnumerator UpZipFile(string zipFilePath, string saveDir, Action callback, string password = null)
         {
-            string[] fileNames = Directory.GetFileSystemEntries(targetDirectory);
-            foreach (var file in fileNames)
+            if (!File.Exists(zipFilePath))
             {
-                if (Directory.Exists(file))
+                throw new FileNotFoundException("指定文件：" + zipFilePath + "不存在！");
+            }
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            if (!saveDir.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+            {
+                saveDir += Path.AltDirectorySeparatorChar;
+            }
+            using (ZipInputStream inputStream = new ZipInputStream(File.OpenRead(zipFilePath)))
+            {
+                inputStream.Password = password;
+                ZipEntry theEntry;
+                while ((theEntry = inputStream.GetNextEntry()) != null)
                 {
-                    string pPath = parentPath;
-                    pPath += file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
-                    pPath += Path.DirectorySeparatorChar.ToString();
-                    ZipStep(file, stream, pPath);
-                }
-                else
-                {
-                    using (FileStream fs = File.OpenRead(file))
+                    yield return null;
+                    string directoryName = Path.GetDirectoryName(theEntry.Name);
+                    string fileName = Path.GetFileName(theEntry.Name);
+                    if (!string.IsNullOrEmpty(directoryName))
                     {
-                        if (fs.Length > 0)
+                        Directory.CreateDirectory(saveDir + directoryName);
+                    }
+                    if (!string.IsNullOrEmpty(fileName))
+                    {
+                        using (FileStream writer = File.Create(saveDir + theEntry.Name))
                         {
-                            byte[] buffer = new byte[fs.Length];
-                            fs.Read(buffer, 0, buffer.Length);
-                            string fileName = parentPath + file.Substring(file.LastIndexOf(Path.DirectorySeparatorChar.ToString()) + 1);
-                            ZipEntry entry = new ZipEntry(fileName);
-                            entry.IsUnicodeText = true;
-                            entry.DateTime = DateTime.Now;
-                            entry.Size = fs.Length;
-                            entry.CompressionMethod = CompressionMethod.Deflated;
-                            fs.Close();
-                            stream.PutNextEntry(entry);
-                            stream.Write(buffer, 0, buffer.Length);
+                            int size = 2048;
+                            byte[] data = new byte[2048];
+                            while (true)
+                            {
+                                yield return null;
+                                size = inputStream.Read(data, 0, data.Length);
+                                if (size > 0)
+                                {
+                                    writer.Write(data, 0, size);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+            }
+            if (callback != null)
+            {
+                callback();
             }
         }
     }

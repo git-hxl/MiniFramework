@@ -6,7 +6,6 @@ namespace MiniFramework
     struct Config
     {
         public string version;
-        public string platform;
     }
     public class AssetBundleEditor : EditorWindow
     {

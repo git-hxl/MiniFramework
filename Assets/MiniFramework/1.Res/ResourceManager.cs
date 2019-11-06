@@ -33,7 +33,7 @@ namespace MiniFramework
             return asset;
         }
 
-        public void LoadScene(string name, LoadSceneMode mode)
+        public void LoadScene(string name, LoadSceneMode mode = LoadSceneMode.Single)
         {
             SceneManager.LoadScene(name, mode);
         }

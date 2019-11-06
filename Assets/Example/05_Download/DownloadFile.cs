@@ -2,7 +2,6 @@
 using UnityEngine;
 using MiniFramework;
 using UnityEngine.UI;
-
 public class DownloadFile : MonoBehaviour
 {
     public string Url;
@@ -11,10 +10,14 @@ public class DownloadFile : MonoBehaviour
     IEnumerator Start()
     {
         httpDownload = new HttpDownload(Application.dataPath);
-        yield return httpDownload.Download(Url);
+        yield return httpDownload.Download(Url, (result) =>
+        {
+        
+        });
     }
 
-    private void Update() {
+    private void Update()
+    {
         Debug.Log(httpDownload.Progress);
     }
 }

@@ -5,7 +5,7 @@ namespace MiniFramework
 {
     public class ZipEditor : EditorWindow
     {
-        [MenuItem("Assets/压缩")]
+        [MenuItem("Assets/压缩文件夹")]
         static void Zip()
         {
             if (Selection.assetGUIDs == null) return;
@@ -24,7 +24,7 @@ namespace MiniFramework
             }
         }
 
-        [MenuItem("Assets/解压")]
+        [MenuItem("Assets/解压压缩包")]
         static void UnZip()
         {
             if (Selection.assetGUIDs == null) return;

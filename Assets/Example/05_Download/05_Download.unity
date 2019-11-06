@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7133e5b03b94fc0b73abc43fa12023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Url: https://download.unitychina.cn/download_unity/7098af2f11ea/UnityDownloadAssistant-2018.4.11f1.dmg
+  Url: http://download.ydstatic.cn/cidian/static/8.6/20191030/YoudaoDictSetup.exe
 --- !u!1 &1251773582
 GameObject:
   m_ObjectHideFlags: 0
