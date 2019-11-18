@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7133e5b03b94fc0b73abc43fa12023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Url: http://download.ydstatic.cn/cidian/static/8.6/20191030/YoudaoDictSetup.exe
+  Url: http://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_4.pdf
 --- !u!1 &1251773582
 GameObject:
   m_ObjectHideFlags: 0

@@ -60,3 +60,8 @@ yield return httpDownload.Download(url,Callback);
 //可依次下载多个任务
 yield return httpDownload.Download(url2,Callback);
 ```
+五、资源加载
+、、、
+//同时支持Resource、编辑器内和AB包
+ResourceManager.Instance.Load<Sprite>("Background");
+、、、

@@ -16,15 +16,11 @@ namespace MiniFramework
             T asset = Resources.Load<T>(name);
             if (asset == null)
             {
-                foreach (var item in Bundles)
-                {
-                    name = name.Substring(name.LastIndexOf('/') + 1);
-                    if (item.Contains(name))
-                    {
-                        asset = item.LoadAsset<T>(name);
-                        break;
-                    }
-                }
+                asset = LoadFromEditor<T>(name);
+            }
+            if (asset == null)
+            {
+                asset = LoadFromAB<T>(name);
             }
             if (asset == null)
             {
@@ -32,7 +28,44 @@ namespace MiniFramework
             }
             return asset;
         }
-
+        public T LoadFromEditor<T>(string name) where T : Object
+        {
+#if UNITY_EDITOR
+            name = name.Substring(name.LastIndexOf('/') + 1);
+            string type = typeof(T).ToString();
+            type = type.Substring(type.LastIndexOf('.') + 1);
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(name + " t:" + type);
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                if (name == System.IO.Path.GetFileNameWithoutExtension(path))
+                {
+                    T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+                    if (asset != null)
+                    {
+                        return asset;
+                    }
+                }
+            }
+#endif
+            return null;
+        }
+        public T LoadFromAB<T>(string name) where T : Object
+        {
+            name = name.Substring(name.LastIndexOf('/') + 1);
+            foreach (var item in Bundles)
+            {
+                if (item.Contains(name))
+                {
+                    T asset = item.LoadAsset<T>(name);
+                    if (asset != null)
+                    {
+                        return asset;
+                    }
+                }
+            }
+            return null;
+        }
         public void LoadScene(string name, LoadSceneMode mode = LoadSceneMode.Single)
         {
             SceneManager.LoadScene(name, mode);

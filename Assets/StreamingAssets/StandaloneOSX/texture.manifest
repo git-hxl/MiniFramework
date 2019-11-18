@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2037749751
+CRC: 2521337501
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 431631f50e17e01ef1f7084244713388
+    Hash: f3eb3ef31255fab1a9a4a8ba61af82c7
   TypeTreeHash:
     serializedVersion: 2
     Hash: 6f5f72e227be8e50077cb63ab72d9f53
@@ -20,8 +20,7 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- "Assets/Texture/\u5546\u57CE.mat"
-- Assets/Resources/Texture/Background.png
-- "Assets/Texture/\u5546\u57CE.png"
-- "Assets/Texture/\u5546\u57CE.fontsettings"
+- "Assets/Fonts/\u5546\u57CE.mat"
+- "Assets/Fonts/\u5546\u57CE.png"
+- "Assets/Fonts/\u5546\u57CE.fontsettings"
 Dependencies: []

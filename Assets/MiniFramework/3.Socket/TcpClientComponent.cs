@@ -42,7 +42,7 @@ namespace MiniFramework
         }
         private void CheckTimeout()
         {
-            DelayAction.Excute(this, 3, () =>
+            DelayAction.Excute(this, 5, () =>
             {
                 if (!IsConnected)
                 {

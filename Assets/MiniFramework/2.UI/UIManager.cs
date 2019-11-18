@@ -44,7 +44,7 @@ namespace MiniFramework
                 GameObject asset = ResourceManager.Instance.Load<GameObject>(panelName);
                 if (asset != null)
                 {
-                    panel = Instantiate(asset, transform) as GameObject;
+                    panel = Instantiate(asset, m_Canvas.transform) as GameObject;
                     panel.SetActive(true);
                     panel.name = asset.name;
                     UIPanelDict.Add(panel.name, panel);
