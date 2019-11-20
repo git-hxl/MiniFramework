@@ -79,21 +79,24 @@ namespace MiniFramework
         }
         public void Dispatch(int msgId, byte[] data)
         {
-            List<MsgData> value;
-            if (msgDict.TryGetValue(msgId, out value))
+            lock(locker)
             {
-                for (int i = value.Count - 1; i >= 0; i--)
+                List<MsgData> value;
+                if (msgDict.TryGetValue(msgId, out value))
                 {
-                    MsgData msg = value[i];
-                    MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
-                    queueMsg.Action = msg.Action;
-                    queueMsg.data = data;
-                    msgQueue.Enqueue(queueMsg);
+                    for (int i = value.Count - 1; i >= 0; i--)
+                    {
+                        MsgData msg = value[i];
+                        MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
+                        queueMsg.Action = msg.Action;
+                        queueMsg.data = data;
+                        msgQueue.Enqueue(queueMsg);
+                    }
                 }
-            }
-            else
-            {
-                Debug.LogError("消息ID:" + msgId + "未注册");
+                else
+                {
+                    Debug.LogError("消息ID:" + msgId + "未注册");
+                }
             }
         }
     }

@@ -10,8 +10,8 @@ namespace MiniFramework
             UDP
         }
         public HeartType Type;
-        public int Timeout = 5;
-        public int HeartPackLatency;
+        public int CheckInterval = 5;
+        public float PackLatency;
 
         private float sendTime;
         private float recvTime;
@@ -23,10 +23,10 @@ namespace MiniFramework
             {
                 //接收心跳包 
                 recvTime = Time.time;
-                HeartPackLatency = (int)((recvTime - sendTime) * 1000);
+                PackLatency = recvTime - sendTime;
             });
 
-            switch(Type)
+            switch (Type)
             {
                 case HeartType.TCP:
                     TcpHeart();
@@ -39,7 +39,7 @@ namespace MiniFramework
 
         void TcpHeart()
         {
-            RepeatAction.Excute(this, Timeout, -1, () =>
+            RepeatAction.Excute(this, CheckInterval, -1, () =>
             {
                 if (!TcpClientComponent.Instance.IsConnected)
                 {
@@ -51,10 +51,7 @@ namespace MiniFramework
                 {
                     Debug.LogError("心跳包接收超时!");
                     TcpClientComponent.Instance.Close();
-                    if (TcpClientComponent.Instance.ConnectAbort != null)
-                    {
-                        TcpClientComponent.Instance.ConnectAbort();
-                    }
+                    TcpClientComponent.Instance.ConnectAbort.Invoke();
                     return;
                 }
                 TcpClientComponent.Instance.Send(NetMsgID.HeartPack, null);
@@ -64,7 +61,7 @@ namespace MiniFramework
 
         void UdpHeart()
         {
-            RepeatAction.Excute(this, Timeout, -1, () =>
+            RepeatAction.Excute(this, CheckInterval, -1, () =>
             {
                 if (!UdpClientComponent.Instance.IsActive)
                 {
@@ -76,10 +73,7 @@ namespace MiniFramework
                 {
                     Debug.LogError("心跳包接收超时!");
                     UdpClientComponent.Instance.Close();
-                    if (UdpClientComponent.Instance.ConnectAbort != null)
-                    {
-                        UdpClientComponent.Instance.ConnectAbort();
-                    }
+                    UdpClientComponent.Instance.ConnectAbort.Invoke();
                     return;
                 }
                 UdpClientComponent.Instance.Send(NetMsgID.HeartPack, null);

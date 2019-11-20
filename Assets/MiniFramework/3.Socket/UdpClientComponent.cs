@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace MiniFramework
 {
@@ -12,7 +13,7 @@ namespace MiniFramework
         public int LocalPort;
         public bool IsActive;
 
-        public Action ConnectAbort;
+        public UnityEvent ConnectAbort;
 
         private byte[] recvBuffer;
         private UdpClient udpClient;

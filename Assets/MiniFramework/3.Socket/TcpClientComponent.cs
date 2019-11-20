@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace MiniFramework
 {
@@ -9,11 +10,12 @@ namespace MiniFramework
     {
         public string Address;
         public int Port;
+        public int Timeout;
         public bool IsConnected;
-
-        public Action ConnectSuccess;
-        public Action ConnectTimeout;
-        public Action ConnectAbort;
+  
+        public UnityEvent ConnectSuccess;
+        public UnityEvent ConnectTimeout;
+        public UnityEvent ConnectAbort;
 
         private int maxBufferSize = 1024;
         private byte[] recvBuffer;
@@ -42,16 +44,15 @@ namespace MiniFramework
         }
         private void CheckTimeout()
         {
-            DelayAction.Excute(this, 5, () =>
+            Coroutine coroutine = UntilAction.Excute(this, () => IsConnected, () => ConnectSuccess.Invoke());
+            DelayAction.Excute(this, Timeout, () =>
             {
                 if (!IsConnected)
                 {
                     Debug.LogError("连接超时!");
                     tcpClient.Close();
-                    if (ConnectTimeout != null)
-                    {
-                        ConnectTimeout();
-                    }
+                    ConnectTimeout.Invoke();
+                    StopCoroutine(coroutine);
                 }
             });
         }
@@ -64,11 +65,7 @@ namespace MiniFramework
                 NetworkStream stream = tcpClient.GetStream();
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
-                Debug.Log("客户端连接成功");
-                if (ConnectSuccess != null)
-                {
-                    ConnectSuccess();
-                }
+                Debug.Log("客户端连接成功");          
             }
         }
         private void ReadResult(IAsyncResult ar)
