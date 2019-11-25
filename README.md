@@ -54,7 +54,7 @@ Debug.Log(cSVData[1]["Level"]);
 ```
 四、下载模块
 ```
-//采用协程下载
+//采用协程下载（支持断点续传）
 HttpDownload httpDownload = new HttpDownload(Application.dataPath);
 yield return httpDownload.Download(url,Callback);
 //可依次下载多个任务
