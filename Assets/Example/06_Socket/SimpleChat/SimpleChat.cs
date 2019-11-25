@@ -9,7 +9,7 @@ public class SimpleChat: MonoBehaviour {
     public InputField InputField;
     public Button ButtonSend;
 	void Start () {
-        NetMsgDispatcher.Instance.Regist(NetMsgID.Test, (data) =>
+        NetMsgManager.Instance.Regist(NetMsgID.Test, (data) =>
         {
             string msg = Encoding.UTF8.GetString(data);
             Text txtMsg = Instantiate(Msg.gameObject, Msg.transform.parent).GetComponent<Text>();

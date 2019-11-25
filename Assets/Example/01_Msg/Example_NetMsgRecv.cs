@@ -8,7 +8,7 @@ public class Example_NetMsgRecv : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        NetMsgDispatcher.Instance.Regist(NetMsgID.Test, OnRecv);
+        NetMsgManager.Instance.Regist(NetMsgID.Test, OnRecv);
     }
 	
     void OnRecv(byte[] data)
@@ -17,6 +17,7 @@ public class Example_NetMsgRecv : MonoBehaviour {
     }
     void OnDestroy()
     {
-        NetMsgDispatcher.Instance.UnRegist(NetMsgID.Test, OnRecv);
+       //非必需
+       // NetMsgManager.Instance.UnRegist(NetMsgID.Test, OnRecv);
     }
 }

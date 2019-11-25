@@ -4,8 +4,8 @@ namespace MiniFramework
     public class CameraFollow : MonoBehaviour
     {
         public Transform Target;
-        public float Distance;
-        public float Angle;
+        public float Distance = 10;
+        public float Angle = 45;
         public float LerpSpeed = 5;
         private Transform mCamera;
         // Use this for initialization

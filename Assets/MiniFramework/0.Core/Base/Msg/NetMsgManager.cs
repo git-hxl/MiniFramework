@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class NetMsgDispatcher : MonoSingleton<NetMsgDispatcher>
+    public class NetMsgManager : MonoSingleton<NetMsgManager>
     {
         private class MsgData : IPoolable
         {
@@ -26,7 +26,10 @@ namespace MiniFramework
             while (msgQueue.Count > 0)
             {
                 MsgData msg = msgQueue.Dequeue();
-                msg.Action(msg.data);
+                if(!msg.Action.Target.Equals(null))
+                {
+                    msg.Action(msg.data);
+                }
                 Pool<MsgData>.Instance.Recycle(msg);
             }
         }
@@ -87,10 +90,18 @@ namespace MiniFramework
                     for (int i = value.Count - 1; i >= 0; i--)
                     {
                         MsgData msg = value[i];
-                        MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
-                        queueMsg.Action = msg.Action;
-                        queueMsg.data = data;
-                        msgQueue.Enqueue(queueMsg);
+                        if(!msg.Action.Target.Equals(null))
+                        {
+                            MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
+                            queueMsg.Action = msg.Action;
+                            queueMsg.data = data;
+                            msgQueue.Enqueue(queueMsg);
+                        }
+                        else
+                        {                        
+                            value.Remove(msg);
+                            Pool<MsgData>.Instance.Recycle(msg);
+                        }
                     }
                 }
                 else

@@ -19,7 +19,7 @@ namespace MiniFramework
         // Use this for initialization
         void Start()
         {
-            NetMsgDispatcher.Instance.Regist(NetMsgID.HeartPack, (data) =>
+            NetMsgManager.Instance.Regist(NetMsgID.HeartPack, (data) =>
             {
                 //接收心跳包 
                 recvTime = Time.time;

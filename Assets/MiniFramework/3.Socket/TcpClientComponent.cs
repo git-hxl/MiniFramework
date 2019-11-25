@@ -12,7 +12,7 @@ namespace MiniFramework
         public int Port;
         public int Timeout;
         public bool IsConnected;
-  
+
         public UnityEvent ConnectSuccess;
         public UnityEvent ConnectTimeout;
         public UnityEvent ConnectAbort;
@@ -26,12 +26,11 @@ namespace MiniFramework
         {
             Connect();
         }
-
+        [ContextMenu("连接服务器")]
         public void Connect()
         {
             if (IsConnected)
             {
-                Debug.Log("客户端已连接");
                 return;
             }
             recvBuffer = new byte[maxBufferSize];
@@ -44,15 +43,21 @@ namespace MiniFramework
         }
         private void CheckTimeout()
         {
-            Coroutine coroutine = UntilAction.Excute(this, () => IsConnected, () => ConnectSuccess.Invoke());
-            DelayAction.Excute(this, Timeout, () =>
+            Coroutine waitForSuccess = null;
+            Coroutine waitForTimeout = null;
+            waitForSuccess = UntilAction.Excute(this, () => IsConnected, () =>
+            {
+                ConnectSuccess.Invoke();
+                StopCoroutine(waitForTimeout);
+            });    
+            waitForTimeout = DelayAction.Excute(this, Timeout, () =>
             {
                 if (!IsConnected)
                 {
                     Debug.LogError("连接超时!");
                     tcpClient.Close();
                     ConnectTimeout.Invoke();
-                    StopCoroutine(coroutine);
+                    StopCoroutine(waitForSuccess);
                 }
             });
         }
@@ -65,7 +70,7 @@ namespace MiniFramework
                 NetworkStream stream = tcpClient.GetStream();
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
-                Debug.Log("客户端连接成功");          
+                Debug.Log("客户端连接成功");
             }
         }
         private void ReadResult(IAsyncResult ar)
@@ -96,6 +101,7 @@ namespace MiniFramework
             NetworkStream stream = tcpClient.GetStream();
             stream.EndWrite(ar);
         }
+        [ContextMenu("断开服务器")]
         public void Close()
         {
             if (tcpClient != null && IsConnected)

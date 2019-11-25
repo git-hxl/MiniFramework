@@ -7,6 +7,7 @@ public class Example_GMsgSend : MonoBehaviour
 
     void Start()
     {
-        GameMsgDispatcher.Instance.Dispatch<string>(GameMsgID.Test, "hello");
+        GameMsgManager.Instance.Dispatch<string>(GameMsgID.Test, "hello");
+        GameMsgManager.Instance.Dispatch<int>(GameMsgID.Test, 123);
     }
 }
