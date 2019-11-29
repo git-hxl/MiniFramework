@@ -48,28 +48,5 @@ namespace MiniFramework
             }
             return file.Length;
         }
-        public static void Open(string path)
-        {
-            if (!Directory.Exists(path) && !File.Exists(path))
-            {
-                return;
-            }
-            Process p = new Process();
-#if UNITY_EDITOR_WIN
-            p.StartInfo.FileName = "cmd.exe";
-            p.StartInfo.Arguments = "/c start " + path;
-#elif UNITY_EDITOR_OSX
-            p.StartInfo.FileName = "bash";
-            p.StartInfo.Arguments = Application.dataPath + "/MiniFramework/0.Core/Editor/OpenDir.sh" + " " + path;
-#endif
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
-            p.WaitForExit();
-            p.Close();
-        }
     }
 }

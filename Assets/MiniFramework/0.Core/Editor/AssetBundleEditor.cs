@@ -12,7 +12,7 @@ namespace MiniFramework
         private BuildTarget platform;
         private BuildAssetBundleOptions option;
         private string version;
-
+        private string path;
 
         [MenuItem("MiniFramework/AssetBundle")]
         public static void OpenWindow()
@@ -22,12 +22,26 @@ namespace MiniFramework
         }
         private void Awake()
         {
-            platform = (BuildTarget)EditorPrefs.GetInt("platform", 2);
-            option = (BuildAssetBundleOptions)EditorPrefs.GetInt("option", 256);
-            version = EditorPrefs.GetString("version", "1.0.0");
+            platform = (BuildTarget)EditorPrefs.GetInt("Mini_Platform", 2);
+            option = (BuildAssetBundleOptions)EditorPrefs.GetInt("Mini_Option", 256);
+            version = EditorPrefs.GetString("Mini_Version", "1.0.0");
+            path = EditorPrefs.GetString("Mini_Path", Application.streamingAssetsPath);
         }
         private void OnGUI()
         {
+            GUILayout.Label("保存路径");
+            GUILayout.BeginHorizontal();
+            path = GUILayout.TextField(path);
+            if (GUILayout.Button("选择文件夹"))
+            {
+                string selectPath = EditorUtility.OpenFolderPanel("资源保持路径", Application.dataPath, "");
+                if (!string.IsNullOrEmpty(selectPath))
+                {
+                    path = selectPath;
+                }
+            }
+            GUILayout.EndHorizontal();
+
             GUILayout.Label("打包平台");
             platform = (BuildTarget)EditorGUILayout.EnumPopup(platform);
 
@@ -45,18 +59,17 @@ namespace MiniFramework
             GUILayout.Label("版本信息");
             version = GUILayout.TextField(version);
 
-
             if (GUILayout.Button("生成config文件"))
             {
                 CreateConfig();
             }
             if (GUILayout.Button("打开StreamingAssets目录"))
             {
-                FileUtil.Open(Application.streamingAssetsPath);
+                EditorUtility.RevealInFinder(Application.streamingAssetsPath);
             }
             if (GUILayout.Button("打开PersistentData目录"))
             {
-                FileUtil.Open(Application.persistentDataPath);
+                EditorUtility.RevealInFinder(Application.persistentDataPath);
             }
             if (GUILayout.Button("打包"))
             {
@@ -66,13 +79,14 @@ namespace MiniFramework
         }
         private void OnDestroy()
         {
-            EditorPrefs.SetInt("platform", (int)platform);
-            EditorPrefs.SetInt("option", (int)option);
-            EditorPrefs.SetString("version", version);
+            EditorPrefs.SetInt("Mini_Platform", (int)platform);
+            EditorPrefs.SetInt("Mini_Option", (int)option);
+            EditorPrefs.SetString("Mini_Version", version);
+            EditorPrefs.SetString("Mini_Path", path);
         }
         private string GetTargetPath(BuildTarget platform)
         {
-            string outputPath = Application.streamingAssetsPath + "/" + platform;
+            string outputPath = path + "/" + platform;
             if (!Directory.Exists(outputPath))
             {
                 Directory.CreateDirectory(outputPath);
@@ -83,7 +97,7 @@ namespace MiniFramework
         {
             Config config = new Config();
             config.version = version;
-            File.WriteAllText(Application.streamingAssetsPath + "/" + platform + "/config.txt", SerializeUtil.ToJson(config));
+            File.WriteAllText(GetTargetPath(platform) + "/config.txt", SerializeUtil.ToJson(config));
             AssetDatabase.Refresh();
             Debug.Log("写入成功");
         }

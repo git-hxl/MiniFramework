@@ -20,6 +20,7 @@ namespace MiniFramework
         private string platform;
         private HttpDownload httpDownload;
         private List<string> updateFiles = new List<string>();
+        private string assetPath;
         // Use this for initialization
         IEnumerator Start()
         {
@@ -42,10 +43,12 @@ namespace MiniFramework
             }
             if (IsLocal)
             {
-                yield return LoadAssetBundle(Application.streamingAssetsPath + "/" + platform);
+                assetPath = Application.streamingAssetsPath + "/" + platform;
+                yield return LoadAssetBundle(assetPath);
             }
             else
             {
+                assetPath = Application.persistentDataPath + "/" + platform;
                 yield return CheckUpdate();
             }
         }
@@ -55,6 +58,10 @@ namespace MiniFramework
         /// <returns></returns>
         IEnumerator CheckUpdate()
         {
+            if(!Directory.Exists(assetPath))
+            {
+                Directory.CreateDirectory(assetPath);
+            }
             httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
             yield return httpDownload.Download(ResUrl + "/" + platform + "/config.txt");
             if (httpDownload.isError)
@@ -66,15 +73,15 @@ namespace MiniFramework
             LitJson.JsonData newData = SerializeUtil.FromJson(File.ReadAllText(httpDownload.FilePath));
             Version NewVersion = new Version(newData["version"].ToString());
 
-            string configPath = Application.persistentDataPath + "/" + platform + "/config.txt";
+            string configPath = assetPath + "/config.txt";
             if (File.Exists(configPath))
             {
                 LitJson.JsonData localData = SerializeUtil.FromJson(File.ReadAllText(configPath));
                 Version LocalVersion = new Version(localData["version"].ToString());
                 Debug.Log("当前版本号：" + LocalVersion + "最新版本号：" + NewVersion);
-                if (NewVersion != LocalVersion)
+                if (NewVersion.Major > LocalVersion.Major)
                 {
-                    Debug.Log("版本号不一致，请前往平台更新");
+                    Debug.Log("主版本号不一致，请前往平台更新安装包");
                     Application.OpenURL(AppUrl);
                     yield break;
                 }
@@ -97,12 +104,12 @@ namespace MiniFramework
             }
 
             string newManifestPath = httpDownload.FilePath;
-            string oldManifestPath = Application.persistentDataPath + "/" + platform + "/" + platform;
+            string oldManifestPath = assetPath + "/" + platform;
             Dictionary<string, Hash128> newManifest = AssetBundleLoader.LoadABManifest(newManifestPath);
             Dictionary<string, Hash128> oldManifest = AssetBundleLoader.LoadABManifest(oldManifestPath);
             foreach (var item in newManifest)
             {
-                if (oldManifest.ContainsKey(item.Key) && oldManifest[item.Key] == oldManifest[item.Key])
+                if (oldManifest.ContainsKey(item.Key) && oldManifest[item.Key] == item.Value)
                 {
                     continue;
                 }
@@ -110,10 +117,10 @@ namespace MiniFramework
             }
             if (updateFiles.Count > 0)
             {
-                httpDownload = new HttpDownload(Application.persistentDataPath + "/" + platform);
+                httpDownload = new HttpDownload(assetPath);
                 foreach (var item in updateFiles)
                 {
-                    Debug.Log("下载网络资源：" + item);
+                    //这里下载差异化AB包
                     string fileUrl = ResUrl + "/" + platform + "/" + item;
                     yield return httpDownload.Download(fileUrl);
                     if (httpDownload.isError)
@@ -123,9 +130,9 @@ namespace MiniFramework
                     }
                 }
                 updateFiles.Clear();
+                File.Copy(newManifestPath, oldManifestPath, true);
             }
-            File.Copy(newManifestPath, oldManifestPath, true);
-            yield return LoadAssetBundle(Application.persistentDataPath + "/" + platform);
+            yield return LoadAssetBundle(assetPath);
         }
         /// <summary>
         /// 加载AssetsBundle
