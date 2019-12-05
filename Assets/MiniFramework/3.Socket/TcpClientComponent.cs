@@ -44,13 +44,13 @@ namespace MiniFramework
         private void CheckTimeout()
         {
             Coroutine waitForSuccess = null;
-            Coroutine waitForTimeout = null;
+            Coroutine waitForFail = null;
             waitForSuccess = UntilAction.Excute(this, () => IsConnected, () =>
             {
                 ConnectSuccess.Invoke();
-                StopCoroutine(waitForTimeout);
+                StopCoroutine(waitForFail);
             });    
-            waitForTimeout = DelayAction.Excute(this, Timeout, () =>
+            waitForFail = DelayAction.Excute(this, Timeout, () =>
             {
                 if (!IsConnected)
                 {
