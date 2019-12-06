@@ -20,6 +20,7 @@ namespace MiniFramework
         {
             Launch();
         }
+        [ContextMenu("开启服务器")]
         public void Launch()
         {
             if (IsActive)
@@ -108,6 +109,7 @@ namespace MiniFramework
                 Debug.Log("已断开远程客户端");
             }
         }
+        [ContextMenu("关闭服务器")]
         public void Close()
         {
             Clear();

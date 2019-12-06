@@ -2,7 +2,8 @@
 {
     public class NetMsgID
     {
-        public const int Test = -1;
+        public const int Test = -2;
+        public const int ConnectAbort = -1;
         public const int HeartPack = 0;
     }
 

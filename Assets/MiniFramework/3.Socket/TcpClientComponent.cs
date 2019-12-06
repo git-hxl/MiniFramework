@@ -24,6 +24,10 @@ namespace MiniFramework
 
         void Start()
         {
+            NetMsgManager.Instance.Regist(NetMsgID.ConnectAbort, (data) =>
+            {
+                ConnectAbort.Invoke();
+            });
             Connect();
         }
         [ContextMenu("连接服务器")]
@@ -84,6 +88,12 @@ namespace MiniFramework
                 Array.Copy(recvBuffer, 0, recvBytes, 0, recvLength);
                 dataPacker.UnPack(recvBytes);
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
+            }
+            else
+            {
+                Debug.LogError("连接中断");
+                Close();
+                NetMsgManager.Instance.Dispatch(NetMsgID.ConnectAbort, null);
             }
         }
         public void Send(int msgID, byte[] bodyData)

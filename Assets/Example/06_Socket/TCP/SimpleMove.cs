@@ -34,14 +34,14 @@ public class SimpleMove : MonoBehaviour {
 
     public void ConnectSuccess()
     {
-        Debug.Log("连接成功");
+        //Debug.Log("连接成功");
         isCanMove = true;
 
         
     }
     public void ConnectAbort()
     {
-        Debug.Log("网络中断");
+        //Debug.Log("网络中断");
         isCanMove = false;
     }
 }
