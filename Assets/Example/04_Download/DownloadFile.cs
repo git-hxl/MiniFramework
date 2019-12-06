@@ -12,12 +12,13 @@ public class DownloadFile : MonoBehaviour
         httpDownload = new HttpDownload(Application.dataPath);
         yield return httpDownload.Download(Url, (result) =>
         {
-        
+
         });
     }
 
     private void Update()
     {
-        Debug.Log(httpDownload.Progress);
+        if (!httpDownload.isError)
+            Debug.Log(httpDownload.Progress);
     }
 }

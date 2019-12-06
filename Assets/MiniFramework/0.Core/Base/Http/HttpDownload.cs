@@ -37,7 +37,19 @@ namespace MiniFramework
                         callback(false);
                     yield break;
                 }
-                TotalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
+                string contentLength = headRequest.GetResponseHeader("Content-Length");
+                if (!string.IsNullOrEmpty(contentLength))
+                {
+                    TotalLength = long.Parse(contentLength);
+                }
+                else
+                {
+                    Debug.LogError("无法获取资源大小");
+                    isError = true;
+                    if (callback != null)
+                        callback(false);
+                    yield break;
+                }
             }
             Debug.Log("开始下载:" + FileName + " 大小:" + UnitConvert.ByteAutoConvert(TotalLength) + " 已下载:" + UnitConvert.ByteAutoConvert(CurLength));
             using (UnityWebRequest request = UnityWebRequest.Get(url))
