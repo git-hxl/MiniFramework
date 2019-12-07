@@ -437,18 +437,7 @@ MonoBehaviour:
   IsConnected: 0
   ConnectSuccess:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1141560664}
-        m_MethodName: ConnectSuccess
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   ConnectTimeout:
@@ -458,18 +447,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   ConnectAbort:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1141560664}
-        m_MethodName: ConnectAbort
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!4 &847963793
@@ -497,7 +475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: 0
-  CheckInterval: 5
+  CheckInterval: 1
   PackLatency: 0
 --- !u!1 &1141560663
 GameObject:
@@ -530,6 +508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 10
+  dir: {x: 0, y: 0, z: 0}
 --- !u!23 &1141560665
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -24,10 +24,6 @@ namespace MiniFramework
 
         void Start()
         {
-            NetMsgManager.Instance.Regist(NetMsgID.ConnectAbort, (data) =>
-            {
-                ConnectAbort.Invoke();
-            });
             Connect();
         }
         [ContextMenu("连接服务器")]
@@ -43,17 +39,24 @@ namespace MiniFramework
             IPAddress ip = NetworkUtil.ParseIP(Address);
             tcpClient.BeginConnect(ip, Port, ConnectResult, tcpClient);
             Debug.Log("开始连接服务器：" + ip + " 端口：" + Port);
-            CheckTimeout();
+            CheckConnectState();
         }
-        private void CheckTimeout()
+        private void CheckConnectState()
         {
             Coroutine waitForSuccess = null;
             Coroutine waitForFail = null;
+            //连接成功
             waitForSuccess = UntilAction.Excute(this, () => IsConnected, () =>
             {
                 ConnectSuccess.Invoke();
                 StopCoroutine(waitForFail);
-            });    
+                //网络中断
+                UntilAction.Excute(this, () => !IsConnected, () =>
+                {
+                    ConnectAbort.Invoke();
+                });
+            });
+            //连接失败
             waitForFail = DelayAction.Excute(this, Timeout, () =>
             {
                 if (!IsConnected)
@@ -64,6 +67,7 @@ namespace MiniFramework
                     StopCoroutine(waitForSuccess);
                 }
             });
+
         }
         private void ConnectResult(IAsyncResult ar)
         {
@@ -74,7 +78,7 @@ namespace MiniFramework
                 NetworkStream stream = tcpClient.GetStream();
                 stream.BeginRead(recvBuffer, 0, recvBuffer.Length, ReadResult, tcpClient);
                 IsConnected = true;
-                Debug.Log("客户端连接成功");
+                Debug.Log("客户端连接成功!");
             }
         }
         private void ReadResult(IAsyncResult ar)
@@ -91,9 +95,8 @@ namespace MiniFramework
             }
             else
             {
-                Debug.LogError("连接中断");
+                Debug.LogError("网络中断!");
                 Close();
-                NetMsgManager.Instance.Dispatch(NetMsgID.ConnectAbort, null);
             }
         }
         public void Send(int msgID, byte[] bodyData)

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 namespace MiniFramework
 {
-
     public class HeartPackComponent : MonoBehaviour
     {
         public enum HeartType
@@ -51,7 +50,6 @@ namespace MiniFramework
                 {
                     Debug.LogError("心跳包接收超时!");
                     TcpClientComponent.Instance.Close();
-                    TcpClientComponent.Instance.ConnectAbort.Invoke();
                     return;
                 }
                 TcpClientComponent.Instance.Send(NetMsgID.HeartPack, null);
