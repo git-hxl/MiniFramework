@@ -1,6 +1,6 @@
 # MiniFramework
 U3D客户端框架  
-0.正在陆续完善MVC核心框架搭建（先不上传） 
+0.正在陆续完善MVC核心框架搭建（先不上传）  
 1.支持下载、检测更新、支持断点续传  
 2.UDPSocket\TCPSocket(包含心跳检测，解决沾包问题)  
 3.http get、put和post封装  
