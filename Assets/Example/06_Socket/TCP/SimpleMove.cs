@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework;
+using Google.Protobuf;
 public class SimpleMove : MonoBehaviour {
     public float Speed;
     public Vector3 dir;
@@ -9,7 +10,7 @@ public class SimpleMove : MonoBehaviour {
 	void Start () {
         NetMsgManager.Instance.Regist(NetMsgID.Test, (data) =>
         {
-            string s =  SerializeUtil.FromProtoBuff<string>(data);
+            string s =  SerializeUtil.FromPtr<string>(data);
             string x = s.Split(':')[0];
             string z = s.Split(':')[1];
             dir = new Vector3(float.Parse(x),0,float.Parse(z));
@@ -26,7 +27,7 @@ public class SimpleMove : MonoBehaviour {
            // if(x!=0||z!=0)
             {
                 string s = x + ":" + z;
-                byte[] data = SerializeUtil.ToProtoBuff(s);
+                byte[] data = SerializeUtil.ToPtr(s);
                 TcpClientComponent.Instance.Send(NetMsgID.Test, data);
             }
 
