@@ -1,8 +1,6 @@
 .git
 .vs
 .vscode
-*.csproj
-*.sln
 Library
 obj
 Temp

@@ -1,0 +1,6 @@
+version:1.0.0
+Hotfix.dll:2c8080b324f1fd0b7a300589d2de77d6
+Hotfix.dll.mdb:4018ebbf4c3ea81b1c89878333cb28b6
+Hotfix.pdb:1245a039e8e010a005eee5cba44634bf
+img:47c9b1070b5f8f9419eb1ec8848e920b
+StandaloneWindows:f49befec2ba0236d3da12d574b090e7a
