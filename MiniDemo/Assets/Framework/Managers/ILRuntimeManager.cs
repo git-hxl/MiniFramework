@@ -2,78 +2,50 @@
 using ILRuntime.CLR.TypeSystem;
 using ILRuntime.Runtime.Intepreter;
 using ILRuntime.Runtime.Stack;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using MiniFramework;
-public class ILRuntimeManager : MonoSingleton<ILRuntimeManager> {
-
-    public ILRuntime.Runtime.Enviorment.AppDomain appdomain;
-
+public class ILRuntimeManager : MonoSingleton<ILRuntimeManager>
+{
     public bool IsLocal;
-    public string dllPath;
-    public void Start()
-    {
-        StartCoroutine(LoadILRuntime());
-    }
-
-    IEnumerator LoadILRuntime()
+    public ILRuntime.Runtime.Enviorment.AppDomain appdomain;
+    void Start()
     {
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
-        byte[] dll = null;
-        byte[] pdb = null;
-        if(IsLocal)
+        if (IsLocal)
         {
-            yield return FileUtil.ReadStreamingFile(Application.streamingAssetsPath + "/Hotfix.dll", (data) =>
-            {
-                dll = data;
-            });
-            yield return FileUtil.ReadStreamingFile(Application.streamingAssetsPath + "/Hotfix.pdb", (data) =>
-            {
-                pdb = data;
-            });
+            LoadLocalDLL();
         }
         else
         {
-            dll = File.ReadAllBytes(dllPath);
-        }
-//#if UNITY_ANDROID
-//    WWW www = new WWW(Application.streamingAssetsPath + "/Hotfix.dll");
-//#else
-//        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/Hotfix.dll.txt");
-//#endif
-//        while (!www.isDone)
-//            yield return null;
-//        if (!string.IsNullOrEmpty(www.error))
-//            Debug.LogError(www.error);
-//        byte[] dll = www.bytes;
-//        www.Dispose();
-//#if UNITY_ANDROID
-//    www = new WWW(Application.streamingAssetsPath + "/Hotfix.pdb");
-//#else
-//        www = new WWW("file:///" + Application.streamingAssetsPath + "/Hotfix.pdb");
-//#endif
-//        while (!www.isDone)
-//            yield return null;
-//        if (!string.IsNullOrEmpty(www.error))
-//            Debug.LogError(www.error);
-//        byte[] pdb = www.bytes;
-        using (System.IO.MemoryStream fs = new MemoryStream(dll))
-        {
-            if(pdb!=null)
-            {
-                using (System.IO.MemoryStream p = new MemoryStream(pdb))
-                {
-                    appdomain.LoadAssembly(fs, p, new Mono.Cecil.Pdb.PdbReaderProvider());
-                }
-            }
-            else
-            {
-                appdomain.LoadAssembly(fs, null, new Mono.Cecil.Pdb.PdbReaderProvider());
-            }
+            LoadFromAB();
         }
         OnILRuntimeInitialized();
+    }
+    void LoadLocalDLL()
+    {
+        byte[] dll = null;
+        byte[] pdb = null;
+
+        dll = File.ReadAllBytes(Application.streamingAssetsPath + "/Hotfix/Hotfix.dll");
+        pdb = File.ReadAllBytes(Application.streamingAssetsPath + "/Hotfix/Hotfix.pdb");
+
+        using (System.IO.MemoryStream fs = new MemoryStream(dll))
+        {
+            using (System.IO.MemoryStream p = new MemoryStream(pdb))
+            {
+                appdomain.LoadAssembly(fs, p, new Mono.Cecil.Pdb.PdbReaderProvider());
+            }
+        }
+    }
+    void LoadFromAB()
+    {
+        byte[] dll = ResourceManager.Instance.LoadFromAB<TextAsset>("Hotfix").bytes;
+        using (System.IO.MemoryStream fs = new MemoryStream(dll))
+        {
+            appdomain.LoadAssembly(fs, null, new Mono.Cecil.Pdb.PdbReaderProvider());
+        }
     }
 
     void OnILRuntimeInitialized()

@@ -12,16 +12,18 @@ namespace Hotfix
     {
         void Awake()
         {
-            Debug.Log("DLL Awake");
+            Debug.Log("DLL Awake:"+gameObject.name);
         }
 
         void OnEnable()
         {
-            Debug.Log("DLL OnEnable");
+            Debug.Log("DLL OnEnable:"+gameObject.name);
+
+            StartCoroutine(TestCor());
         }
         void Start()
         {
-            Debug.Log("DLL Start");
+            Debug.Log("DLL Start:"+gameObject .name);
         }
 
         //void Update()
@@ -31,12 +33,18 @@ namespace Hotfix
 
         void OnDisable()
         {
-            Debug.Log("DLL OnDisable");
+            Debug.Log("DLL OnDisable:"+gameObject.name);
         }
 
         void OnDestroy()
         {
-            Debug.Log("DLL OnDestroy");
+            Debug.Log("DLL OnDestroy:"+gameObject.name);
+        }
+
+        public IEnumerator TestCor()
+        {
+            yield return new WaitForSeconds(5f);
+            Debug.Log("5s过去了");
         }
     }
 

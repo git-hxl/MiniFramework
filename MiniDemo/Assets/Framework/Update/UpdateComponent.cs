@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using LitJson;
 namespace MiniFramework
 {
     /// <summary>
@@ -12,110 +11,98 @@ namespace MiniFramework
     /// </summary>
     public class UpdateComponent : MonoBehaviour
     {
-        public bool IsLocal;
         public UnityEvent UpdateSuccess;
         public UnityEvent UpdateFail;
-        private string platform;
+        private string platform;//运行平台
+        private string resPath;//下载的AB资源保存路径
         private HttpDownload httpDownload;
+
         private List<string> updateFiles = new List<string>();
-        private string assetPath;
         // Use this for initialization
+
         IEnumerator Start()
         {
             switch (Application.platform)
             {
-                case RuntimePlatform.OSXEditor:
-                case RuntimePlatform.OSXPlayer:
-                    platform = "StandaloneOSX";
-                    break;
                 case RuntimePlatform.WindowsEditor:
                 case RuntimePlatform.WindowsPlayer:
-                    platform = "StandaloneWindows";
-                    break;
-                case RuntimePlatform.IPhonePlayer:
-                    platform = "iOS";
-                    break;
+                    platform = "StandaloneWindows"; break;
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    platform = "StandaloneOSX"; break;
                 case RuntimePlatform.Android:
-                    platform = "Android";
-                    break;
+                    platform = "Android"; break;
+                case RuntimePlatform.IPhonePlayer:
+                    platform = "iOS"; break;
             }
-            if (IsLocal)
+            resPath = Application.persistentDataPath + "/" + platform;
+            if (!Directory.Exists(resPath))
             {
-                assetPath = Application.streamingAssetsPath + "/" + platform;
-                yield return LoadAssetBundle();
+                Directory.CreateDirectory(resPath);
             }
-            else
-            {
-                assetPath = Application.persistentDataPath + "/" + platform;
-                //Repair();
-                yield return CheckUpdate();
-            }
+            yield return CheckConfig();
         }
         /// <summary>
-        /// 检查更新
+        /// 检查配置文件
         /// </summary>
         /// <returns></returns>
-        IEnumerator CheckUpdate()
+        IEnumerator CheckConfig()
         {
-            if(!Directory.Exists(assetPath))
-            {
-                Directory.CreateDirectory(assetPath);
-            }
-            httpDownload = new HttpDownload(Application.persistentDataPath + "/Update");
-            yield return httpDownload.Download(URLConfig.ResUrl + "/" + platform + "/config.txt");
+            //下载config文件
+            httpDownload = new HttpDownload(Application.persistentDataPath);
+            string url = URLConfig.ResUrl + "/" + platform + "/config.txt";
+            yield return httpDownload.Download(url);
+            //下载失败
             if (httpDownload.isError)
             {
                 UpdateFail.Invoke();
                 yield break;
             }
-            string[] downloadConfig = File.ReadAllLines(httpDownload.FilePath);
-            Dictionary<string, string> downloadConfigDict = new Dictionary<string, string>();
-            foreach (var item in downloadConfig)
+            //读取最新config
+            string[] newConfig = File.ReadAllLines(httpDownload.FilePath);
+            Dictionary<string, string> newConfigDict = new Dictionary<string, string>();
+            foreach (var item in newConfig)
             {
                 string[] value = item.Split(':');
-                downloadConfigDict.Add(value[0], value[1]);
+                newConfigDict.Add(value[0], value[1]);
             }
-
-            Version NewVersion = new Version(downloadConfigDict["version"]);
-            string configPath = assetPath + "/config.txt";
-            string[] localConfig = new string[0];
-
-            if (File.Exists(configPath))
+            Debug.Log("最新版本号：" + newConfigDict["version"]);
+            Dictionary<string, string> localConfigDict = new Dictionary<string, string>();
+            if (File.Exists(resPath + "/config.txt"))
             {
-                localConfig = File.ReadAllLines(configPath);
-
-                Version LocalVersion = new Version(localConfig[0].Split(':')[1]);
-
-                Debug.Log("当前版本号：" + LocalVersion + "最新版本号：" + NewVersion);
-                if (NewVersion.Major > LocalVersion.Major)
+                //读取本地config
+                string[] localConfig = File.ReadAllLines(resPath + "/config.txt");
+                foreach (var item in localConfig)
                 {
-                    Debug.Log("主版本号不一致，请前往平台更新安装包");
+                    string[] value = item.Split(':');
+                    localConfigDict.Add(value[0], value[1]);
+                }
+                Debug.Log("本地版本号：" + localConfigDict["version"]);
+                Version newVersion = new Version(newConfigDict["version"]);
+                Version localVersion = new Version(localConfigDict["version"]);
+                //对比版本号
+                if (newVersion.Major > localVersion.Major)
+                {
+                    Debug.LogError("主版本号不一致，请前往平台更新安装包");
                     Application.OpenURL(URLConfig.AppUrl);
+                    Application.Quit();
                     yield break;
                 }
             }
-            Dictionary<string, string> localConfigDict = new Dictionary<string, string>();
-            foreach (var item in localConfig)
+            //对比Hash值
+            foreach (var item in newConfigDict)
             {
-                string[] value = item.Split(':');
-                localConfigDict.Add(value[0], value[1]);
-            }
-
-            //获取差异化文件
-            foreach (var item in downloadConfigDict)
-            {
-                if(item.Key == "version" || item.Key == platform)
+                if (item.Key == "version")
                 {
                     continue;
                 }
-                if(localConfigDict.ContainsKey(item.Key)&&localConfigDict[item.Key] == item.Value)
+                if (localConfigDict.ContainsKey(item.Key) && localConfigDict[item.Key] == item.Value)
                 {
                     continue;
                 }
                 updateFiles.Add(item.Key);
             }
             yield return DownloadAssetBundle();
-            File.Copy(Application.persistentDataPath + "/Update/config.txt", assetPath + "/config.txt", true);
         }
         /// <summary>
         /// 下载差异化AssetBundle
@@ -123,60 +110,33 @@ namespace MiniFramework
         /// <returns></returns>
         IEnumerator DownloadAssetBundle()
         {
-            if (updateFiles.Count > 0)
+            httpDownload = new HttpDownload(resPath);
+            foreach (var item in updateFiles)
             {
-                httpDownload = new HttpDownload(assetPath);
-                foreach (var item in updateFiles)
+                //这里下载差异化AB包
+                string fileUrl = URLConfig.ResUrl + "/" + platform + "/" + item;
+                yield return httpDownload.Download(fileUrl);
+                if (httpDownload.isError)
                 {
-                    //这里下载差异化AB包
-                    string fileUrl = URLConfig.ResUrl + "/" + platform + "/" + item;
-                    yield return httpDownload.Download(fileUrl);
-                    if (httpDownload.isError)
-                    {
-                        UpdateFail.Invoke();
-                        yield break;
-                    }
-                }
-                updateFiles.Clear();
-            }
-            yield return LoadAssetBundle();
-        }
-        /// <summary>
-        /// 加载AssetsBundle
-        /// </summary>
-        /// <param name="assetPath"></param>
-        /// <returns></returns>
-        private IEnumerator LoadAssetBundle()
-        {
-            string[] files = Directory.GetFiles(assetPath);
-            foreach (var item in files)
-            {
-                string extension = Path.GetExtension(item);
-                string fileName = Path.GetFileName(item);
-                if (extension == "" )
-                {
-                    Debug.Log("加载AssetBundle：" + fileName);
-                    yield return AssetBundleLoader.LoadAssetBundle(assetPath + "/" + fileName, (assetBundle) =>
-                    {
-                        ResourceManager.Instance.Bundles.Add(assetBundle);
-                    });
-                }
-                if(fileName == "Hotfix.dll")
-                {
-                    Debug.Log("初始化hotfix");
-                    ILRuntimeManager.Instance.dllPath = assetPath + "/" + fileName;
+                    UpdateFail.Invoke();
+                    yield break;
                 }
             }
+            updateFiles.Clear();
+            File.Copy(Application.persistentDataPath + "/config.txt", resPath + "/config.txt", true);
+            yield return ResourceManager.Instance.LoadAssetBundle(resPath);
+            Debug.Log("更新完成");
             UpdateSuccess.Invoke();
         }
+
         /// <summary>
         /// 用于修复客户端
         /// </summary>
         public void Repair()
         {
-            if (Directory.Exists(assetPath))
+            if (Directory.Exists(resPath))
             {
-                Directory.Delete(assetPath,true);
+                Directory.Delete(resPath, true);
             }
         }
     }

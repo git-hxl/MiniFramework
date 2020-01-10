@@ -56,63 +56,6 @@ namespace MiniFramework
             }
             return panel;
         }
-        public void CloseUI(string panelName)
-        {
-            if (UIPanelDict.ContainsKey(panelName))
-            {
-                GameObject up = UIPanelDict[panelName];
-                up.SetActive(false);
-            }
-        }
-        public void DestroyUI(string panelName)
-        {
-            if (UIPanelDict.ContainsKey(panelName))
-            {
-                Destroy(UIPanelDict[panelName].gameObject);
-                UIPanelDict.Remove(panelName);
-            }
-        }
-        /// <summary>
-        /// 禁用面板交互
-        /// </summary>
-        /// <param name="panelName"></param>
-        public void DisableRayCast(string panelName)
-        {
-            if (UIPanelDict.ContainsKey(panelName))
-            {
-                GameObject panel = UIPanelDict[panelName];
-                Image[] images = panel.transform.GetComponentsInChildren<Image>();
-                for (int i = 0; i < images.Length; i++)
-                {
-                    images[i].raycastTarget = false;
-                }
-                Text[] texts = panel.transform.GetComponentsInChildren<Text>();
-                for (int i = 0; i < texts.Length; i++)
-                {
-                    texts[i].raycastTarget = false;
-                }
-            }
-        }
-        /// <summary>
-        /// 启用面板交互
-        /// </summary>
-        /// <param name="panelName"></param>
-        public void EnableRayCast(string panelName)
-        {
-            if (UIPanelDict.ContainsKey(panelName))
-            {
-                GameObject panel = UIPanelDict[panelName];
-                Image[] images = panel.transform.GetComponentsInChildren<Image>();
-                for (int i = 0; i < images.Length; i++)
-                {
-                    images[i].raycastTarget = true;
-                }
-                Text[] texts = panel.transform.GetComponentsInChildren<Text>();
-                for (int i = 0; i < texts.Length; i++)
-                {
-                    texts[i].raycastTarget = true;
-                }
-            }
-        }
+
     }
 }

@@ -3,7 +3,7 @@ using UnityEditor;
 using System.IO;
 namespace MiniFramework
 {
-    public class ZipEditor : EditorWindow
+    public class ZipEditor
     {
         [MenuItem("Assets/压缩文件夹")]
         static void Zip()

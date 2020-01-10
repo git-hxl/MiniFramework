@@ -7,11 +7,11 @@ namespace MiniFramework
 {
     public static class AssetBundleLoader
     {
-        public static IEnumerator LoadAssetBundle(string path,Action<AssetBundle> callback)
+        public static IEnumerator LoadAssetBundle(string path, Action<AssetBundle> callback)
         {
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
             yield return request;
-            if(request.assetBundle != null)
+            if (request.assetBundle != null)
             {
                 callback(request.assetBundle);
             }
@@ -34,6 +34,18 @@ namespace MiniFramework
                     bundlesHash.Add(bundlesName[i], hash);
                 }
                 assetBundle.Unload(true);
+            }
+            return bundlesHash;
+        }
+
+        public static Dictionary<string, Hash128> LoadABManifest(AssetBundleManifest manifest)
+        {
+            Dictionary<string, Hash128> bundlesHash = new Dictionary<string, Hash128>();
+            string[] bundlesName = manifest.GetAllAssetBundles();
+            for (int i = 0; i < bundlesName.Length; i++)
+            {
+                Hash128 hash = manifest.GetAssetBundleHash(bundlesName[i]);
+                bundlesHash.Add(bundlesName[i], hash);
             }
             return bundlesHash;
         }

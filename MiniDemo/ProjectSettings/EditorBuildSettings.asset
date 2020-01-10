@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Example/ResLoad/ResLoad.unity
-    guid: df0f6b7cd1849f4438403ecc4fa73b1a
+    path: Assets/Main.unity
+    guid: e7becb994e7e27f46befa97ce97f4c89

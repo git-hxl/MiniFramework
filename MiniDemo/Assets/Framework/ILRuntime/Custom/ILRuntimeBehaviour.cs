@@ -1,6 +1,5 @@
 ﻿using ILRuntime.CLR.TypeSystem;
 using ILRuntime.Runtime.Intepreter;
-using System.Collections;
 using UnityEngine;
 
 public class ILRuntimeBehaviour : MonoBehaviour
@@ -18,9 +17,8 @@ public class ILRuntimeBehaviour : MonoBehaviour
         clrInstance.AppDomain = ILRuntimeManager.Instance.appdomain;
         ilInstance.CLRInstance = clrInstance;
         clrInstance.Awake();
-        if (clrInstance.enabled)
-        {
-            clrInstance.OnEnable();
-        }
+        clrInstance.OnEnable();
     }
+
+    
 }

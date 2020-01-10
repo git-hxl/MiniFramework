@@ -7,7 +7,7 @@ namespace MiniFramework
 		/// <summary>
 		/// 镂空区域中心
 		/// </summary>
-		private Vector4 mCenter;
+		//private Vector4 mCenter;
 		/// <summary>
 		/// 最终的偏移值X
 		/// </summary>

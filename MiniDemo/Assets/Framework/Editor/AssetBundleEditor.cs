@@ -1,19 +1,9 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
-using LitJson;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Collections.Generic;
-
 namespace MiniFramework
 {
-    struct Config
-    {
-        public string version;
-
-        public List<string> md5s;
-    }
     public class AssetBundleEditor : EditorWindow
     {
         private BuildTarget platform;
@@ -29,7 +19,7 @@ namespace MiniFramework
         }
         private void Awake()
         {
-            platform = (BuildTarget)EditorPrefs.GetInt("Mini_Platform", 2);
+            platform = (BuildTarget)EditorPrefs.GetInt("Mini_Platform", 5);
             option = (BuildAssetBundleOptions)EditorPrefs.GetInt("Mini_Option", 256);
             version = EditorPrefs.GetString("Mini_Version", "1.0.0");
             path = EditorPrefs.GetString("Mini_Path", Application.streamingAssetsPath);
@@ -66,9 +56,10 @@ namespace MiniFramework
             GUILayout.Label("版本信息");
             version = GUILayout.TextField(version);
 
-            if (GUILayout.Button("生成config文件"))
+            if (GUILayout.Button("生成Hotfix字节文件"))
             {
-                CreateConfig();
+                GenHotfix();
+                AssetDatabase.Refresh();
             }
             if (GUILayout.Button("打开StreamingAssets目录"))
             {
@@ -80,8 +71,10 @@ namespace MiniFramework
             }
             if (GUILayout.Button("打包"))
             {
-                BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
-                CreateConfig();
+                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
+                Dictionary<string, Hash128> hash = AssetBundleLoader.LoadABManifest(manifest);
+                CreateConfig(hash);
+                AssetDatabase.Refresh();
             }
         }
         private void OnDestroy()
@@ -100,7 +93,17 @@ namespace MiniFramework
             }
             return outputPath;
         }
-        private void CreateConfig()
+
+        private void GenHotfix()
+        {
+            string path = Application.streamingAssetsPath + "/Hotfix/Hotfix.dll";
+            string newPath = Application.dataPath + "/Hotfix.bytes";
+            if (File.Exists(path))
+            {
+                File.Copy(path, newPath, true);
+            }
+        }
+        private void CreateConfig(Dictionary<string, Hash128> hash)
         {
             string configPath = GetTargetPath(platform) + "/config.txt";
             if (File.Exists(configPath))
@@ -109,21 +112,22 @@ namespace MiniFramework
             }
             List<string> contents = new List<string>();
             contents.Add("version:" + version);
-            string[] files = Directory.GetFiles(GetTargetPath(platform));
-            MD5 md5 = MD5.Create();
-            foreach (var item in files)
+
+            //string[] files = Directory.GetFiles(GetTargetPath(platform));
+            //MD5 md5 = MD5.Create();
+            foreach (var item in hash)
             {
-                string extension = Path.GetExtension(item);
-                if (extension == ".meta"|| extension == ".manifest") continue;
-                using (FileStream fs = File.OpenRead(item))
-                {
-                    byte[] fileMd5Bytes = md5.ComputeHash(fs);  //计算FileStream 对象的哈希值
-                    string fileMD5 = System.BitConverter.ToString(fileMd5Bytes).Replace("-","").ToLower();
-                    contents.Add(Path.GetFileName(item) + ":" + fileMD5);
-                }
+                //string extension = Path.GetExtension(item);
+                // if (extension == ".meta" || extension == ".manifest") continue;
+                //using (FileStream fs = File.OpenRead(item))
+                //{
+                //    byte[] fileMd5Bytes = md5.ComputeHash(fs);  //计算FileStream 对象的哈希值
+                //    string fileMD5 = System.BitConverter.ToString(fileMd5Bytes).Replace("-", "").ToLower();
+                //    contents.Add(Path.GetFileName(item) + ":" + fileMD5);
+                //}
+                contents.Add(item.Key + ":" + item.Value);
             }
             File.WriteAllLines(configPath, contents.ToArray());
-            AssetDatabase.Refresh();
             Debug.Log("写入成功");
         }
     }

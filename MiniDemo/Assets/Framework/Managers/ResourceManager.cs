@@ -1,22 +1,52 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 namespace MiniFramework
 {
     public class ResourceManager : MonoSingleton<ResourceManager>
     {
-        public List<AssetBundle> Bundles = new List<AssetBundle>();
-        
+        public string ABPath;
+        private List<AssetBundle> bundles = new List<AssetBundle>();
+
+        private IEnumerator Start()
+        {
+            if (!string.IsNullOrEmpty(ABPath))
+                yield return LoadAssetBundle(ABPath);
+        }
         /// <summary>
-        /// 从Resources、Assets和AssetBundle中依次加载
+        /// 加载AB包
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator LoadAssetBundle(string resPath)
+        {
+            string[] files = Directory.GetFiles(resPath);
+            foreach (var item in files)
+            {
+                string fileName = Path.GetFileName(item);
+                string extension = Path.GetExtension(item);
+                if (extension != "")
+                {
+                    continue;
+                }
+                Debug.Log("加载AssetBundle：" + fileName);
+                yield return AssetBundleLoader.LoadAssetBundle(item, (assetBundle) =>
+                {
+                    bundles.Add(assetBundle);
+                });
+            }
+        }
+        /// <summary>
+        /// 从本地或者AssetBundle中加载
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
         public T Load<T>(string name) where T : Object
         {
-            T asset = Resources.Load<T>(name);
+            T asset = null;
 #if UNITY_EDITOR
             if (asset == null)
             {
@@ -36,19 +66,10 @@ namespace MiniFramework
 #if UNITY_EDITOR
         private T LoadFromEditor<T>(string name) where T : Object
         {
-            name = name.Substring(name.LastIndexOf('/') + 1);
-            string[] guids = UnityEditor.AssetDatabase.FindAssets(name + " t:" + typeof(T).Name);
-            foreach (string guid in guids)
+            T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(name);
+            if (asset != null)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                if (name == System.IO.Path.GetFileNameWithoutExtension(path))
-                {
-                    T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-                    if (asset != null)
-                    {
-                        return asset;
-                    }
-                }
+                return asset;
             }
             return null;
         }
@@ -56,7 +77,7 @@ namespace MiniFramework
         public T LoadFromAB<T>(string name) where T : Object
         {
             name = name.Substring(name.LastIndexOf('/') + 1);
-            foreach (var item in Bundles)
+            foreach (var item in bundles)
             {
                 if (item.Contains(name))
                 {
