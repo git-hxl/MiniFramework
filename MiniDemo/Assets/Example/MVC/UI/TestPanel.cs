@@ -30,9 +30,5 @@ public class TestPanel : BasePanel {
         bt_destroy.onClick.AddListener(() => Destroy());
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }

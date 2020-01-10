@@ -7,7 +7,7 @@
     {
         private Model model;
 
-        protected override void OnSingletonInit()
+        public void Init()
         {
             model = new Model();
         }

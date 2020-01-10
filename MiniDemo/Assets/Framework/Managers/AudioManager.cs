@@ -3,12 +3,11 @@ namespace MiniFramework
 {
     public class AudioManager : MonoSingleton<AudioManager>
     {
-
         private AudioSource MusicSource;
         private AudioSource SoundSource;
         private float musicVolume;
         private float soundVolume;
-        protected override void Init()
+        void Start()
         {
             GameObject music = new GameObject("MusicSource", typeof(AudioSource));
             music.transform.SetParent(transform);
