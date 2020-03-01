@@ -60,6 +60,7 @@
      <Compile Include="Assets\Example\6.Core\NewBehaviourScript.cs" />
      <Compile Include="Assets\Scripts\Framework\CoreModule\Tools\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\Framework\CoreModule\Tools\RangeCheck.cs" />
+     <Compile Include="Assets\Scripts\Framework\CoreModule\Tools\RangeCheck\FanCheck.cs" />
      <Compile Include="Assets\Scripts\Framework\CoreModule\Tools\RigbodyMove.cs" />
      <Compile Include="Assets\Scripts\Framework\DataModule\DataManager.cs" />
      <Compile Include="Assets\Scripts\Framework\DataModule\IData.cs" />
