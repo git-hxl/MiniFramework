@@ -209,7 +209,7 @@ MonoBehaviour:
   Target: {fileID: 1003542942}
   Distance: 15
   Angle: 45
-  LerpSpeed: 20
+  lerpSpeed: 0.5
 --- !u!1 &155473764
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72081eb863163564298d843a9eb067d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 10
   angleSpeed: 10
 --- !u!1 &2014884589
 GameObject:
