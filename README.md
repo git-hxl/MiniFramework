@@ -7,4 +7,3 @@ U3D客户端框架
 4.添加工具：数字图片自动生成字体、压缩和解压、Protobuf和Json序列化、AB打包和资源对比  
 5.Debugger工具，可视化debug信息，硬件信息，内存信息，优化大量debug信息造成的卡顿（大幅优化)  
 6.接入ILRuntime,加入IMessage适配器，支持新协议，解决分析生成代码的bug（修改了protobuf源码不影响核心功能）,protobuf采用3.6.0(支持unity.net3.5以及IL2CPP)  
-7.一些额外的小功能，太多了就不写了  
