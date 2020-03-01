@@ -1,13 +1,13 @@
 ManifestFileVersion: 0
-CRC: 1205388119
+CRC: 995781740
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: hotfix
-      Dependencies: {}
-    Info_1:
       Name: res
       Dependencies: {}
-    Info_2:
+    Info_1:
       Name: prefab
+      Dependencies: {}
+    Info_2:
+      Name: hotfix
       Dependencies: {}
