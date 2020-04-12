@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using MiniFramework.WebRequest;
 namespace MiniFramework.Resource
 {
     public partial class ResourceManager
@@ -11,22 +12,33 @@ namespace MiniFramework.Resource
         {
             private string platform;//运行平台
 
-            private string resPath;//下载的AB资源保存路径
+            private string assetBundlePath;//下载的AB资源保存路径
 
-            private HttpDownload httpDownload;
+            private Dictionary<string, string> localConfig;
+            private Dictionary<string, string> newConfig;
 
-            private List<string> updateFiles = new List<string>();
+            private List<string> updateFiles;
 
             private ResourceManager resourceManager;
+
+            private IDownload iDownloader;
+
+            public event Action onUpdateCompleted;
+
+            public event Action onUpdateError;
             public ResourceUpdate(ResourceManager resourceManager)
             {
                 platform = PlatformUtil.GetPlatformName();
-                resPath = Application.persistentDataPath + "/" + platform;
-                if (!Directory.Exists(resPath))
+                assetBundlePath = Application.persistentDataPath + "/" + platform;
+                if (!Directory.Exists(assetBundlePath))
                 {
-                    Directory.CreateDirectory(resPath);
+                    Directory.CreateDirectory(assetBundlePath);
                 }
                 this.resourceManager = resourceManager;
+
+                localConfig = new Dictionary<string, string>();
+                newConfig = new Dictionary<string, string>();
+                updateFiles = new List<string>();
             }
             /// <summary>
             /// 检查配置文件
@@ -39,43 +51,41 @@ namespace MiniFramework.Resource
                     yield break;
                 }
                 //下载config文件
-                httpDownload = new HttpDownload(Application.persistentDataPath);
                 string url = Config.Config.URL.ResUrl + "/" + platform + "/config.txt";
-                yield return httpDownload.Download(url);
+                iDownloader = WebRequestManager.Instance.Downloader(Application.persistentDataPath);
+                yield return iDownloader.Get(url);
+
                 //下载失败
-                if (httpDownload.isError)
+                if (iDownloader.isError)
                 {
-                    resourceManager.updateFailCallback?.Invoke();
+                    onUpdateError?.Invoke();
                     yield break;
                 }
-                //读取最新config
-                Dictionary<string, string> newConfigDict = FileUtil.ReadConfig(File.ReadAllText(httpDownload.FilePath));
-                Debug.Log("最新版本号：" + newConfigDict["version"]);
-                Dictionary<string, string> localConfigDict = new Dictionary<string, string>();
-                if (File.Exists(resPath + "/config.txt"))
+                //读取config
+
+                newConfig = FileUtil.ReadAssetBundleConfig(iDownloader.downloadFilePath);
+
+                localConfig = FileUtil.ReadAssetBundleConfig(assetBundlePath + "/config.txt");
+
+                if(newConfig.ContainsKey("version")&&localConfig.ContainsKey("version"))
                 {
-                    //读取本地config
-                    localConfigDict = FileUtil.ReadConfig(File.ReadAllText(resPath + "/config.txt"));
-                    Debug.Log("本地版本号：" + localConfigDict["version"]);
-                    Version newVersion = new Version(newConfigDict["version"]);
-                    Version localVersion = new Version(localConfigDict["version"]);
                     //对比版本号
-                    if (newVersion.Major > localVersion.Major)
+                    if (newConfig["version"] != localConfig["version"])
                     {
-                        Debug.LogError("主版本号不一致，请前往平台更新安装包");
+                        Debug.LogError("版本号不一致，请前往平台更新安装包");
                         Application.OpenURL(Config.Config.URL.AppUrl);
                         Application.Quit();
                         yield break;
                     }
                 }
                 //对比Hash值
-                foreach (var item in newConfigDict)
+                foreach (var item in newConfig)
                 {
                     if (item.Key == "version")
                     {
                         continue;
                     }
-                    if (localConfigDict.ContainsKey(item.Key) && localConfigDict[item.Key] == item.Value)
+                    if (localConfig.ContainsKey(item.Key) && localConfig[item.Key] == item.Value)
                     {
                         continue;
                     }
@@ -89,31 +99,30 @@ namespace MiniFramework.Resource
             /// <returns></returns>
             public IEnumerator DownloadNewAssetBundle()
             {
-                httpDownload = new HttpDownload(resPath);
+                iDownloader = WebRequestManager.Instance.Downloader(assetBundlePath);
                 foreach (var item in updateFiles)
                 {
                     //这里下载差异化AB包
                     string fileUrl = Config.Config.URL.ResUrl + "/" + platform + "/" + item;
-                    yield return httpDownload.Download(fileUrl);
-                    if (httpDownload.isError)
+                    yield return iDownloader.Get(fileUrl);
+                    if (iDownloader.isError)
                     {
-                        resourceManager.updateFailCallback?.Invoke();
+                        onUpdateError?.Invoke();
                         yield break;
                     }
                 }
                 updateFiles.Clear();
-                File.Copy(Application.persistentDataPath + "/config.txt", resPath + "/config.txt", true);
-                Debug.Log("更新完成");
-                resourceManager.updateSuccessCallback?.Invoke();
+                File.Copy(Application.persistentDataPath + "/config.txt", assetBundlePath + "/config.txt", true);
+                onUpdateCompleted?.Invoke();
             }
             /// <summary>
             /// 修复文件错误
             /// </summary>
             public void RepairErro()
             {
-                if (Directory.Exists(resPath))
+                if (Directory.Exists(assetBundlePath))
                 {
-                    Directory.Delete(resPath, true);
+                    Directory.Delete(assetBundlePath, true);
                 }
             }
         }

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using UnityEngine;
 namespace MiniFramework.Resource
@@ -8,9 +10,15 @@ namespace MiniFramework.Resource
     {
         private class ResourceRead : IResourceRead
         {
-            private string resPath;
+            private string assetBundlePath;
+
+            private Dictionary<string, string> localConfig;
 
             private List<AssetBundle> cachedBundles;
+
+            public event Action onReadCompleted;
+
+            public event Action onReadError;
 
             public List<AssetBundle> CacheBundles
             {
@@ -21,20 +29,12 @@ namespace MiniFramework.Resource
             public ResourceRead(ResourceManager resourceManager)
             {
                 this.resourceManager = resourceManager;
-                switch (resourceManager.readType)
-                {
-                    case ReadType.None:
-                    case ReadType.FromStreamingAssets:
-                        resPath = Application.streamingAssetsPath + "/" + PlatformUtil.GetPlatformName();
-                        break;
-                    case ReadType.FromPersistentPath:
-                        resPath = Application.persistentDataPath + "/" + PlatformUtil.GetPlatformName();
-                        break;
-                }
                 cachedBundles = new List<AssetBundle>();
+                localConfig = new Dictionary<string, string>();
             }
+
             /// <summary>
-            /// 读取所有AssetBundle文件
+            /// 读取AssetBundle
             /// </summary>
             /// <returns></returns>
             public IEnumerator ReadAll()
@@ -43,32 +43,38 @@ namespace MiniFramework.Resource
                 {
                     yield break;
                 }
-                List<string> bundles = new List<string>();
-                yield return FileUtil.ReadStreamingFile(resPath + "/config.txt", (data) =>
+                //从streamingAsset中读取
+                if(resourceManager.readType == ReadType.FromStreamingAssets)
                 {
-                    if (data != null)
+                    assetBundlePath = Application.streamingAssetsPath + "/" + PlatformUtil.GetPlatformName();
+                    yield return FileUtil.ReadStreamingFile(assetBundlePath + "/config.txt", (data) =>
                     {
-                        string txt = Encoding.UTF8.GetString(data);
-                        var configDict = FileUtil.ReadConfig(txt);
-                        foreach (var item in configDict)
+                        if (data != null)
                         {
-                            if (item.Key == "version")
-                            {
-                                continue;
-                            }
-                            bundles.Add(item.Key);
+                            localConfig = FileUtil.TxtToDic(data.text);
+                            Debug.Log("读取资源配置文件");
                         }
-                        Debug.Log("读取资源配置文件");
-                    }
-                });
-                for (int i = 0; i < bundles.Count; i++)
+                    });
+                }
+                //从persistentPath中读取
+                if(resourceManager.readType == ReadType.FromPersistentPath)
                 {
-                    Debug.Log("加载AssetBundle：" + bundles[i]);
-                    AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(resPath + "/" + bundles[i]);
+                    assetBundlePath = Application.persistentDataPath + "/" + PlatformUtil.GetPlatformName();
+                    localConfig = FileUtil.TxtToDic(File.ReadAllText(assetBundlePath + "/config.txt"));
+                }
+
+                foreach (var item in localConfig)
+                {
+                    if(item.Key=="version")
+                    {
+                        continue;
+                    }
+                    Debug.Log("加载AssetBundle：" + item.Key);
+                    AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(assetBundlePath + "/" + item.Key);
                     yield return request;
                     if (request.assetBundle == null)
                     {
-                        resourceManager.readFailCallback?.Invoke();
+                        onReadError?.Invoke();
                         yield break;
                     }
                     else
@@ -76,8 +82,7 @@ namespace MiniFramework.Resource
                         AddBundle(request.assetBundle);
                     }
                 }
-                Debug.Log("资源加载完成");
-                resourceManager.readSuccessCallback?.Invoke();
+                onReadCompleted?.Invoke();
             }
             /// <summary>
             /// 添加AssetBundle

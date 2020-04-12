@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using System;
 namespace MiniFramework.Resource
 {
     public sealed partial class ResourceManager : MonoSingleton<ResourceManager>, IResourceManager
@@ -10,14 +11,63 @@ namespace MiniFramework.Resource
 
         private ResourceUpdate resourceUpdate;
 
-        public System.Action readSuccessCallback;
+        /// <summary>
+        /// 资源读取完成事件
+        /// </summary>
 
-        public System.Action readFailCallback;
-
-        public System.Action updateSuccessCallback;
-
-        public System.Action updateFailCallback;
-
+        public event Action onReadCompleted
+        {
+            add
+            {
+                resourceRead.onReadCompleted += value;
+            }
+            remove
+            {
+                resourceRead.onReadCompleted -= value;
+            }
+        }
+        /// <summary>
+        /// 资源读取失败事件
+        /// </summary>
+        public event Action onReadError
+        {
+            add
+            {
+                resourceRead.onReadError += value;
+            }
+            remove
+            {
+                resourceRead.onReadError -= value;
+            }
+        }
+        /// <summary>
+        /// 更新完成事件
+        /// </summary>
+        public event Action onUpdateCompleted
+        {
+            add
+            {
+                resourceUpdate.onUpdateCompleted += value;
+            }
+            remove
+            {
+                resourceUpdate.onUpdateCompleted -= value;
+            }
+        }
+        /// <summary>
+        /// 更新失败事件
+        /// </summary>
+        public event Action onUpdateError
+        {
+            add
+            {
+                resourceUpdate.onUpdateError += value;
+            }
+            remove
+            {
+                resourceUpdate.onUpdateError -= value;
+            }
+        }
         protected override void Awake()
         {
             base.Awake();
@@ -39,9 +89,9 @@ namespace MiniFramework.Resource
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public T LoadAsset<T>(string name) where T : Object
+        public T LoadAsset<T>(string name) where T : UnityEngine.Object
         {
-            Object asset = null;
+            UnityEngine.Object asset = null;
             asset = LoadAssetFromAssetBundle<T>(name);
 #if UNITY_EDITOR
             if (asset == null)
@@ -60,7 +110,7 @@ namespace MiniFramework.Resource
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public T LoadAssetFromEditor<T>(string name) where T : Object
+        public T LoadAssetFromEditor<T>(string name) where T : UnityEngine.Object
         {
 #if UNITY_EDITOR
             T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(name);
@@ -77,7 +127,7 @@ namespace MiniFramework.Resource
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        public T LoadAssetFromAssetBundle<T>(string name) where T : Object
+        public T LoadAssetFromAssetBundle<T>(string name) where T : UnityEngine.Object
         {
             name = name.Substring(name.LastIndexOf('/') + 1);
             foreach (var item in resourceRead.CacheBundles)

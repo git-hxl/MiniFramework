@@ -42,6 +42,13 @@ Instantiate(asset,transform);
 ```
 5.WebRequest
 ```
+接口设计
+IDownload : 资源下载接口,默认会采用断点续传
+IWebRequestManager: WebRequest统一管理接口,封装了Get,Put,Post
+
+常用接口示例:
+//dir:下载保存路径 url:下载地址
+WebRequestManager.Instance.Downloader(dir).Get(url);
 ```
 6.Network
 ```

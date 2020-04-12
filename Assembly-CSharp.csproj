@@ -79,6 +79,7 @@
     <Compile Include="Assets\Framework\Network\TcpServerComponent.cs" />
     <Compile Include="Assets\Framework\Network\UdpClientComponent.cs" />
     <Compile Include="Assets\Framework\Pool\IPoolable.cs" />
+    <Compile Include="Assets\Framework\Pool\IPoolObject.cs" />
     <Compile Include="Assets\Framework\Pool\Pool.cs" />
     <Compile Include="Assets\Framework\Pool\PoolManager.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceManager.cs" />
@@ -122,11 +123,10 @@
     <Compile Include="Assets\Framework\UI\Tools\UIDrag.cs" />
     <Compile Include="Assets\Framework\UI\Tools\UIJoystick.cs" />
     <Compile Include="Assets\Framework\UI\UIManager.cs" />
-    <Compile Include="Assets\Framework\WebRequest\AssetBundleLoader.cs" />
-    <Compile Include="Assets\Framework\WebRequest\HttpDownload.cs" />
-    <Compile Include="Assets\Framework\WebRequest\HttpRequest.cs" />
-    <Compile Include="Assets\Scenes\1.Res\ResLoadExample.cs" />
-    <Compile Include="Assets\Scenes\3.Tool\SequenceExample.cs" />
+    <Compile Include="Assets\Framework\WebRequest\IDownload.cs" />
+    <Compile Include="Assets\Framework\WebRequest\IWebRequestManager.cs" />
+    <Compile Include="Assets\Framework\WebRequest\WebRequestManager.cs" />
+    <Compile Include="Assets\Framework\WebRequest\WebRequestManager.Download.cs" />
     <None Include="Assets\Framework\Shader\UI\CircleGuideShader.shader" />
     <None Include="Assets\Framework\Shader\2D\Effect\OldPhoto.shader" />
     <None Include="Assets\Framework\Shader\2D\Effect\Pencil.shader" />
@@ -135,7 +135,6 @@
     <None Include="Assets\Framework\Shader\2D\Effect\Projector.shader" />
     <None Include="Assets\Framework\Shader\2D\Effect\Wave.shader" />
     <None Include="Assets\Framework\Shader\2D\Effect\Dissolve.shader" />
-    <None Include="Assets\StreamingAssets\StandaloneWindows\config.txt" />
     <None Include="Assets\Framework\Shader\2D\Effect\Emboss.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/UnityProjects/MiniFramework/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

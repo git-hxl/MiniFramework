@@ -74,7 +74,7 @@ namespace MiniFramework
             if (GUILayout.Button("打包"))
             {
                 AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);
-                Dictionary<string, Hash128> hash = AssetBundleLoader.LoadABManifest(manifest);
+                Dictionary<string, Hash128> hash = FileUtil.LoadABManifest(manifest);
                 CreateConfig(hash);
                 AssetDatabase.Refresh();
             }
