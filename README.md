@@ -26,7 +26,7 @@ AudioManager.Instance.PlaySoundAtPoint();
 AudioManager.Instance.SetTotalVolume();
 
 ```
-3. Resouce
+3. Resource
 ```
 接口设计
 IResourceManager : 资源加载统一管理接口
@@ -36,4 +36,16 @@ IResourceUpdate:资源更新接口
 常用接口示例:
 GameObject asset = ResourceManager.Instance.LoadAsset<GameObject>("UILogin");
 Instantiate(asset,transform);
+```
+4.Pool
+```
+```
+5.WebRequest
+```
+```
+6.Network
+```
+```
+7.Message
+```
 ```
