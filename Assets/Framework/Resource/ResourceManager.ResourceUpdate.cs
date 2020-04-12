@@ -40,7 +40,7 @@ namespace MiniFramework.Resource
                 }
                 //下载config文件
                 httpDownload = new HttpDownload(Application.persistentDataPath);
-                string url = URLConfig.ResUrl + "/" + platform + "/config.txt";
+                string url = Config.Config.URL.ResUrl + "/" + platform + "/config.txt";
                 yield return httpDownload.Download(url);
                 //下载失败
                 if (httpDownload.isError)
@@ -63,7 +63,7 @@ namespace MiniFramework.Resource
                     if (newVersion.Major > localVersion.Major)
                     {
                         Debug.LogError("主版本号不一致，请前往平台更新安装包");
-                        Application.OpenURL(URLConfig.AppUrl);
+                        Application.OpenURL(Config.Config.URL.AppUrl);
                         Application.Quit();
                         yield break;
                     }
@@ -93,7 +93,7 @@ namespace MiniFramework.Resource
                 foreach (var item in updateFiles)
                 {
                     //这里下载差异化AB包
-                    string fileUrl = URLConfig.ResUrl + "/" + platform + "/" + item;
+                    string fileUrl = Config.Config.URL.ResUrl + "/" + platform + "/" + item;
                     yield return httpDownload.Download(fileUrl);
                     if (httpDownload.isError)
                     {

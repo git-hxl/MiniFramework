@@ -63,17 +63,24 @@
     <Compile Include="Assets\Example\01.UI\UILogin.cs" />
     <Compile Include="Assets\Example\01.UI\UIRegister.cs" />
     <Compile Include="Assets\Example\02.Audio\TestAudio.cs" />
+    <Compile Include="Assets\Example\03.Resource\TestResource.cs" />
     <Compile Include="Assets\Framework\Audio\AudioManager.cs" />
     <Compile Include="Assets\Framework\Audio\IAudioManager.cs" />
-    <Compile Include="Assets\Framework\ConfigModule\URLConfig.cs" />
-    <Compile Include="Assets\Framework\MsgModule\EventID.cs" />
-    <Compile Include="Assets\Framework\MsgModule\EventManager.cs" />
-    <Compile Include="Assets\Framework\MsgModule\MsgID.cs" />
-    <Compile Include="Assets\Framework\MsgModule\MsgManager.cs" />
-    <Compile Include="Assets\Framework\ResModule\PoolManager.cs" />
-    <Compile Include="Assets\Framework\ResModule\ResLoader\AssetBundleLoader.cs" />
-    <Compile Include="Assets\Framework\ResModule\ResLoader\HttpDownload.cs" />
-    <Compile Include="Assets\Framework\ResModule\ResLoader\HttpRequest.cs" />
+    <Compile Include="Assets\Framework\Config\Config.ConfigUrl.cs" />
+    <Compile Include="Assets\Framework\Config\Config.cs" />
+    <Compile Include="Assets\Framework\Message\EventID.cs" />
+    <Compile Include="Assets\Framework\Message\EventManager.cs" />
+    <Compile Include="Assets\Framework\Message\MsgID.cs" />
+    <Compile Include="Assets\Framework\Message\MsgManager.cs" />
+    <Compile Include="Assets\Framework\Network\DataPacker.cs" />
+    <Compile Include="Assets\Framework\Network\HeartPackComponent.cs" />
+    <Compile Include="Assets\Framework\Network\SocketUtil.cs" />
+    <Compile Include="Assets\Framework\Network\TcpClientComponent.cs" />
+    <Compile Include="Assets\Framework\Network\TcpServerComponent.cs" />
+    <Compile Include="Assets\Framework\Network\UdpClientComponent.cs" />
+    <Compile Include="Assets\Framework\Pool\IPoolable.cs" />
+    <Compile Include="Assets\Framework\Pool\Pool.cs" />
+    <Compile Include="Assets\Framework\Pool\PoolManager.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceManager.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceRead.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceUpdate.cs" />
@@ -81,60 +88,55 @@
     <Compile Include="Assets\Framework\Resource\ResourceManager.ReadType.cs" />
     <Compile Include="Assets\Framework\Resource\ResourceManager.ResourceRead.cs" />
     <Compile Include="Assets\Framework\Resource\ResourceManager.ResourceUpdate.cs" />
-    <Compile Include="Assets\Framework\SocketModule\DataPacker.cs" />
-    <Compile Include="Assets\Framework\SocketModule\HeartPackComponent.cs" />
-    <Compile Include="Assets\Framework\SocketModule\SocketUtil.cs" />
-    <Compile Include="Assets\Framework\SocketModule\TcpClientComponent.cs" />
-    <Compile Include="Assets\Framework\SocketModule\TcpServerComponent.cs" />
-    <Compile Include="Assets\Framework\SocketModule\UdpClientComponent.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.ConsoleWindow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.FPSCounter.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.InformationWindow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.MemoryWindow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\DebuggerComponent.SettingsWindow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Debugger\IDebuggerWindow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\IO\CSVUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\IO\FileUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\IO\SecurityUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\IO\SerializeUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\IO\ZipUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\BezierUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\CameraFollow.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\ColorConvert.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\PlatformUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\RangeCheck.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\RangeCheck\FanCheck.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\RigbodyMove.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\TimeUtil.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Other\UnitConvert.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Pool\IPoolable.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Pool\Pool.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\DelayNode.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\EventNode.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\RepeatNode.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\Sequence.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\SequenceNode.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Sequence\UntilNode.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Singleton\MonoSingleton.cs" />
-    <Compile Include="Assets\Framework\ToolModule\Singleton\Singleton.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.ConsoleWindow.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.FPSCounter.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.InformationWindow.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.MemoryWindow.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\DebuggerComponent.SettingsWindow.cs" />
+    <Compile Include="Assets\Framework\Tool\Debugger\IDebuggerWindow.cs" />
+    <Compile Include="Assets\Framework\Tool\IO\CSVUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\IO\FileUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\IO\SecurityUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\IO\SerializeUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\IO\ZipUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\BezierUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\CameraFollow.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\ColorConvert.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\PlatformUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\RangeCheck.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\RangeCheck\FanCheck.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\RigbodyMove.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\TimeUtil.cs" />
+    <Compile Include="Assets\Framework\Tool\Other\UnitConvert.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\DelayNode.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\EventNode.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\RepeatNode.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\Sequence.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\SequenceNode.cs" />
+    <Compile Include="Assets\Framework\Tool\Sequence\UntilNode.cs" />
+    <Compile Include="Assets\Framework\Tool\Singleton\MonoSingleton.cs" />
+    <Compile Include="Assets\Framework\Tool\Singleton\Singleton.cs" />
     <Compile Include="Assets\Framework\UI\IPanel.cs" />
     <Compile Include="Assets\Framework\UI\IUIManager.cs" />
     <Compile Include="Assets\Framework\UI\Tools\UIDrag.cs" />
     <Compile Include="Assets\Framework\UI\Tools\UIJoystick.cs" />
     <Compile Include="Assets\Framework\UI\UIManager.cs" />
+    <Compile Include="Assets\Framework\WebRequest\AssetBundleLoader.cs" />
+    <Compile Include="Assets\Framework\WebRequest\HttpDownload.cs" />
+    <Compile Include="Assets\Framework\WebRequest\HttpRequest.cs" />
     <Compile Include="Assets\Scenes\1.Res\ResLoadExample.cs" />
     <Compile Include="Assets\Scenes\3.Tool\SequenceExample.cs" />
-    <None Include="Assets\Framework\ShaderModule\UI\CircleGuideShader.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\OldPhoto.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Pencil.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Flash.shader" />
-    <None Include="Assets\Framework\ShaderModule\UI\RectGuideShader.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Projector.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Wave.shader" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Dissolve.shader" />
+    <None Include="Assets\Framework\Shader\UI\CircleGuideShader.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\OldPhoto.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Pencil.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Flash.shader" />
+    <None Include="Assets\Framework\Shader\UI\RectGuideShader.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Projector.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Wave.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Dissolve.shader" />
     <None Include="Assets\StreamingAssets\StandaloneWindows\config.txt" />
-    <None Include="Assets\Framework\ShaderModule\2D\Effect\Emboss.shader" />
+    <None Include="Assets\Framework\Shader\2D\Effect\Emboss.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/UnityProjects/MiniFramework/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -351,14 +353,14 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/ToolModule/Plugins/Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/ToolModule/Plugins/ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>D:/UnityProjects/MiniFramework/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

@@ -3,17 +3,22 @@
 
 1. UI
 ```
-//继承接口IPanel
-public class UILogin : IPanel
-{}
-//打开已缓存的界面
+接口设计
+IPanel:所有界面的基类
+IUIManager:界面统一管理接口
+
+常用接口示例:
 UIManager.Instance.Open<UIRegister>();
-//加载界面并打开,如果已缓存则不会加载
+//如果打开失败,会尝试从本地资源加载
 UIManager.Instance.Open<UIRegister>("Assets/Example/01.UI/Prefabs/UIRegister.prefab");
 ```
 2. Audio
 ```
-//播放音效 如果没有缓存会去加载
+接口设计
+IAudioManager:音频统一管理接口
+
+常用接口示例:
+//从本地加载播放
 AudioManager.Instance.PlaySound("Assets/Example/02.Audio/Audios/Click.wav");
 
 AudioManager.Instance.PlaySoundAtPoint();
@@ -24,7 +29,11 @@ AudioManager.Instance.SetTotalVolume();
 3. Resouce
 ```
 接口设计
-IResourceManager : Resouce统一管理单列脚本 用于加载资源
-IResourceLoad: 用于读取本地资源镜像
-IResourceUpdate:用于更新资源,包含差异化对比,断点下载,下载进度查看
+IResourceManager : 资源加载统一管理接口
+IResourceLoad: 资源读取接口
+IResourceUpdate:资源更新接口
+
+常用接口示例:
+GameObject asset = ResourceManager.Instance.LoadAsset<GameObject>("UILogin");
+Instantiate(asset,transform);
 ```
