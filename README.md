@@ -30,7 +30,7 @@ AudioManager.Instance.SetTotalVolume();
 ```
 接口设计
 IResourceManager : 资源加载统一管理接口
-IResourceLoad: 资源读取接口
+IResourceRead: 资源读取接口
 IResourceUpdate:资源更新接口
 
 常用接口示例:
