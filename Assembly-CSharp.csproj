@@ -64,6 +64,7 @@
     <Compile Include="Assets\Example\01.UI\UIRegister.cs" />
     <Compile Include="Assets\Example\02.Audio\TestAudio.cs" />
     <Compile Include="Assets\Example\03.Resource\TestResource.cs" />
+    <Compile Include="Assets\Example\05.WebRequest\TestWebRequest.cs" />
     <Compile Include="Assets\Framework\Audio\AudioManager.cs" />
     <Compile Include="Assets\Framework\Audio\IAudioManager.cs" />
     <Compile Include="Assets\Framework\Config\Config.ConfigUrl.cs" />
