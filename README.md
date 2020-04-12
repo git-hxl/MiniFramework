@@ -9,7 +9,7 @@ IUIManager:界面统一管理接口
 
 常用接口示例:
 UIManager.Instance.Open<UIRegister>();
-//如果打开失败,会尝试从本地资源加载
+//如果打开失败,会尝试从本地资源加载(发布版本无需处理资源地址,如下示例,默认会从AssetBundle中加载UIResigster.prefab)
 UIManager.Instance.Open<UIRegister>("Assets/Example/01.UI/Prefabs/UIRegister.prefab");
 ```
 2. Audio
