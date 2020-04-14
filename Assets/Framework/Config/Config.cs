@@ -1,10 +1,11 @@
 ﻿namespace MiniFramework.Config
 {
-    public sealed partial class Config
+    public sealed partial class Config:Singleton<Config>
     {
-        private static ConfigUrl configUrl;
-        public static ConfigUrl URL
-        {
+        private Config() { }
+        private   ConfigUrl configUrl;
+        public  ConfigUrl GetConfigUrl
+        { 
             get
             {
                 if (configUrl == null)

@@ -34,11 +34,26 @@ IResourceRead: 资源读取接口
 IResourceUpdate:资源更新接口
 
 常用接口示例:
+//发布版本无需处理资源地址,如下示例,默认会从AssetBundle中加载UILogin.prefab,适用于编辑器模式。
+GameObject asset = ResourceManager.Instance.LoadAsset<GameObject>("Assets/Example/01.UI/Prefabs/UILogin.prefab");
+//此方式只能从assetbundle中加载
 GameObject asset = ResourceManager.Instance.LoadAsset<GameObject>("UILogin");
 Instantiate(asset,transform);
 ```
 4.Pool
 ```
+接口设计
+IPool : 缓存池统一管理接口
+IObjectPool:游戏对象缓存池统一管理接口
+IPoolable: 缓存类必需接口
+
+常用接口示例:
+普通类：
+TestPoolExample test = Pool<TestPoolExample>.Instance.Allocate();
+Pool<TestPoolExample>.Instance.Recycle(test);o
+游戏对象（该方式创建的游戏对象会挂载ObjectPoolable组件）
+ObjectPool.Instance.Allocate("Assets/Example/04.Pool/PoolObject/Cube.prefab");
+ObjectPool.Instance.Recycle(gameObject);
 ```
 5.WebRequest
 ```
@@ -49,6 +64,9 @@ IWebRequestManager: WebRequest统一管理接口,封装了Get,Put,Post
 常用接口示例:
 //dir:下载保存路径 url:下载地址
 WebRequestManager.Instance.Downloader(dir).Get(url);
+WebRequestManager.Instance.Get(url,callback);
+WebRequestManager.Instance.Put(url,data,callback);
+WebRequestManager.Instance.Post(url,form,callback);
 ```
 6.Network
 ```

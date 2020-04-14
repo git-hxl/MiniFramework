@@ -64,11 +64,14 @@
     <Compile Include="Assets\Example\01.UI\UIRegister.cs" />
     <Compile Include="Assets\Example\02.Audio\TestAudio.cs" />
     <Compile Include="Assets\Example\03.Resource\TestResource.cs" />
+    <Compile Include="Assets\Example\04.Pool\AutoRecycleObject.cs" />
+    <Compile Include="Assets\Example\04.Pool\TestObjectPool.cs" />
+    <Compile Include="Assets\Example\04.Pool\TestPool.cs" />
     <Compile Include="Assets\Example\05.WebRequest\TestWebRequest.cs" />
     <Compile Include="Assets\Framework\Audio\AudioManager.cs" />
     <Compile Include="Assets\Framework\Audio\IAudioManager.cs" />
-    <Compile Include="Assets\Framework\Config\Config.ConfigUrl.cs" />
     <Compile Include="Assets\Framework\Config\Config.cs" />
+    <Compile Include="Assets\Framework\Config\ConfigUrl.cs" />
     <Compile Include="Assets\Framework\Message\EventID.cs" />
     <Compile Include="Assets\Framework\Message\EventManager.cs" />
     <Compile Include="Assets\Framework\Message\MsgID.cs" />
@@ -79,10 +82,12 @@
     <Compile Include="Assets\Framework\Network\TcpClientComponent.cs" />
     <Compile Include="Assets\Framework\Network\TcpServerComponent.cs" />
     <Compile Include="Assets\Framework\Network\UdpClientComponent.cs" />
+    <Compile Include="Assets\Framework\Pool\IObjectPool.cs" />
+    <Compile Include="Assets\Framework\Pool\IPool.cs" />
     <Compile Include="Assets\Framework\Pool\IPoolable.cs" />
-    <Compile Include="Assets\Framework\Pool\IPoolObject.cs" />
+    <Compile Include="Assets\Framework\Pool\ObjectPool.cs" />
+    <Compile Include="Assets\Framework\Pool\ObjectPoolable.cs" />
     <Compile Include="Assets\Framework\Pool\Pool.cs" />
-    <Compile Include="Assets\Framework\Pool\PoolManager.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceManager.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceRead.cs" />
     <Compile Include="Assets\Framework\Resource\IResourceUpdate.cs" />
@@ -353,14 +358,14 @@
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>D:/UnityProjects/MiniFramework/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
+    <Reference Include="Google.Protobuf">
+      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/Google.Protobuf.dll</HintPath>
+    <Reference Include="Unity.Analytics.StandardEvents">
+      <HintPath>D:/UnityProjects/MiniFramework/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

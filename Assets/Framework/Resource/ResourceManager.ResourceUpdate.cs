@@ -51,7 +51,7 @@ namespace MiniFramework.Resource
                     yield break;
                 }
                 //下载config文件
-                string url = Config.Config.URL.ResUrl + "/" + platform + "/config.txt";
+                string url = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/config.txt";
                 iDownloader = WebRequestManager.Instance.Downloader(Application.persistentDataPath);
                 yield return iDownloader.Get(url);
 
@@ -73,7 +73,7 @@ namespace MiniFramework.Resource
                     if (newConfig["version"] != localConfig["version"])
                     {
                         Debug.LogError("版本号不一致，请前往平台更新安装包");
-                        Application.OpenURL(Config.Config.URL.AppUrl);
+                        Application.OpenURL(Config.Config.Instance.GetConfigUrl.AppUrl);
                         Application.Quit();
                         yield break;
                     }
@@ -103,7 +103,7 @@ namespace MiniFramework.Resource
                 foreach (var item in updateFiles)
                 {
                     //这里下载差异化AB包
-                    string fileUrl = Config.Config.URL.ResUrl + "/" + platform + "/" + item;
+                    string fileUrl = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/" + item;
                     yield return iDownloader.Get(fileUrl);
                     if (iDownloader.isError)
                     {

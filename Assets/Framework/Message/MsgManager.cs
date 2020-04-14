@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using MiniFramework.Pool;
 namespace MiniFramework
 {
     public class MsgManager : MonoSingleton<MsgManager>
@@ -15,6 +15,12 @@ namespace MiniFramework
                 data = null;
                 Action = null;
             }
+
+            public void OnAllocated()
+            {
+                 
+            }
+
             public byte[] data;
             public Action<byte[]> Action;
         }
