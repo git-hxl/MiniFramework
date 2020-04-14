@@ -77,11 +77,13 @@ namespace MiniFramework.Resource
         {
             resourceRead = new ResourceRead(this);
             resourceUpdate = new ResourceUpdate(this);
+            resourceUpdate.onUpdateError += () => resourceRead = null;
         }
         private IEnumerator Start()
         {
             yield return resourceUpdate.CheckConfig();
-            yield return resourceRead.ReadAll();
+            if (resourceRead != null)
+                yield return resourceRead.ReadAll();
         }
         /// <summary>
         /// 加载资源

@@ -43,7 +43,7 @@ namespace MiniFramework.Resource
                     yield break;
                 }
                 //从streamingAsset中读取
-                if(resourceManager.readType == ReadType.FromStreamingAssets)
+                if (resourceManager.readType == ReadType.FromStreamingAssets)
                 {
                     assetBundlePath = Application.streamingAssetsPath + "/" + PlatformUtil.GetPlatformName();
                     yield return FileUtil.ReadStreamingFile(assetBundlePath + "/config.txt", (data) =>
@@ -56,7 +56,7 @@ namespace MiniFramework.Resource
                     });
                 }
                 //从persistentPath中读取
-                if(resourceManager.readType == ReadType.FromPersistentPath)
+                if (resourceManager.readType == ReadType.FromPersistentPath)
                 {
                     assetBundlePath = Application.persistentDataPath + "/" + PlatformUtil.GetPlatformName();
                     localConfig = FileUtil.TxtToDic(File.ReadAllText(assetBundlePath + "/config.txt"));
@@ -64,7 +64,7 @@ namespace MiniFramework.Resource
 
                 foreach (var item in localConfig)
                 {
-                    if(item.Key=="version")
+                    if (item.Key == "version")
                     {
                         continue;
                     }
