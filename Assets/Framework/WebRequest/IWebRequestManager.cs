@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -7,11 +8,12 @@ namespace MiniFramework.WebRequest
     public interface IWebRequestManager 
     {
         /// <summary>
-        /// 获取下载接口
+        /// 下载接口
         /// </summary>
-        /// <param name="dir">保存路径</param>
-        /// <returns></returns>
-        IDownload Downloader(string dir);
+        /// <param name="url"></param>
+        /// <param name="dir"></param>
+        /// <param name="iDownloader"></param>
+        void Download(string url,string dir,out IDownloader iDownloader);
         /// <summary>
         /// UnityWebRequest Get封装
         /// </summary>

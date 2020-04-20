@@ -1,8 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-public class HelperTool {
-
+public class MiniExtension
+{
     [MenuItem("Assets/获取AssetPath")]
     static void GetResAssetPath()
     {
@@ -12,5 +12,15 @@ public class HelperTool {
         textEditor.text = assetPath;
         textEditor.OnFocus();
         textEditor.Copy();
+    }
+    [MenuItem("MiniFramework/Tool/打开StreamingAssets")]
+    static void OpenStreamingAssetsFinder()
+    {
+        EditorUtility.RevealInFinder(Application.streamingAssetsPath);
+    }
+    [MenuItem("MiniFramework/Tool/打开PersisentData")]
+    static void OpenPersistentDataFinder()
+    {
+        EditorUtility.RevealInFinder(Application.persistentDataPath);
     }
 }

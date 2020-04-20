@@ -1,10 +1,28 @@
-﻿using System;
+﻿using MiniFramework.WebRequest;
+using System;
 using System.Collections;
 
 namespace MiniFramework.Resource
 {
     public interface IResourceUpdate
     {
+        /// <summary>
+        /// 总计需更新数量
+        /// </summary>
+        int TotalUpdateCount { get; }
+        /// <summary>
+        /// 已更新数量
+        /// </summary>
+        int UpdatedCount { get; }
+        /// <summary>
+        /// 下载配置文件
+        /// </summary>
+        void DownloadConfig();
+        /// <summary>
+        /// 下载器
+        /// </summary>
+        /// <returns></returns>
+        IDownloader GetDownloader { get; }
         /// <summary>
         /// 更新完成事件
         /// </summary>
@@ -14,19 +32,9 @@ namespace MiniFramework.Resource
         /// </summary>
         event Action onUpdateError;
         /// <summary>
-        /// 检查配置文件
+        /// 修复文件
         /// </summary>
-        /// <returns></returns>
-        IEnumerator CheckConfig();
-        /// <summary>
-        /// 下载差异化资源
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator DownloadNewAssetBundle();
-        /// <summary>
-        /// 修复文件错误
-        /// </summary>
-        void RepairErro();
+        void RepairFile();
     }
 }
 

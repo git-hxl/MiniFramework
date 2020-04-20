@@ -3,46 +3,48 @@ using System.Collections;
 
 namespace MiniFramework.WebRequest
 {
-    public interface IDownload
+    public interface IDownloader
     {
         /// <summary>
         /// 下载进度
         /// </summary>
-        float downloadProgress { get; set; }
+        float downloadProgress { get; }
+        /// <summary>
+        /// 下载速度 单位（kb/s）
+        /// </summary>
+        int downloadSpeed { get; }
         /// <summary>
         /// 文件名
         /// </summary>
-        string downloadFileName { get; set; }
+        string downloadFileName { get; }
         /// <summary>
         /// 文件路径
         /// </summary>
-        string downloadFilePath { get; set; }
+        string downloadFilePath { get; }
         /// <summary>
         /// 文件下载保存路径
         /// </summary>
-        string downloadSaveDir { get; set; }
+        string downloadSaveDir { get; }
         /// <summary>
         /// 当前已下载大小
         /// </summary>
-        long curlength { get; set; }
+        long curlength { get; }
         /// <summary>
         /// 文件总大小
         /// </summary>
-        long totalLength { get; set; }
+        long totalLength { get; }
         /// <summary>
         /// 是否出错
         /// </summary>
-        bool isError { get; set; }
+        bool isError { get; }
         /// <summary>
-        /// 下载
+        /// 是否完成
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        IEnumerator Get(string url);
+        bool isCompleted { get; }
         /// <summary>
         /// 下载完成
         /// </summary>
-        event Action<IDownload> onDownloadCompleted;
+        event Action onDownloadCompleted;
         /// <summary>
         /// 下载失败
         /// </summary>

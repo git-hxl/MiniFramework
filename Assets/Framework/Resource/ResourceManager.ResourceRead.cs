@@ -38,10 +38,6 @@ namespace MiniFramework.Resource
             /// <returns></returns>
             public IEnumerator ReadAll()
             {
-                if (resourceManager.readType == ReadType.None)
-                {
-                    yield break;
-                }
                 //从streamingAsset中读取
                 if (resourceManager.readType == ReadType.FromStreamingAssets)
                 {

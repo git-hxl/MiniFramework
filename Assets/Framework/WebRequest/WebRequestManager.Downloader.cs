@@ -8,10 +8,13 @@ namespace MiniFramework.WebRequest
 {
     public partial class WebRequestManager
     {
-        private class Download : IDownload
+        private class Downloader : IDownloader
         {
             public float downloadProgress { get; set; }
-
+            /// <summary>
+            /// 下载速度 单位（kb/s）
+            /// </summary>
+            public int downloadSpeed { get; set; }
             public string downloadFileName { get; set; }
 
             public string downloadFilePath { get; set; }
@@ -23,19 +26,23 @@ namespace MiniFramework.WebRequest
             public long totalLength { get; set; }
 
             public bool isError { get; set; }
+            public bool isCompleted { get; set; }
 
-            public event Action<IDownload> onDownloadCompleted;
+            public event Action onDownloadCompleted;
 
             public event Action onDownloadError;
 
-            public Download(string dir)
+            private float time;
+            private int unitTotalLength;
+            public Downloader(string dir)
             {
                 downloadSaveDir = dir;
             }
 
             public IEnumerator Get(string url)
             {
-                downloadFileName = url.Substring(url.LastIndexOf('/') + 1);
+                string[] txts = url.Split('?');
+                downloadFileName = txts[0].Substring(url.LastIndexOf('/') + 1);
                 downloadFilePath = downloadSaveDir + "/" + downloadFileName;
                 string tempFilePath = downloadFilePath + ".tmp";
                 curlength = FileUtil.GetFileLength(tempFilePath);
@@ -75,12 +82,22 @@ namespace MiniFramework.WebRequest
                         while (!request.isDone)
                         {
                             yield return null;
+
                             byte[] data = request.downloadHandler.data;
                             int writeLength = data.Length - index;
                             fileStream.Write(data, index, writeLength);
                             index = data.Length;
                             curlength += writeLength;
                             downloadProgress = curlength * 1.0f / totalLength;
+
+                            time += Time.deltaTime;
+                            unitTotalLength += writeLength;
+                            if (time > 1f)
+                            {
+                                downloadSpeed = unitTotalLength / 1024;
+                                time = 0;
+                                unitTotalLength = 0;
+                            }
                         }
 
                         if (request.isHttpError || request.isNetworkError)
@@ -97,7 +114,8 @@ namespace MiniFramework.WebRequest
                     }
                     File.Move(tempFilePath, downloadFilePath);
                     Debug.Log("下载成功:" + downloadFileName);
-                    onDownloadCompleted?.Invoke(this);
+                    isCompleted = true;
+                    onDownloadCompleted?.Invoke();
                 }
             }
         }

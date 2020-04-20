@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Framework\Tool\Editor\AssetBundleEditor.cs" />
-    <Compile Include="Assets\Framework\Tool\Editor\HelperTool.cs" />
+    <Compile Include="Assets\Framework\Tool\Editor\MiniExtension.cs" />
     <Compile Include="Assets\Framework\Tool\Editor\SpriteFont.cs" />
     <Compile Include="Assets\Framework\Tool\Editor\ZipEditor.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">

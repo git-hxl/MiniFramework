@@ -1,8 +1,19 @@
-﻿using UnityEngine;
+﻿using MiniFramework.WebRequest;
+using UnityEngine;
 namespace MiniFramework.Resource
 {
     public interface IResourceManager
     {
+        /// <summary>
+        /// 获取更新信息
+        /// </summary>
+        /// <returns></returns>
+        IResourceUpdate GetResourceUpdate { get; }
+        /// <summary>
+        /// 获取加载信息
+        /// </summary>
+        /// <returns></returns>
+        IResourceRead GetResourceRead { get; }
         /// <summary>
         /// 加载资源
         /// </summary>

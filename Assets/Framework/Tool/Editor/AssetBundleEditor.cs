@@ -63,14 +63,7 @@ namespace MiniFramework
             //     GenHotfix();
             //     AssetDatabase.Refresh();
             // }
-            if (GUILayout.Button("打开StreamingAssets目录"))
-            {
-                EditorUtility.RevealInFinder(Application.streamingAssetsPath);
-            }
-            if (GUILayout.Button("打开PersistentData目录"))
-            {
-                EditorUtility.RevealInFinder(Application.persistentDataPath);
-            }
+            
             if (GUILayout.Button("打包"))
             {
                 AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), option, platform);

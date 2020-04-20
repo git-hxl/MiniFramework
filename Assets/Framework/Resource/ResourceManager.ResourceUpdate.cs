@@ -21,11 +21,17 @@ namespace MiniFramework.Resource
 
             private ResourceManager resourceManager;
 
-            private IDownload iDownloader;
+            private IDownloader iDownloader;
 
             public event Action onUpdateCompleted;
 
             public event Action onUpdateError;
+
+            public int TotalUpdateCount { get; set; }
+            public int UpdatedCount { get; set; }
+
+            public IDownloader GetDownloader { get { return iDownloader; } }
+
             public ResourceUpdate(ResourceManager resourceManager)
             {
                 platform = PlatformUtil.GetPlatformName();
@@ -35,39 +41,28 @@ namespace MiniFramework.Resource
                     Directory.CreateDirectory(assetBundlePath);
                 }
                 this.resourceManager = resourceManager;
-
                 localConfig = new Dictionary<string, string>();
                 newConfig = new Dictionary<string, string>();
                 updateFiles = new List<string>();
+            }
+
+            public void DownloadConfig()
+            {
+                string url = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/config.txt";
+                WebRequestManager.Instance.Download(url, Application.persistentDataPath, out iDownloader);
+                iDownloader.onDownloadCompleted += () => CheckConfig();
+                iDownloader.onDownloadError += onUpdateError;
             }
             /// <summary>
             /// 检查配置文件
             /// </summary>
             /// <returns></returns>
-            public IEnumerator CheckConfig()
+            void CheckConfig()
             {
-                if (resourceManager.readType != ReadType.FromPersistentPath)
-                {
-                    yield break;
-                }
-                //下载config文件
-                string url = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/config.txt";
-                iDownloader = WebRequestManager.Instance.Downloader(Application.persistentDataPath);
-                yield return iDownloader.Get(url);
-
-                //下载失败
-                if (iDownloader.isError)
-                {
-                    onUpdateError?.Invoke();
-                    yield break;
-                }
                 //读取config
-
                 newConfig = FileUtil.ReadAssetBundleConfig(iDownloader.downloadFilePath);
-
                 localConfig = FileUtil.ReadAssetBundleConfig(assetBundlePath + "/config.txt");
-
-                if(newConfig.ContainsKey("version")&&localConfig.ContainsKey("version"))
+                if (newConfig.ContainsKey("version") && localConfig.ContainsKey("version"))
                 {
                     //对比版本号
                     if (newConfig["version"] != localConfig["version"])
@@ -75,7 +70,7 @@ namespace MiniFramework.Resource
                         Debug.LogError("版本号不一致，请前往平台更新安装包");
                         Application.OpenURL(Config.Config.Instance.GetConfigUrl.AppUrl);
                         Application.Quit();
-                        yield break;
+                        return;
                     }
                 }
                 //对比Hash值
@@ -91,25 +86,23 @@ namespace MiniFramework.Resource
                     }
                     updateFiles.Add(item.Key);
                 }
-                yield return DownloadNewAssetBundle();
+                resourceManager.StartCoroutine(DownloadNewAssetBundle());
             }
             /// <summary>
             /// 下载差异化资源
             /// </summary>
             /// <returns></returns>
-            public IEnumerator DownloadNewAssetBundle()
+            IEnumerator DownloadNewAssetBundle()
             {
-                iDownloader = WebRequestManager.Instance.Downloader(assetBundlePath);
                 foreach (var item in updateFiles)
                 {
                     //这里下载差异化AB包
                     string fileUrl = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/" + item;
-                    yield return iDownloader.Get(fileUrl);
-                    if (iDownloader.isError)
-                    {
-                        onUpdateError?.Invoke();
-                        yield break;
-                    }
+
+                    WebRequestManager.Instance.Download(fileUrl, assetBundlePath, out iDownloader);
+
+                    iDownloader.onDownloadError += onUpdateError;
+                    yield return new WaitUntil(()=> iDownloader.isCompleted);
                 }
                 updateFiles.Clear();
                 File.Copy(Application.persistentDataPath + "/config.txt", assetBundlePath + "/config.txt", true);
@@ -118,7 +111,7 @@ namespace MiniFramework.Resource
             /// <summary>
             /// 修复文件错误
             /// </summary>
-            public void RepairErro()
+            public void RepairFile()
             {
                 if (Directory.Exists(assetBundlePath))
                 {

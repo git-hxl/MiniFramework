@@ -8,13 +8,15 @@ namespace MiniFramework.WebRequest
     public sealed partial class WebRequestManager : MonoSingleton<WebRequestManager>,IWebRequestManager
     {
         /// <summary>
-        /// 获取下载接口
+        /// 下载
         /// </summary>
         /// <param name="dir">保存路径</param>
         /// <returns></returns>
-        public IDownload Downloader(string dir)
+        public void Download(string url, string dir, out IDownloader iDownloader)
         {
-            return new Download(dir);
+            Downloader downloader = new Downloader(dir);
+            StartCoroutine(downloader.Get(url));
+            iDownloader = downloader;
         }
         /// <summary>
         /// UnityWebRequest Get封装

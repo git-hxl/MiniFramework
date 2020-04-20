@@ -1,73 +1,40 @@
 ﻿using System.Collections;
 using UnityEngine;
 using System;
+using MiniFramework.WebRequest;
+
 namespace MiniFramework.Resource
 {
     public sealed partial class ResourceManager : MonoSingleton<ResourceManager>, IResourceManager
     {
         public ReadType readType;
-
+        private ResourceUpdate resourceUpdate;
         private ResourceRead resourceRead;
 
-        private ResourceUpdate resourceUpdate;
+        /// <summary>
+        /// 获取更新信息
+        /// </summary>
+        /// <returns></returns>
+        public IResourceUpdate GetResourceUpdate
+        {
+            get
+            {
+                return resourceUpdate;
+            }
+            
+        }
+        /// <summary>
+        /// 获取加载信息
+        /// </summary>
+        /// <returns></returns>
+        public IResourceRead GetResourceRead
+        {
+            get
+            {
+                return resourceRead;
+            }
+        }
 
-        /// <summary>
-        /// 资源读取完成事件
-        /// </summary>
-
-        public event Action onReadCompleted
-        {
-            add
-            {
-                resourceRead.onReadCompleted += value;
-            }
-            remove
-            {
-                resourceRead.onReadCompleted -= value;
-            }
-        }
-        /// <summary>
-        /// 资源读取失败事件
-        /// </summary>
-        public event Action onReadError
-        {
-            add
-            {
-                resourceRead.onReadError += value;
-            }
-            remove
-            {
-                resourceRead.onReadError -= value;
-            }
-        }
-        /// <summary>
-        /// 更新完成事件
-        /// </summary>
-        public event Action onUpdateCompleted
-        {
-            add
-            {
-                resourceUpdate.onUpdateCompleted += value;
-            }
-            remove
-            {
-                resourceUpdate.onUpdateCompleted -= value;
-            }
-        }
-        /// <summary>
-        /// 更新失败事件
-        /// </summary>
-        public event Action onUpdateError
-        {
-            add
-            {
-                resourceUpdate.onUpdateError += value;
-            }
-            remove
-            {
-                resourceUpdate.onUpdateError -= value;
-            }
-        }
         protected override void Awake()
         {
             base.Awake();
@@ -77,13 +44,21 @@ namespace MiniFramework.Resource
         {
             resourceRead = new ResourceRead(this);
             resourceUpdate = new ResourceUpdate(this);
-            resourceUpdate.onUpdateError += () => resourceRead = null;
+
         }
-        private IEnumerator Start()
+        private void Start()
         {
-            yield return resourceUpdate.CheckConfig();
-            if (resourceRead != null)
-                yield return resourceRead.ReadAll();
+            switch (readType)
+            {
+                case ReadType.None: break;
+                case ReadType.FromStreamingAssets:
+                    StartCoroutine(resourceRead.ReadAll()); break;
+                case ReadType.FromPersistentPath:
+                    resourceUpdate.onUpdateCompleted += () => StartCoroutine(resourceRead.ReadAll());
+                    resourceUpdate.DownloadConfig();
+                    break;
+            }
+
         }
         /// <summary>
         /// 加载资源

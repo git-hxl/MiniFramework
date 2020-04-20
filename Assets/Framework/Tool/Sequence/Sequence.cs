@@ -26,9 +26,9 @@ namespace MiniFramework
             return sequence;
         }
 
-        public static SequenceNode Repeat(this SequenceNode sequence, int times, float interval, Action action)
+        public static SequenceNode Repeat(this SequenceNode sequence, int times, float interval, Action action, Func<bool> condition = null)
         {
-            sequence.Append(times, interval, action);
+            sequence.Append(times, interval, action, condition);
             return sequence;
         }
     }

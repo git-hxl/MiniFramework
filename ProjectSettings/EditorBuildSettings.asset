@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Example/06.Network/06.Network.unity
+    guid: 4d2434f128502974c8622c84de6819e7
   m_configObjects: {}

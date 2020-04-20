@@ -9,7 +9,6 @@ IUIManager:界面统一管理接口
 
 常用接口示例:
 UIManager.Instance.Open<UIRegister>();
-//如果打开失败,会尝试从本地资源加载(发布版本无需处理资源地址,如下示例,默认会从AssetBundle中加载UIResigster.prefab)
 UIManager.Instance.Open<UIRegister>("Assets/Example/01.UI/Prefabs/UIRegister.prefab");
 ```
 2. Audio
@@ -20,9 +19,7 @@ IAudioManager:音频统一管理接口
 常用接口示例:
 //从本地加载播放
 AudioManager.Instance.PlaySound("Assets/Example/02.Audio/Audios/Click.wav");
-
 AudioManager.Instance.PlaySoundAtPoint();
-
 AudioManager.Instance.SetTotalVolume();
 
 ```
@@ -48,10 +45,10 @@ IObjectPool:游戏对象缓存池统一管理接口
 IPoolable: 缓存类必需接口
 
 常用接口示例:
-普通类：
+//普通类
 TestPoolExample test = Pool<TestPoolExample>.Instance.Allocate();
-Pool<TestPoolExample>.Instance.Recycle(test);o
-游戏对象（该方式创建的游戏对象会挂载ObjectPoolable组件）
+Pool<TestPoolExample>.Instance.Recycle(test);
+//游戏对象（该方式创建的游戏对象会挂载ObjectPoolable组件）
 ObjectPool.Instance.Allocate("Assets/Example/04.Pool/PoolObject/Cube.prefab");
 ObjectPool.Instance.Recycle(gameObject);
 ```
@@ -70,6 +67,11 @@ WebRequestManager.Instance.Post(url,form,callback);
 ```
 6.Network
 ```
+常用接口示例：
+SocketManager.Instance.GetTcpClient.Init(Address, Port);
+SocketManager.Instance.GetTcpClient.Connect();
+SocketManager.Instance.GetTcpClient.Close();
+SocketManager.Instance.GetTcpClient.Send(msgID, data));
 ```
 7.Message
 ```

@@ -28,10 +28,10 @@ namespace MiniFramework
             EventNode eventNode = new EventNode();
             coroutines.Add(eventNode.Event(action));
         }
-        public void Append(int times, float interval, Action action)
+        public void Append(int times, float interval, Action action, Func<bool> condition = null)
         {
             RepeatNode repeatNode = new RepeatNode();
-            coroutines.Add(repeatNode.Repeat(times, interval, action));
+            coroutines.Add(repeatNode.Repeat(times, interval, action, condition));
         }
         public SequenceNode Begin()
         {
