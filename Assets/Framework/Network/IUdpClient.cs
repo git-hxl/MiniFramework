@@ -3,7 +3,7 @@ using System;
 
 namespace MiniFramework.Network
 {
-    interface IUdpClient
+    public interface IUdpClient:ISocket
     {
         /// <summary>
         /// ip地址或者域名
@@ -11,15 +11,14 @@ namespace MiniFramework.Network
         string Address { get; }
         int Port { get; }
         bool IsActive { get; }
-
-        event Action ConnectAbort;
-
-        void Init(string address, int port);
+        /// <summary>
+        /// 设置Ip和端口号
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        void SetIPEndPoint(string address, int port);
         void Launch();
         void Broadcast(int msgID, byte[] data);
-
-        void Send(int msgID, byte[] data);
-
-        void Close();
+        event Action ConnectAbort;
     }
 }

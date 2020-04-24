@@ -18,7 +18,7 @@ namespace MiniFramework
 
             public void OnAllocated()
             {
-                 
+
             }
 
             public byte[] data;
@@ -29,14 +29,17 @@ namespace MiniFramework
         private static readonly object locker = new object();
         private void Update()
         {
-            while (msgQueue.Count > 0)
+            lock (locker)
             {
-                MsgData msg = msgQueue.Dequeue();
-                if(!msg.Action.Target.Equals(null))
+                while (msgQueue.Count > 0)
                 {
-                    msg.Action(msg.data);
+                    MsgData msg = msgQueue.Dequeue();
+                    if (!msg.Action.Target.Equals(null))
+                    {
+                        msg.Action(msg.data);
+                    }
+                    Pool<MsgData>.Instance.Recycle(msg);
                 }
-                Pool<MsgData>.Instance.Recycle(msg);
             }
         }
         public void Regist(int msgId, Action<byte[]> action)
@@ -99,25 +102,24 @@ namespace MiniFramework
         }
         public void Dispatch(int msgId, byte[] data)
         {
-            lock(locker)
+            lock (locker)
             {
                 List<MsgData> value;
                 if (msgDict.TryGetValue(msgId, out value))
                 {
                     for (int i = value.Count - 1; i >= 0; i--)
                     {
-                        MsgData msg = value[i];
-                        if(!msg.Action.Target.Equals(null))
+                        if (!value[i].Action.Target.Equals(null))
                         {
                             MsgData queueMsg = Pool<MsgData>.Instance.Allocate();
-                            queueMsg.Action = msg.Action;
+                            queueMsg.Action = value[i].Action;
                             queueMsg.data = data;
                             msgQueue.Enqueue(queueMsg);
                         }
                         else
-                        {                        
-                            value.Remove(msg);
-                            Pool<MsgData>.Instance.Recycle(msg);
+                        {
+                            value.Remove(value[i]);
+                            Pool<MsgData>.Instance.Recycle(value[i]);
                         }
                     }
                 }

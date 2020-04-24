@@ -1,62 +1,61 @@
-﻿using System.Collections;
+﻿using MiniFramework;
+using MiniFramework.Network;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using MiniFramework;
-using MiniFramework.Network;
-using System.Text;
-using System;
 
-public class TestTcpServer : MonoBehaviour
+public class TestUdpClient : MonoBehaviour
 {
+    public string Address;
     public int Port;
     public Text msg;
-    public Button buttonConnect;
+    public Button buttonLaunch;
     public Button buttonClose;
     public Button buttonSend;
+    public Button buttonBroadcast;
     public InputField inputFieldMsg;
 
     public ScrollRect scrollRect;
-
-    public Toggle toggleHearBeat;
     // Start is called before the first frame update
     void Start()
     {
-
-        SocketManager.Instance.GetTcpServer.SetPort(Port);
+        SocketManager.Instance.GetUdpClient.SetIPEndPoint(Address, Port);
 
 
         MsgManager.Instance.Regist(MsgID.Test, GetMsg);
-        MsgManager.Instance.Regist(MsgID.HearBeat, GetHeartPack);
 
-        buttonConnect.onClick.AddListener(() =>
+        buttonLaunch.onClick.AddListener(() =>
         {
-            SocketManager.Instance.GetTcpServer.Launch();
+            SocketManager.Instance.GetUdpClient.Launch();
         });
 
         buttonClose.onClick.AddListener(() =>
         {
-            SocketManager.Instance.GetTcpServer.Close();
+            SocketManager.Instance.GetUdpClient.Close();
         });
 
         buttonSend.onClick.AddListener(() =>
         {
-            SocketManager.Instance.GetTcpServer.Send(MsgID.Test, Encoding.UTF8.GetBytes(inputFieldMsg.text));
+            SocketManager.Instance.GetUdpClient.Send(MsgID.Test, Encoding.UTF8.GetBytes(inputFieldMsg.text));
         });
+
+        buttonBroadcast.onClick.AddListener(() =>
+        {
+            SocketManager.Instance.GetUdpClient.Broadcast(MsgID.Test, Encoding.UTF8.GetBytes(inputFieldMsg.text));
+        });
+
         Application.runInBackground = true;
     }
+
 
     private void GetMsg(byte[] data)
     {
         UpdateMsg(Encoding.UTF8.GetString(data));
     }
-    private void GetHeartPack(byte[] data)
-    {
-        if(toggleHearBeat.isOn)
-        {
-            SocketManager.Instance.GetTcpServer.Send(MsgID.HearBeat, null);
-        }
-    }
+
 
     void UpdateMsg(string txt)
     {

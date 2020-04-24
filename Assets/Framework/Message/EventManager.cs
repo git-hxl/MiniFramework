@@ -7,21 +7,21 @@ namespace MiniFramework
     public class EventManager : Singleton<EventManager>
     {
         private EventManager() { }
-        private Dictionary<string, List<Action<object[]>>> listeners = new Dictionary<string, List<Action<object[]>>>();
+        private Dictionary<string, List<Action>> listeners = new Dictionary<string, List<Action>>();
         public void ClearAll()
         {
             listeners.Clear();
         }
-        public void Regist(string id, Action<object[]> listener)
+        public void Regist(string id, Action listener)
         {
             if(listener == null)
             {
                 return;
             }
-            List<Action<object[]>> values;
+            List<Action> values;
             if(!listeners.TryGetValue(id,out values))
             {
-                values = new List<Action<object[]>>();
+                values = new List<Action>();
                 listeners.Add(id, values);
             }
             foreach (var item in values)
@@ -34,9 +34,9 @@ namespace MiniFramework
             }
             values.Add(listener);
         }
-        public void UnRegist(string id, Action<object[]> listener)
+        public void UnRegist(string id, Action listener)
         {
-            List<Action<object[]>> values;
+            List<Action> values;
             if (listeners.TryGetValue(id, out values))
             {
                 for (int i = values.Count-1; i >=0; i--)
@@ -51,23 +51,23 @@ namespace MiniFramework
         }
         public void Clear(string id)
         {
-            List<Action<object[]>> values;
+            List<Action> values;
             if (listeners.TryGetValue(id, out values))
             {
                 values.Clear();
             }
         }
-        public void Dispatch(string id, params object[] arg)
+        public void Dispatch(string id)
         {
-            List<Action<object[]>> values;
+            List<Action> values;
             if (listeners.TryGetValue(id, out values))
             {
                 for (int i = values.Count - 1; i >= 0; i--)
                 {
-                    Action<object[]> value = values[i];
+                    Action value = values[i];
                     if (!value.Target.Equals(null))
                     {
-                        value(arg);
+                        value();
                     }
                     else
                     {

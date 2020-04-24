@@ -24,9 +24,7 @@ public class TestTcpClient : MonoBehaviour
         SocketManager.Instance.GetTcpClient.ConnectFailed += GetTcpClient_ConnectFailed;
         SocketManager.Instance.GetTcpClient.ConnectSuccess += GetTcpClient_ConnectSuccess;
         SocketManager.Instance.GetTcpClient.ConnectAbort += GetTcpClient_ConnectAbort;
-        SocketManager.Instance.GetTcpClient.Init(Address, Port);
-
-
+        SocketManager.Instance.GetTcpClient.SetIPEndPoint(Address, Port);
         MsgManager.Instance.Regist(MsgID.Test, GetMsg);
 
         buttonConnect.onClick.AddListener(() =>

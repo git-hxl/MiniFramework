@@ -67,12 +67,18 @@ WebRequestManager.Instance.Post(url,form,callback);
 ```
 6.Network
 ```
-常用接口示例：
-SocketManager.Instance.GetTcpClient.Init(Address, Port);
+使用示例：
+SocketManager.Instance.GetTcpClient.SetIPEndPoint(Address, Port);
 SocketManager.Instance.GetTcpClient.Connect();
 SocketManager.Instance.GetTcpClient.Close();
 SocketManager.Instance.GetTcpClient.Send(msgID, data));
 ```
 7.Message
 ```
+使用示例：
+EventManager.Instance.Regist("Test", getEventMsg);
+EventManager.Instance.Dispatch("Test");
+
+MsgManager.Instance.Regist(1000, getThreadMsg);
+MsgManager.Instance.Dispatch(1000, null));
 ```

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Net;
-using System.Net.Sockets;
 using UnityEngine;
-using UnityEngine.Events;
-
 namespace MiniFramework.Network
 {
     public sealed partial class SocketManager
@@ -24,7 +21,7 @@ namespace MiniFramework.Network
             private byte[] recvBuffer;
             private System.Net.Sockets.UdpClient socket;
             private DataPacker dataPacker;
-            public void Init(string address, int port)
+            public void SetIPEndPoint(string address, int port)
             {
                 Address = address;
                 Port = port;
@@ -39,7 +36,6 @@ namespace MiniFramework.Network
                 try
                 {
                     dataPacker = new DataPacker();
-
                     IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, Port);
                     socket = new System.Net.Sockets.UdpClient(endPoint);
                     socket.EnableBroadcast = true;
@@ -56,7 +52,7 @@ namespace MiniFramework.Network
             {
                 socket = (System.Net.Sockets.UdpClient)ar.AsyncState;
                 IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
-                recvBuffer = socket.EndReceive(ar, ref remote);
+                recvBuffer = socket.EndReceive(ar, ref remote); 
                 dataPacker.UnPack(recvBuffer);
                 socket.BeginReceive(ReceiveResult, socket);
             }
@@ -91,7 +87,7 @@ namespace MiniFramework.Network
                 {
                     socket.Close();
                     IsActive = false;
-                    Debug.Log("主动关闭连接");
+                    Debug.LogError("主动关闭连接");
                     ConnectAbort?.Invoke();
                 }
             }

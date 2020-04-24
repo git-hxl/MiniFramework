@@ -28,20 +28,27 @@ namespace MiniFramework.Network
             private System.Net.Sockets.TcpClient socket;
             private SocketManager socketManager;
             private SequenceNode sequenceNodeConnect;
+
+            private HearBeat hearBeat;
             public TcpClient(SocketManager socketManager)
             {
-                this.socketManager = socketManager;
-            }
-            public void Init(string address, int port)
-            {
-                Address = address;
-                Port = port;
                 maxBufferSize = 1024;
                 ConnectTimeout = 5f;
-                ip = SocketUtil.ParseIP(Address);
+                this.socketManager = socketManager;
+                this.hearBeat = new HearBeat(socketManager,this);
+
+                ConnectSuccess += hearBeat.Start;
+                ConnectAbort += hearBeat.Stop;
+
                 MsgManager.Instance.Regist(MsgID.ConnectSuccess, (data) => ConnectSuccess?.Invoke());
                 MsgManager.Instance.Regist(MsgID.ConnectFailed, (data) => ConnectFailed?.Invoke());
                 MsgManager.Instance.Regist(MsgID.ConnectAbort, (data) => ConnectAbort?.Invoke());
+            }
+            public void SetIPEndPoint(string address, int port)
+            {
+                Address = address;
+                Port = port;
+                ip = SocketUtil.ParseIP(Address);
             }
 
             public void Connect()
@@ -51,10 +58,10 @@ namespace MiniFramework.Network
                 IsConnecting = true;
                 recvBuffer = new byte[maxBufferSize];
                 dataPacker = new DataPacker();
-
                 Debug.Log("开始连接服务器：" + ip + " 端口：" + Port);
                 socket = new System.Net.Sockets.TcpClient();
                 socket.BeginConnect(ip, Port, ConnectResult, socket);
+                //连接超时检测
                 sequenceNodeConnect = socketManager.Sequence().Delay(ConnectTimeout).Event(() =>
                 {
                     if (IsConnecting && !IsConnected)
@@ -100,7 +107,7 @@ namespace MiniFramework.Network
                     }
                     else
                     {
-                        Debug.LogError("网络中断!");
+                        Debug.LogError("网络中断");
                         Close();
                     }
                 }

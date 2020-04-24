@@ -2,7 +2,7 @@
 
 namespace MiniFramework.Network
 {
-    public interface ITcpClient
+    public interface ITcpClient:ISocket
     {
         /// <summary>
         /// ip地址或者域名
@@ -25,25 +25,16 @@ namespace MiniFramework.Network
         /// </summary>
         float ConnectTimeout { get; set; }
         /// <summary>
-        /// 初始化
+        /// 设置Ip和端口号
         /// </summary>
         /// <param name="address"></param>
         /// <param name="port"></param>
-        void Init(string address, int port);
+        void SetIPEndPoint(string address, int port);
         /// <summary>
         /// 连接
         /// </summary>
         void Connect();
-        /// <summary>
-        /// 发送
-        /// </summary>
-        /// <param name="msgID"></param>
-        /// <param name="data"></param>
-        void Send(int msgID, byte[] data);
-        /// <summary>
-        /// 关闭连接
-        /// </summary>
-        void Close();
+ 
         event Action ConnectSuccess;
         event Action ConnectFailed;
         event Action ConnectAbort;

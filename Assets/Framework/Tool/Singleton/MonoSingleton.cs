@@ -22,7 +22,7 @@ namespace MiniFramework
         }
         protected virtual void Awake()
         {
-            if(mInstance!=null)
+            if (mInstance != null)
             {
                 Destroy(gameObject);
                 return;

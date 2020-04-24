@@ -18,11 +18,15 @@ namespace MiniFramework.Network
             private List<System.Net.Sockets.TcpClient> remoteClients;
             private TcpListener tcpListener;
             private DataPacker dataPacker;
-            public void Init(int port)
+
+            public TcpServer()
             {
-                Port = port;
                 MaxConnections = 12;
                 MaxBufferSize = 1024;
+            }
+            public void SetPort(int port)
+            {
+                Port = port;
             }
             [ContextMenu("开启服务器")]
             public void Launch()
@@ -113,7 +117,7 @@ namespace MiniFramework.Network
                 {
                     tcpListener.Stop();
                     IsActive = false;
-                    Debug.Log("已关闭服务器");
+                    Debug.Log("已关闭服务器监听");
                 }
             }
         }

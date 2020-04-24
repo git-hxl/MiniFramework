@@ -70,6 +70,8 @@
     <Compile Include="Assets\Example\05.WebRequest\TestWebRequest.cs" />
     <Compile Include="Assets\Example\06.Network\TestTcpClient.cs" />
     <Compile Include="Assets\Example\06.Network\TestTcpServer.cs" />
+    <Compile Include="Assets\Example\06.Network\TestUdpClient.cs" />
+    <Compile Include="Assets\Example\07.Message\TestMessage.cs" />
     <Compile Include="Assets\Framework\Audio\AudioManager.cs" />
     <Compile Include="Assets\Framework\Audio\IAudioManager.cs" />
     <Compile Include="Assets\Framework\Config\Config.cs" />
@@ -78,12 +80,14 @@
     <Compile Include="Assets\Framework\Message\EventManager.cs" />
     <Compile Include="Assets\Framework\Message\MsgID.cs" />
     <Compile Include="Assets\Framework\Message\MsgManager.cs" />
+    <Compile Include="Assets\Framework\Network\ISocket.cs" />
     <Compile Include="Assets\Framework\Network\ISocketManager.cs" />
     <Compile Include="Assets\Framework\Network\ITcpClient.cs" />
     <Compile Include="Assets\Framework\Network\ITcpServer.cs" />
     <Compile Include="Assets\Framework\Network\IUdpClient.cs" />
     <Compile Include="Assets\Framework\Network\SocketManager.cs" />
     <Compile Include="Assets\Framework\Network\SocketManager.DataPacker.cs" />
+    <Compile Include="Assets\Framework\Network\SocketManager.HearBeat.cs" />
     <Compile Include="Assets\Framework\Network\SocketManager.TcpClient.cs" />
     <Compile Include="Assets\Framework\Network\SocketManager.TcpServer.cs" />
     <Compile Include="Assets\Framework\Network\SocketManager.UdpClient.cs" />
