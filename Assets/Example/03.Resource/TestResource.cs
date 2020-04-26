@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MiniFramework.Resource;
-using MiniFramework.Config;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MiniFramework.WebRequest;

@@ -6,7 +6,6 @@ namespace MiniFramework
 {
     public class EventManager : Singleton<EventManager>
     {
-        private EventManager() { }
         private Dictionary<string, List<Action>> listeners = new Dictionary<string, List<Action>>();
         public void ClearAll()
         {

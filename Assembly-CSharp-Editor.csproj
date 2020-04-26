@@ -60,10 +60,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Framework\Tool\Editor\AssetBundleEditor.cs" />
-    <Compile Include="Assets\Framework\Tool\Editor\MiniExtension.cs" />
-    <Compile Include="Assets\Framework\Tool\Editor\SpriteFont.cs" />
-    <Compile Include="Assets\Framework\Tool\Editor\ZipEditor.cs" />
+    <Compile Include="Assets\MiniFramework\Tool\Editor\AssetBundleEditor.cs" />
+    <Compile Include="Assets\MiniFramework\Tool\Editor\MiniExtension.cs" />
+    <Compile Include="Assets\MiniFramework\Tool\Editor\SpriteFont.cs" />
+    <Compile Include="Assets\MiniFramework\Tool\Editor\ZipEditor.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/UnityProjects/MiniFramework/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -316,12 +316,6 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>D:/UnityProjects/MiniFramework/Assets/Framework/Tool/Plugins/ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>D:/UnityProjects/MiniFramework/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
@@ -336,6 +330,12 @@
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>D:/UnityProjects/MiniFramework/Library/PackageCache/com.unity.purchasing@2.0.3/Editor/UnityEditor.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>D:/UnityProjects/MiniFramework/Assets/MiniFramework/Tool/Plugins/ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>D:/UnityProjects/MiniFramework/Assets/MiniFramework/Tool/Plugins/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>C:/Apps/Unity 2018.4.19f1/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

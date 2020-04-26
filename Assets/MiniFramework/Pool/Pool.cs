@@ -8,7 +8,6 @@ namespace MiniFramework.Pool
     /// <typeparam name="T"></typeparam>
     public class Pool<T> : Singleton<Pool<T>>, IPool<T> where T : IPoolable, new()
     {
-        private Pool() { }
         private uint mMaxCount = 10;//缓存池最大个数
         protected readonly Stack<T> mCacheStack = new Stack<T>();//缓存池
         //当前缓存池中对象个数

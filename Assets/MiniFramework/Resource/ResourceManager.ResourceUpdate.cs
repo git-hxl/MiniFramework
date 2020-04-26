@@ -48,7 +48,7 @@ namespace MiniFramework.Resource
 
             public void DownloadConfig()
             {
-                string url = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/config.txt";
+                string url = ConfigUrl.Instance.ResUrl + "/" + platform + "/config.txt";
                 WebRequestManager.Instance.Download(url, Application.persistentDataPath, out iDownloader);
                 iDownloader.onDownloadCompleted += () => CheckConfig();
                 iDownloader.onDownloadError += onUpdateError;
@@ -68,7 +68,7 @@ namespace MiniFramework.Resource
                     if (newConfig["version"] != localConfig["version"])
                     {
                         Debug.LogError("版本号不一致，请前往平台更新安装包");
-                        Application.OpenURL(Config.Config.Instance.GetConfigUrl.AppUrl);
+                        Application.OpenURL(ConfigUrl.Instance.AppUrl);
                         Application.Quit();
                         return;
                     }
@@ -97,7 +97,7 @@ namespace MiniFramework.Resource
                 foreach (var item in updateFiles)
                 {
                     //这里下载差异化AB包
-                    string fileUrl = Config.Config.Instance.GetConfigUrl.ResUrl + "/" + platform + "/" + item;
+                    string fileUrl = ConfigUrl.Instance.ResUrl + "/" + platform + "/" + item;
 
                     WebRequestManager.Instance.Download(fileUrl, assetBundlePath, out iDownloader);
 

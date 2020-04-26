@@ -1,6 +1,6 @@
-﻿namespace MiniFramework.Config
+﻿namespace MiniFramework
 {
-    public class ConfigUrl
+    public class ConfigUrl : Singleton<ConfigUrl>
     {
 #if !Release
         //AssetBundle更新下载地址

@@ -47,16 +47,16 @@
 				return value.ToString ();
 			} 
 			else if (value < 1000000) {
-				return(value / 1000).ToString ("N0") + "K";
+				return(value / 1000f).ToString ("N1") + "K";
 			} 
 			else if (value < 1000000000) {
-				return(value / 1000000).ToString ("N0")+ "M";
+				return(value / 1000000f).ToString ("N2")+ "M";
 			} 
 			else if (value < 1000000000000) {
-				return(value / 1000000000).ToString ("N0")+ "B";
+				return(value / 1000000000f).ToString ("N3")+ "B";
 			} 
 			else {
-				return(value / 1000000000000).ToString ("N0") + "T";
+				return(value / 1000000000000f).ToString ("N4") + "T";
 			}
         }
     }
