@@ -80,5 +80,5 @@ EventManager.Instance.Regist("Test", getEventMsg);
 EventManager.Instance.Dispatch("Test");
 
 MsgManager.Instance.Regist(1000, getThreadMsg);
-MsgManager.Instance.Dispatch(1000, null));
+MsgManager.Instance.Enqueue(1000, null));
 ```

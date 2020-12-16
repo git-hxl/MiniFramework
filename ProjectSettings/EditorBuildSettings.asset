@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Example/06.Network/06.Network.unity
-    guid: 4d2434f128502974c8622c84de6819e7
+    path: Assets/MiniFramework/0.Example/Socket/Socket.unity
+    guid: da18ff7a4fe92394a80fb4cda013fd85
   m_configObjects: {}
