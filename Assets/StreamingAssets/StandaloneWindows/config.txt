@@ -1,4 +1,0 @@
-version:1.0.0
-audio:001552a2c4b4353aed98d9ae01e3a1e4
-prefab:eec30b9b0a42d2aebd0b8bb03d16fb3a
-sprite:4e55283f08841edfa7d2d49352c06c99
