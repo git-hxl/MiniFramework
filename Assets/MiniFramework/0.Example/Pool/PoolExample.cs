@@ -37,7 +37,7 @@ public class PoolExample : MonoBehaviour
 
     private void Allocate()
     {
-        GameObject obj =  PoolManager.Instance.Allocate("Assets/MiniFramework 1/0.Example/Pool/Cube.prefab");
+        GameObject obj =  PoolManager.Instance.Allocate("Assets/MiniFramework/0.Example/Pool/Cube.prefab");
     }
 
     private void Recycle()

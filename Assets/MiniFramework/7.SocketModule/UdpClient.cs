@@ -3,7 +3,7 @@ using System.Net;
 using UnityEngine;
 namespace MiniFramework
 {
-    public class UdpClient
+    public class UdpClient : ISocket
     {
         private string address;
         private int port;
@@ -77,8 +77,10 @@ namespace MiniFramework
             if (socket != null && IsActive)
             {
                 socket.Close();
+                socket = null;
                 IsActive = false;
-                Debug.LogError("主动关闭连接");
+                Debug.LogError("网络中断");
+                MsgManager.Instance.Enqueue(MsgID.ConnectFailed, "网络中断");
             }
         }
 

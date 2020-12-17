@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MiniFramework
 {
-    public class TcpServer
+    public class TcpServer : ISocket
     {
         public bool IsActive { get; set; }
         public int Port { get; set; }
@@ -26,7 +26,7 @@ namespace MiniFramework
         [ContextMenu("开启服务器")]
         public void Launch()
         {
-            if (IsActive)
+            if (tcpListener != null)
             { return; }
             recvBuffer = new byte[MaxBufferSize];
             remoteClients = new List<System.Net.Sockets.TcpClient>();
@@ -106,15 +106,15 @@ namespace MiniFramework
                     }
                 }
                 remoteClients.Clear();
-                remoteClients =null;
                 Debug.Log("已断开远程客户端");
             }
-            if (tcpListener != null && IsActive)
-            {
-                tcpListener.Stop();
-                IsActive = false;
-                Debug.Log("已关闭服务器监听");
-            }
+            //if (tcpListener != null && IsActive)
+            //{
+            //    tcpListener.Stop();
+            //    tcpListener = null;
+            //    IsActive = false;
+            //    Debug.Log("已关闭服务器监听");
+            //}
         }
     }
 }

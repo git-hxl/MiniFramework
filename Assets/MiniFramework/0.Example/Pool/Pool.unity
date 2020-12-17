@@ -138,7 +138,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 817795135}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c313484f4c099f34c94ed862c121834e, type: 3}
+  m_Script: {fileID: 11500000, guid: e7587149cebd07043bb9a11adfa615bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &817795137
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024c6e80e83ce07449f176943ec700d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  assetPath: Assets/MiniFramework 1/0.Example/Pool/Cube.prefab
+  assetPath: Assets/MiniFramework/0.Example/Pool/Cube.prefab
   maxCount: 5
 --- !u!1 &1646797783
 GameObject:

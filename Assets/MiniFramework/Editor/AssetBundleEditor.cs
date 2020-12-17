@@ -2,7 +2,6 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace MiniFramework
@@ -14,7 +13,10 @@ namespace MiniFramework
         private string version;
         private string path;
         private Dictionary<string, AssetBundleBuild> assetBundleBuilds = new Dictionary<string, AssetBundleBuild>();
-         [MenuItem("MiniFramework/AssetBundle")]
+        private string[] bundles;
+        private List<string> selectBunldes;
+        private Vector2 scrollPos;
+        [MenuItem("MiniFramework/AssetBundle")]
         public static void OpenWindow()
         {
             AssetBundleEditor window = (AssetBundleEditor)EditorWindow.GetWindow(typeof(AssetBundleEditor), false, "AssetBundle");
@@ -26,6 +28,9 @@ namespace MiniFramework
             option = (BuildAssetBundleOptions)PlayerPrefs.GetInt("Mini_Option", 256);
             version = PlayerPrefs.GetString("Mini_Version", "1.0.0");
             path = PlayerPrefs.GetString("Mini_Path", Application.streamingAssetsPath);
+            AssetDatabase.RemoveUnusedAssetBundleNames();
+            bundles = AssetDatabase.GetAllAssetBundleNames();
+            selectBunldes = bundles.ToList();
         }
         private void OnGUI()
         {
@@ -48,27 +53,28 @@ namespace MiniFramework
             GUILayout.Label("压缩方式");
             option = (BuildAssetBundleOptions)EditorGUILayout.EnumPopup(option);
 
-            GUILayout.BeginVertical("box");
-            string[] assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
-            for (int i = 0; i < assetBundleNames.Length; i++)
+            scrollPos = GUILayout.BeginScrollView(scrollPos);
+
+            for (int i = 0; i < bundles.Length; i++)
             {
-                string assetLabel = assetBundleNames[i];
-                bool isExit = assetBundleBuilds.ContainsKey(assetLabel);
-                bool isOn= GUILayout.Toggle(isExit, assetLabel);
-                if(isOn&&!isExit)
+                bool isBuild = selectBunldes.Contains(bundles[i]);
+                bool isTrue = GUILayout.Toggle(isBuild, bundles[i]);
+
+                if(isBuild!=isTrue)
                 {
-                    AssetBundleBuild assetBundleBuild = new AssetBundleBuild();
-                    assetBundleBuild.assetBundleName = assetLabel;
-                    assetBundleBuild.assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(assetLabel);
-                    assetBundleBuilds.Add(assetLabel, assetBundleBuild);
-                }
-                else if(!isOn&&isExit)
-                {
-                    assetBundleBuilds.Remove(assetLabel);
+                    if(isTrue)
+                    {
+                        selectBunldes.Add(bundles[i]);
+                    }
+                    else
+                    {
+                        selectBunldes.Remove(bundles[i]);
+                    }
                 }
             }
 
-            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+
             GUILayout.Label("版本信息");
             version = GUILayout.TextField(version);
 
@@ -77,10 +83,19 @@ namespace MiniFramework
             //     GenHotfix();
             //     AssetDatabase.Refresh();
             // }
-            
+
             if (GUILayout.Button("打包"))
             {
-                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), assetBundleBuilds.Values.ToArray(), option, platform);
+                AssetBundleBuild[] builds = new AssetBundleBuild[selectBunldes.Count];
+
+                for (int i = 0; i < builds.Length; i++)
+                {
+                    AssetBundleBuild build = new AssetBundleBuild();
+                    build.assetBundleName = selectBunldes[i];
+                    build.assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(build.assetBundleName);
+                    builds[i] = build;
+                }
+                AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(GetTargetPath(platform), builds, option, platform);
                 Dictionary<string, Hash128> hash = FileUtil.LoadABManifest(manifest);
                 CreateConfig(hash);
                 AssetDatabase.Refresh();

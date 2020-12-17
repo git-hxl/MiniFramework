@@ -8,28 +8,18 @@ namespace MiniFramework
         private float recvHearPackTime;
         private float checkHearPackInterval = 5f;
 
-        private TcpClient tcpClient;
-        private TcpServer tcpServer;
-        private UdpClient udpClient;
+        private ISocket socket;
 
-        public bool isOK;
+        private bool isOK;
         private void Start()
         {
             EventManager.Instance.Regist(MsgID.Ping, RecvHeartPack);
             recvHearPackTime = Time.time;
         }
 
-        public void Init(TcpClient tcpClient)
+        public void Init(ISocket socket)
         {
-            this.tcpClient = tcpClient;
-        }
-        public void Init(TcpServer tcpServer)
-        {
-            this.tcpServer = tcpServer;
-        }
-        public void Init(UdpClient udpClient)
-        {
-            this.udpClient = udpClient;
+            this.socket = socket;
         }
 
         /// <summary>
@@ -38,29 +28,22 @@ namespace MiniFramework
         /// <param name="data"></param>
         private void RecvHeartPack(object data)
         {
-            //Debug.Log("接收到心跳包");
+            Debug.Log("接收到心跳");
             recvHearPackTime = Time.time;
-            if (tcpClient != null)
-                tcpClient.Send(MsgID.Pong, null);
-            else if (tcpServer != null)
-                tcpServer.Send(MsgID.Pong, null);
-            else if (udpClient != null)
-                udpClient.Send(MsgID.Pong, null);
-
+            if (socket != null)
+                socket.Send(MsgID.Ping, null);
             isOK = true;
         }
 
-
+        /// <summary>
+        /// 定时检测是否收到心跳包
+        /// </summary>
         private void Update()
         {
             if (isOK && Time.time - recvHearPackTime > checkHearPackInterval)
             {
-                if (tcpClient != null)
-                    tcpClient.Close();
-                else if (tcpServer != null)
-                    tcpServer.Close();
-                else if (udpClient != null)
-                    udpClient.Close();
+                if (socket != null)
+                    socket.Close();
                 isOK = false;
             }
         }

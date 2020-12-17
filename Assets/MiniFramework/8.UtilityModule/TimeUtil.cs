@@ -25,7 +25,7 @@ namespace MiniFramework
         /// <returns></returns>
         public static DateTime TimestampToDateTime(long timestamp)
         {
-            DateTime dateTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            DateTime dateTime = new DateTime(1970, 1, 1).ToLocalTime();
             return dateTime.AddMilliseconds(timestamp);
         }
     }

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using UnityEngine;
 namespace MiniFramework
 {
-    public class TcpClient
+    public class TcpClient:ISocket
     {
         private string address;
         private int port;
@@ -22,7 +22,7 @@ namespace MiniFramework
             ip = SocketUtil.ParseIP(address);
 
         }
-        public void Connect()
+        public void Launch()
         {
             if (socket != null)
             {
@@ -77,6 +77,7 @@ namespace MiniFramework
             {
                 byte[] sendData = dataPacker.Packer(msgID, data);
                 socket.GetStream().BeginWrite(sendData, 0, sendData.Length, SendResult, socket);
+                Debug.Log("发送消息ID：" + msgID + " 大小：" + sendData.Length + "字节");
             }
         }
         private void SendResult(IAsyncResult ar)

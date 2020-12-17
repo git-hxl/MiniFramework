@@ -21,12 +21,12 @@ public class AudioExample : MonoBehaviour
     {
         if (GUILayout.Button("Shot"))
         {
-            AudioManager.Instance.PlaySound("Assets/MiniFramework 1/0.Example/Audio/shot.mp3");
+            AudioManager.Instance.PlaySound("Assets/MiniFramework/0.Example/Audio/shot.mp3");
         }
 
         if (GUILayout.Button("Music"))
         {
-            AudioManager.Instance.PlayMusic("Assets/MiniFramework 1/0.Example/Audio/bg.mp3");
+            AudioManager.Instance.PlayMusic("Assets/MiniFramework/0.Example/Audio/bg.mp3");
         }
 
         if (GUILayout.Button("Pause Music"))
